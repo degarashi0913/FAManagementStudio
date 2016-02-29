@@ -25,5 +25,10 @@ namespace FAManagementStudio
             InitializeComponent();
             this.DataContext = new MainViewModel();
         }
+
+        private void CommandBinding_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+
+        }
     }
 }

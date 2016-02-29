@@ -4,8 +4,10 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:toolkit="http://schemas.microsoft.com/wpf/2008/toolkit"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+        xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
         xmlns:local="clr-namespace:FAManagementStudio"
+        xmlns:Common="clr-namespace:FAManagementStudio.Common"
+        xmlns:b="clr-namespace:FAManagementStudio.Behavior"
         mc:Ignorable="d"
         Title="FAManagementStudio" Height="700" Width="1000"
         >
@@ -13,9 +15,12 @@
     <DockPanel>
         <StackPanel Orientation="Horizontal" DockPanel.Dock="Top">
             <Button Content="新規" Command="{Binding CreateDatabase}"/>
+            <ComboBox Height="auto" Width="200" IsEditable="True" IsTextSearchEnabled="True" IsReadOnly="False" ItemsSource="{Binding DataInput}" Text="{Binding InputPath, Mode=TwoWay}" AllowDrop="True">
+                <i:Interaction.Behaviors>
+                    <b:FileDropBehavior DropedCommand="{Binding DropFile}"/>
+                </i:Interaction.Behaviors>
+            </ComboBox>
             <Button Content="読込" Command="{Binding LoadDatabase}"/>
-            <!--<TextBox Height="auto" Width="200" Text="{Binding InputPath, Mode=TwoWay}"/>-->
-            <ComboBox Height="auto" Width="200" IsEditable="True" IsTextSearchEnabled="True" IsReadOnly="False" ItemsSource="{Binding DataInput}" Text="{Binding InputPath, Mode=OneWayToSource}"/>
             <Button Content="実行" Command="{Binding ExecuteQuery}"/>
         </StackPanel>
         <DockPanel DockPanel.Dock="Left" >
@@ -30,9 +35,14 @@
                 </ListBox.ItemTemplate>
             </ListBox>
             <TreeView DockPanel.Dock="Right" MinWidth="170" ItemsSource="{Binding Tables}">
+                <TreeView.Resources>
+                    <ContextMenu x:Key="MenuItem">
+                        <!--<MenuItem Header="Select *" Command="{Binding SetSelectSql}"/>-->
+                    </ContextMenu>
+                </TreeView.Resources>
                 <TreeView.ItemContainerStyle>
                     <Style TargetType="{x:Type TreeViewItem}">
-                        <Setter Property="IsSelected" Value="{Binding CurrentDatabase, Mode=TwoWay}"/>
+                        <Setter Property="ContextMenu" Value="{StaticResource MenuItem}"/>
                     </Style>
                 </TreeView.ItemContainerStyle>
                 <TreeView.ItemTemplate>
@@ -42,7 +52,14 @@
                 </TreeView.ItemTemplate>
             </TreeView>
         </DockPanel>
-        <TextBox MinHeight="150" DockPanel.Dock="Top" Text="{Binding Query, Mode=TwoWay}" AcceptsReturn="True" />
+        <TextBox MinHeight="150" DockPanel.Dock="Top" Text="{Binding Query, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" AcceptsReturn="True" >
+            <TextBox.Resources>
+                <Common:CommandReference x:Key="Execute" Command="{Binding ExecuteQuery}"/>
+            </TextBox.Resources>
+            <TextBox.InputBindings>
+                <KeyBinding Key="F5" Command="{StaticResource Execute}" />
+            </TextBox.InputBindings>
+        </TextBox>
         <ListBox Height="auto" DockPanel.Dock="Top" ItemsSource="{Binding Datasource}" >
             <ListBox.ItemContainerStyle>
                 <Style TargetType="{x:Type ListBoxItem}">

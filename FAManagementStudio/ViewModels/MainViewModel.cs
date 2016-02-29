@@ -46,6 +46,8 @@ namespace FAManagementStudio.ViewModels
                 RaisePropertyChanged(nameof(CurrentDatabase));
             }
         }
+        public object SelectedTable { get;
+            set; }
 
         public ObservableCollection<DatabaseInfo> Databases { get; set; } = new ObservableCollection<DatabaseInfo>();
 
@@ -54,6 +56,10 @@ namespace FAManagementStudio.ViewModels
         public ICommand CreateDatabase { get; private set; }
         public ICommand LoadDatabase { get; private set; }
         public ICommand ExecuteQuery { get; private set; }
+
+        public ICommand DropFile { get; private set; }
+
+        public ICommand SetSelectSql { get; private set; }
 
         private PathHistoryRepository _history = new PathHistoryRepository();
         public ObservableCollection<string> DataInput { get { return _history.History; } }
@@ -86,6 +92,17 @@ namespace FAManagementStudio.ViewModels
                 if (string.IsNullOrEmpty(CurrentDatabase.ConnectionString)) return;
                 _queryInf.ExecuteQuery(CurrentDatabase.ConnectionString, Query);
                 RaisePropertyChanged(nameof(Datasource));
+            });
+
+            DropFile = new RelayCommand<string>((string path) =>
+            {
+                InputPath = path;
+                RaisePropertyChanged(nameof(InputPath));
+            });
+
+            SetSelectSql = new RelayCommand(() =>
+            {
+                //CurrentDatabase.
             });
         }
         ~MainViewModel()
