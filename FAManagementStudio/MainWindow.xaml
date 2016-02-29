@@ -1,0 +1,59 @@
+﻿<Window x:Class="FAManagementStudio.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:toolkit="http://schemas.microsoft.com/wpf/2008/toolkit"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+        xmlns:local="clr-namespace:FAManagementStudio"
+        mc:Ignorable="d"
+        Title="FAManagementStudio" Height="700" Width="1000"
+        >
+
+    <DockPanel>
+        <StackPanel Orientation="Horizontal" DockPanel.Dock="Top">
+            <Button Content="新規" Command="{Binding CreateDatabase}"/>
+            <Button Content="読込" Command="{Binding LoadDatabase}"/>
+            <!--<TextBox Height="auto" Width="200" Text="{Binding InputPath, Mode=TwoWay}"/>-->
+            <ComboBox Height="auto" Width="200" IsEditable="True" IsTextSearchEnabled="True" IsReadOnly="False" ItemsSource="{Binding DataInput}" Text="{Binding InputPath, Mode=OneWayToSource}"/>
+            <Button Content="実行" Command="{Binding ExecuteQuery}"/>
+        </StackPanel>
+        <DockPanel DockPanel.Dock="Left" >
+            <ListBox MinWidth="80" DockPanel.Dock="Left" ItemsSource="{Binding Databases}" HorizontalContentAlignment="Center" SelectedItem="{Binding CurrentDatabase}">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Canvas Height="70" Width="50">
+                            <Image Source="/Image/DbShape.bmp" Height="50" Width="50"/>
+                            <TextBlock Text="{Binding DisplayName}" Canvas.Top="50" />
+                        </Canvas>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+            <TreeView DockPanel.Dock="Right" MinWidth="170" ItemsSource="{Binding Tables}">
+                <TreeView.ItemContainerStyle>
+                    <Style TargetType="{x:Type TreeViewItem}">
+                        <Setter Property="IsSelected" Value="{Binding CurrentDatabase, Mode=TwoWay}"/>
+                    </Style>
+                </TreeView.ItemContainerStyle>
+                <TreeView.ItemTemplate>
+                    <HierarchicalDataTemplate ItemsSource="{Binding Chiled}">
+                        <TextBlock Text="{Binding Path=DisplayName}" />
+                    </HierarchicalDataTemplate>
+                </TreeView.ItemTemplate>
+            </TreeView>
+        </DockPanel>
+        <TextBox MinHeight="150" DockPanel.Dock="Top" Text="{Binding Query, Mode=TwoWay}" AcceptsReturn="True" />
+        <ListBox Height="auto" DockPanel.Dock="Top" ItemsSource="{Binding Datasource}" >
+            <ListBox.ItemContainerStyle>
+                <Style TargetType="{x:Type ListBoxItem}">
+                    <Setter Property="Focusable" Value="False"/>
+                </Style>
+            </ListBox.ItemContainerStyle>
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <toolkit:DataGrid ItemsSource="{Binding}" IsReadOnly="True" />
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+    </DockPanel>
+</Window>
