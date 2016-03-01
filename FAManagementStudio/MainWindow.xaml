@@ -50,7 +50,6 @@
                 </TreeView.ContextMenu>  
                 <TreeView.ItemContainerStyle>
                     <Style TargetType="{x:Type TreeViewItem}">
-                        <!--<Setter Property="ContextMenu" Value="{StaticResource MenuItem}"/>-->
                         <EventSetter Event="TreeViewItem.MouseRightButtonDown" Handler="TreeViewItem_MouseRightButtonDown"/>
                     </Style>
                 </TreeView.ItemContainerStyle>
