@@ -35,6 +35,7 @@ namespace FAManagementStudio.Models
             builder.UserID = "SYSDBA";
             builder.Password = "masterkey";
             builder.ServerType = FbServerType.Embedded;
+            builder.Pooling = false;
 
             FbConnection.CreateDatabase(builder.ConnectionString);
         }
@@ -49,6 +50,7 @@ namespace FAManagementStudio.Models
             builder.UserID = "SYSDBA";
             builder.Password = "masterkey";
             builder.ServerType = FbServerType.Embedded;
+            builder.Pooling = false;
 
             ConnectionString = builder.ConnectionString;
             using (var con = new FbConnection(builder.ConnectionString))

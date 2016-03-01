@@ -25,5 +25,14 @@ namespace FAManagementStudio
             InitializeComponent();
             this.DataContext = new MainViewModel();
         }
+        private void TreeViewItem_MouseRightButtonDown(Object sender, MouseButtonEventArgs e)
+        {
+            TreeViewItem item = sender as TreeViewItem;
+            if (item != null)
+            {
+                item.IsSelected = true;
+                e.Handled = true;
+            }
+        }
     }
 }

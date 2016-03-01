@@ -47,6 +47,8 @@ namespace FAManagementStudio.ViewModels
             }
         }
 
+        public object SelectedTableItem { get; set; }
+
         public ObservableCollection<DatabaseInfo> Databases { get; set; } = new ObservableCollection<DatabaseInfo>();
 
         public ObservableCollection<DataView> Datasource { get { return _queryInf.Result; } }
@@ -54,6 +56,10 @@ namespace FAManagementStudio.ViewModels
         public ICommand CreateDatabase { get; private set; }
         public ICommand LoadDatabase { get; private set; }
         public ICommand ExecuteQuery { get; private set; }
+
+        public ICommand DropFile { get; private set; }
+
+        public ICommand SetSelectSql { get; private set; }
 
         private PathHistoryRepository _history = new PathHistoryRepository();
         public ObservableCollection<string> DataInput { get { return _history.History; } }
@@ -87,7 +93,45 @@ namespace FAManagementStudio.ViewModels
                 _queryInf.ExecuteQuery(CurrentDatabase.ConnectionString, Query);
                 RaisePropertyChanged(nameof(Datasource));
             });
+
+            DropFile = new RelayCommand<string>((string path) =>
+            {
+                InputPath = path;
+                RaisePropertyChanged(nameof(InputPath));
+            });
+
+            SetSelectSql = new RelayCommand(() =>
+            {
+                Query = CreateSelectSentence(SelectedTableItem);
+                RaisePropertyChanged(nameof(Query));
+            });
         }
+
+        private string CreateSelectSentence(object treeitem)
+        {
+            var table = treeitem as TableInfo;
+            if (table == null)
+            {
+                var col = treeitem as ColumInfo;
+                return CreateFromColumName(Tables.ToList(), col);
+            }
+            else {
+                return CreateFromTableName(table);
+            }
+        }
+
+        private string CreateFromTableName(TableInfo table)
+        {
+            var colums = string.Join(", ", table.Chiled.Select(x => x.ColumName).ToArray());
+            return $"select {colums} from {table.TableName}";
+        }
+
+        private string CreateFromColumName(List<TableInfo> tables, ColumInfo targetCol)
+        {
+            var table = tables.Where(x => 0 < x.Chiled.Count(col => col == targetCol)).First();
+            return $"select {targetCol.ColumName} from {table.TableName}";
+        }
+
         ~MainViewModel()
         {
             _history.SaveData();
