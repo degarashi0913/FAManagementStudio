@@ -7,11 +7,16 @@
         xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
         xmlns:local="clr-namespace:FAManagementStudio"
         xmlns:Common="clr-namespace:FAManagementStudio.Common"
-        xmlns:b="clr-namespace:FAManagementStudio.Behavior"
+        xmlns:b="clr-namespace:FAManagementStudio.Behaviors"
         mc:Ignorable="d"
         Title="FAManagementStudio" Height="700" Width="1000"
         >
 
+    <Window.Resources>
+        <ContextMenu x:Key="MenuItem">
+            <MenuItem Header="Select *" Command="{Binding SetSelectSql}"/>
+        </ContextMenu>
+    </Window.Resources>
     <DockPanel>
         <StackPanel Orientation="Horizontal" DockPanel.Dock="Top">
             <Button Content="新規" Command="{Binding CreateDatabase}"/>
@@ -35,14 +40,18 @@
                 </ListBox.ItemTemplate>
             </ListBox>
             <TreeView DockPanel.Dock="Right" MinWidth="170" ItemsSource="{Binding Tables}">
-                <TreeView.Resources>
-                    <ContextMenu x:Key="MenuItem">
-                        <!--<MenuItem Header="Select *" Command="{Binding SetSelectSql}"/>-->
+                <i:Interaction.Behaviors>
+                    <b:TreeViewSelectedItemBehavior SelectedItem="{Binding SelectedTableItem, Mode=TwoWay}" />
+                </i:Interaction.Behaviors>
+                <TreeView.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="Select *" Command="{Binding SetSelectSql}"/>
                     </ContextMenu>
-                </TreeView.Resources>
+                </TreeView.ContextMenu>  
                 <TreeView.ItemContainerStyle>
                     <Style TargetType="{x:Type TreeViewItem}">
-                        <Setter Property="ContextMenu" Value="{StaticResource MenuItem}"/>
+                        <!--<Setter Property="ContextMenu" Value="{StaticResource MenuItem}"/>-->
+                        <EventSetter Event="TreeViewItem.MouseRightButtonDown" Handler="TreeViewItem_MouseRightButtonDown"/>
                     </Style>
                 </TreeView.ItemContainerStyle>
                 <TreeView.ItemTemplate>

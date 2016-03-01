@@ -46,8 +46,8 @@ namespace FAManagementStudio.ViewModels
                 RaisePropertyChanged(nameof(CurrentDatabase));
             }
         }
-        public object SelectedTable { get;
-            set; }
+
+        public object SelectedTableItem { get; set; }
 
         public ObservableCollection<DatabaseInfo> Databases { get; set; } = new ObservableCollection<DatabaseInfo>();
 
@@ -102,9 +102,36 @@ namespace FAManagementStudio.ViewModels
 
             SetSelectSql = new RelayCommand(() =>
             {
-                //CurrentDatabase.
+                Query = CreateSelectSentence(SelectedTableItem);
+                RaisePropertyChanged(nameof(Query));
             });
         }
+
+        private string CreateSelectSentence(object treeitem)
+        {
+            var table = treeitem as TableInfo;
+            if (table == null)
+            {
+                var col = treeitem as ColumInfo;
+                return CreateFromColumName(Tables.ToList(), col);
+            }
+            else {
+                return CreateFromTableName(table);
+            }
+        }
+
+        private string CreateFromTableName(TableInfo table)
+        {
+            var colums = string.Join(", ", table.Chiled.Select(x => x.ColumName).ToArray());
+            return $"select {colums} from {table.TableName}";
+        }
+
+        private string CreateFromColumName(List<TableInfo> tables, ColumInfo targetCol)
+        {
+            var table = tables.Where(x => 0 < x.Chiled.Count(col => col == targetCol)).First();
+            return $"select {targetCol.ColumName} from {table.TableName}";
+        }
+
         ~MainViewModel()
         {
             _history.SaveData();

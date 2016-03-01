@@ -1,23 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Interactivity;
 
-namespace FAManagementStudio.Behavior
+namespace FAManagementStudio.Behaviors
 {
     class FileDropBehavior : Behavior<ComboBox>
     {
+        public FileDropBehavior() { }
         public ICommand DropedCommand
         {
             get { return (ICommand)GetValue(DropedCommandProperty); }
             set { SetValue(DropedCommandProperty, value); }
         }
-        public DependencyProperty DropedCommandProperty { get; } = DependencyProperty.Register("DropedCommand", typeof(ICommand), typeof(FileDropBehavior), new PropertyMetadata(null));
+        public static readonly DependencyProperty DropedCommandProperty = DependencyProperty.Register(nameof(DropedCommand), typeof(ICommand), typeof(FileDropBehavior), new PropertyMetadata(null));
 
         private void OnDrop(object sender, DragEventArgs e)
         {
@@ -29,10 +25,6 @@ namespace FAManagementStudio.Behavior
         {
             base.OnAttached();
             this.AssociatedObject.Drop += OnDrop;
-            //this.AssociatedObject.AllowDrop = true;
-            //var textbox = (TextBox)this.AssociatedObject.Template.FindName("PART_EditableTextBox", this.AssociatedObject);
-            //textbox.AllowDrop = true;
-
         }
         protected override void OnDetaching()
         {

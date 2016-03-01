@@ -52,7 +52,7 @@ namespace FAManagementStudio.Models
             {
                 History.RemoveAt(History.Count - 1);
             }
-            History.Add(newPath);
+            History.Insert(0, newPath);
         }
 
         public void SaveData()
