@@ -129,80 +129,23 @@ namespace FAManagementStudio.Models
 
         private List<AnalyzedQuery> AnalyzeQuery(string input)
         {
-            var querys = input.Trim().Split(';');
+            var querys = input.Trim().Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
             var list = new List<AnalyzedQuery>();
 
             for (int i = 0; i < querys.Length; i++)
             {
-                var query = querys[i];
-                var idx = 0;
-                var reg = Regex.Match(query, "(SELECT|INSERT|UPDATE|CREATE|DROP)", RegexOptions.IgnoreCase);
-                while (reg.Success)
+                var query = querys[i].Trim();
+                if (query.StartsWith("SELECT", StringComparison.OrdinalIgnoreCase))
                 {
-                    idx = reg.Index;
-                    reg = reg.NextMatch();
-                    var partQuerty = "";
-                    if (reg.Success)
-                    {
-                        partQuerty = query.Substring(idx, reg.Index - idx);
-                        //next : select statement
-                        if (reg.Value.ToUpper() == "SELECT")
-                        {
-                            // first: insert statement
-                            if (partQuerty.StartsWith("INSERT", StringComparison.OrdinalIgnoreCase))
-                            {
-                                partQuerty = (reg = reg.NextMatch()).Success ? query.Substring(idx, reg.Index - idx) : partQuerty = query.Substring(idx);
-                            }
-                            // first:not insert statement
-                            else
-                            {
-                                var subQueryIdx = reg.Index;
-                                var subPart = partQuerty;
-                                while (subPart.Contains("(") && !subPart.Contains(")"))
-                                {
-                                    var subQueryCount = 1;
-                                    while ((subQueryIdx < query.Length) && (0 < subQueryCount))
-                                    {
-                                        var ch = query[subQueryIdx];
-                                        if (ch == ')')
-                                        {
-                                            subQueryCount--;
-                                        }
-                                        else if (ch == '(')
-                                        {
-                                            subQueryCount++;
-                                        }
-                                        subQueryIdx++;
-                                    }
-                                    while ((reg.Index < subQueryIdx) && (0 < reg.Index))
-                                    {
-                                        reg = reg.NextMatch();
-                                    }
-                                    if (reg.Index < 1) break;
-                                    subPart = query.Substring(subQueryIdx, reg.Index - subQueryIdx);
-                                    subQueryIdx = reg.Index;
-                                }
-                                partQuerty = 0 < reg.Index ? query.Substring(idx, subQueryIdx - idx) : query.Substring(idx);
-                            }
-                        }
-                    }
-                    else
-                    {
-                        partQuerty = query.Substring(idx);
-                    }
-
-                    if (partQuerty.StartsWith("SELECT", StringComparison.OrdinalIgnoreCase))
-                    {
-                        list.Add(new AnalyzedQuery() { Type = QueryType.Select, Query = partQuerty });
-                    }
-                    else if (partQuerty.StartsWith("UPDATE", StringComparison.OrdinalIgnoreCase))
-                    {
-                        list.Add(new AnalyzedQuery() { Type = QueryType.Update, Query = partQuerty });
-                    }
-                    else
-                    {
-                        list.Add(new AnalyzedQuery() { Type = QueryType.Othres, Query = partQuerty });
-                    }
+                    list.Add(new AnalyzedQuery() { Type = QueryType.Select, Query = query });
+                }
+                else if (query.StartsWith("UPDATE", StringComparison.OrdinalIgnoreCase))
+                {
+                    list.Add(new AnalyzedQuery() { Type = QueryType.Update, Query = query });
+                }
+                else
+                {
+                    list.Add(new AnalyzedQuery() { Type = QueryType.Othres, Query = query });
                 }
             }
             return list;

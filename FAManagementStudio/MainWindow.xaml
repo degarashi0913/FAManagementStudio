@@ -52,7 +52,16 @@
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="1*" />
             </Grid.ColumnDefinitions>
-            <ListBox Grid.Column="0" HorizontalAlignment="Stretch" MinWidth="80" DockPanel.Dock="Left" ItemsSource="{Binding Databases}" HorizontalContentAlignment="Center" SelectedItem="{Binding CurrentDatabase}">
+            <ListBox Grid.Column="0" HorizontalAlignment="Stretch" MinWidth="80" DockPanel.Dock="Left" ItemsSource="{Binding Databases}" HorizontalContentAlignment="Center" SelectedItem="{Binding CurrentDatabase}" AllowDrop="True">
+                <i:Interaction.Behaviors>
+                    <b:ListBoxDropBehavior ListBoxDropedCommand="{Binding DbListDropFile}"/>
+                </i:Interaction.Behaviors>
+                <ListBox.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="再読み込み" Command="{Binding ReloadDatabase}"/>
+                        <MenuItem Header="切断" Command="{Binding ShutdownDatabase}"/>
+                    </ContextMenu>
+                </ListBox.ContextMenu>
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <Canvas Height="70" Width="50">
