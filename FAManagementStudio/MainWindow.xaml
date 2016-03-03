@@ -7,7 +7,7 @@
         xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
         xmlns:local="clr-namespace:FAManagementStudio"
         xmlns:Common="clr-namespace:FAManagementStudio.Common"
-        xmlns:b="clr-namespace:FAManagementStudio.Behaviors"
+        xmlns:b="clr-namespace:FAManagementStudio.Views.Behaviors"
         mc:Ignorable="d"
         Title="FAManagementStudio" Height="700" Width="1000"
         >
@@ -108,8 +108,11 @@
                     </TextBox.InputBindings>
                 </TextBox>
                 <GridSplitter Grid.Row="1" Style="{StaticResource HorizontalSpliterStyle}" />
-                <ScrollViewer Grid.Row="2" >
-                    <ListBox ItemsSource="{Binding Datasource}"  >
+                <ScrollViewer Grid.Row="2" HorizontalScrollBarVisibility="Auto" >
+                    <ListBox ItemsSource="{Binding Datasource}" >
+                        <i:Interaction.Behaviors>
+                            <b:ListBoxWheelScrollBehavior/>
+                        </i:Interaction.Behaviors>
                         <ListBox.ItemContainerStyle>
                             <Style TargetType="{x:Type ListBoxItem}">
                                 <Setter Property="Focusable" Value="False"/>

@@ -90,9 +90,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Behaviors\FileDropBehavior.cs" />
-    <Compile Include="Behaviors\ListBoxDropBehavior.cs" />
-    <Compile Include="Behaviors\TreeViewSelectedItemBehavior.cs" />
+    <Compile Include="Views\Behaviors\FileDropBehavior.cs" />
+    <Compile Include="Views\Behaviors\ListBoxDropBehavior.cs" />
+    <Compile Include="Views\Behaviors\ListBoxWheelScrollBehavior.cs" />
+    <Compile Include="Views\Behaviors\TreeViewSelectedItemBehavior.cs" />
     <Compile Include="Common\BindableBase.cs" />
     <Compile Include="Common\CommandReference.cs" />
     <Compile Include="Common\RelayCommand.cs" />
@@ -146,9 +147,7 @@
   <ItemGroup>
     <Resource Include="Image\DbShape.bmp" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Views\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>if $(PlatformName) equ x64 (
