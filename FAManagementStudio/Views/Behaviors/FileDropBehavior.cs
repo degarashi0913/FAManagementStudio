@@ -3,7 +3,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Interactivity;
 
-namespace FAManagementStudio.Behaviors
+namespace FAManagementStudio.Views.Behaviors
 {
     class FileDropBehavior : Behavior<ComboBox>
     {
