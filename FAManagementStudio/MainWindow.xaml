@@ -8,8 +8,9 @@
         xmlns:local="clr-namespace:FAManagementStudio"
         xmlns:Common="clr-namespace:FAManagementStudio.Common"
         xmlns:b="clr-namespace:FAManagementStudio.Views.Behaviors"
+        xmlns:c="clr-namespace:FAManagementStudio.Views.Converters"
         mc:Ignorable="d"
-        Title="FAManagementStudio" Height="700" Width="1000"
+        Title="FAManagementStudio" Height="700" Width="1000" Icon="Image/systemicon.ico"
         >
 
     <Window.Resources>
@@ -92,6 +93,9 @@
                 <i:Interaction.Behaviors>
                     <b:TreeViewSelectedItemBehavior SelectedItem="{Binding SelectedTableItem, Mode=TwoWay}" />
                 </i:Interaction.Behaviors>
+                <TreeView.Resources>
+                    <c:ConstraintsKeyToIconConverter x:Key="KeyConverter"/>
+                </TreeView.Resources>
                 <TreeView.ContextMenu>
                     <ContextMenu>
                         <MenuItem Header="Select *" Command="{Binding SetSelectSql}"/>
@@ -105,6 +109,14 @@
                 <TreeView.ItemTemplate>
                     <HierarchicalDataTemplate ItemsSource="{Binding Chiled}">
                         <TextBlock Text="{Binding Path=DisplayName}" />
+                        <HierarchicalDataTemplate.ItemTemplate>
+                            <HierarchicalDataTemplate >
+                                <StackPanel Orientation="Horizontal" Margin="-11,0,0,0">
+                                    <Image Source="{Binding KeyKind, Converter={StaticResource KeyConverter}}" Width="11" Stretch="Uniform"/>
+                                    <TextBlock Text="{Binding Path=DisplayName}" />
+                                </StackPanel>
+                            </HierarchicalDataTemplate>
+                        </HierarchicalDataTemplate.ItemTemplate>
                     </HierarchicalDataTemplate>
                 </TreeView.ItemTemplate>
             </TreeView>
