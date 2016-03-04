@@ -35,14 +35,30 @@
             <RowDefinition Height="1*"/>
         </Grid.RowDefinitions>
         <StackPanel Grid.Row="0"  Orientation="Horizontal" DockPanel.Dock="Top">
-            <Button Content="新規" Command="{Binding CreateDatabase}"/>
-            <ComboBox Height="auto" Width="200" IsEditable="True" IsTextSearchEnabled="True" IsReadOnly="False" ItemsSource="{Binding DataInput}" Text="{Binding InputPath, Mode=TwoWay}" AllowDrop="True">
+            <Button Command="{Binding CreateDatabase}">
+                <StackPanel Orientation="Horizontal">
+                    <Image Source="/Image/action_add_16xLG.png" />
+                    <TextBlock Text="新規" Margin="4,0"/>
+                </StackPanel>
+            </Button>
+            <ComboBox Height="auto" Width="300" IsEditable="True" IsTextSearchEnabled="True" IsReadOnly="False" ItemsSource="{Binding DataInput}" Text="{Binding InputPath, Mode=TwoWay}" AllowDrop="True">
                 <i:Interaction.Behaviors>
                     <b:FileDropBehavior DropedCommand="{Binding DropFile}"/>
                 </i:Interaction.Behaviors>
             </ComboBox>
-            <Button Content="読込" Command="{Binding LoadDatabase}"/>
-            <Button Content="実行" Command="{Binding ExecuteQuery}"/>
+            <Button Command="{Binding LoadDatabase}">
+                <StackPanel Orientation="Horizontal">
+                    <Image Source="/Image/hardware_16xLG.png" />
+                    <TextBlock Text="読込" Margin="4,0"/>
+                </StackPanel>
+            </Button>
+            <Button Command="{Binding ExecuteQuery}" >
+                <StackPanel Orientation="Horizontal">
+                    <Image Source="/Image/base_exclamationmark_32.png" />
+                    <TextBlock Text="実行" Margin="4,0"/>
+                </StackPanel>
+            </Button>
+            <TextBlock Text="{Binding CurrentDatabase.Path}" VerticalAlignment="Center" />
         </StackPanel>
         <Grid Grid.Row="1" HorizontalAlignment="Stretch">
             <Grid.ColumnDefinitions>
@@ -64,7 +80,7 @@
                 </ListBox.ContextMenu>
                 <ListBox.ItemTemplate>
                     <DataTemplate>
-                        <Canvas Height="70" Width="50">
+                        <Canvas Height="70" Width="50" ToolTip="{Binding Path}">
                             <Image Source="/Image/DbShape.bmp" Height="50" Width="50"/>
                             <TextBlock Text="{Binding DisplayName}" Canvas.Top="50" />
                         </Canvas>
@@ -99,7 +115,7 @@
                     <RowDefinition Height="4"/>
                     <RowDefinition Height="1*"/>
                 </Grid.RowDefinitions>
-                <TextBox Grid.Row="0"  Text="{Binding Query, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" AcceptsReturn="True" TextWrapping="Wrap" >
+                <TextBox Grid.Row="0"  Text="{Binding Query, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" AcceptsReturn="True" TextWrapping="Wrap" Margin="0,2" Grid.RowSpan="2" >
                     <TextBox.Resources>
                         <Common:CommandReference x:Key="Execute" Command="{Binding ExecuteQuery}"/>
                     </TextBox.Resources>

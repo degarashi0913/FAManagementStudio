@@ -147,7 +147,13 @@
   <ItemGroup>
     <Resource Include="Image\DbShape.bmp" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Resource Include="Image\base_exclamationmark_32.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Image\action_add_16xLG.png" />
+    <Resource Include="Image\hardware_16xLG.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>if $(PlatformName) equ x64 (
