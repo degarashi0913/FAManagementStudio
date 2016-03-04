@@ -7,7 +7,7 @@
         xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
         xmlns:local="clr-namespace:FAManagementStudio"
         xmlns:Common="clr-namespace:FAManagementStudio.Common"
-        xmlns:b="clr-namespace:FAManagementStudio.Behaviors"
+        xmlns:b="clr-namespace:FAManagementStudio.Views.Behaviors"
         mc:Ignorable="d"
         Title="FAManagementStudio" Height="700" Width="1000"
         >
@@ -16,30 +16,79 @@
         <ContextMenu x:Key="MenuItem">
             <MenuItem Header="Select *" Command="{Binding SetSelectSql}"/>
         </ContextMenu>
+        <Style x:Key="VirticalSpliterStyle" TargetType="GridSplitter">
+            <Setter Property="Width" Value="2"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="VerticalAlignment" Value="Stretch"/>
+            <Setter Property="ResizeDirection" Value="Columns"/>
+        </Style>
+        <Style x:Key="HorizontalSpliterStyle" TargetType="GridSplitter">
+            <Setter Property="Height" Value="2"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="ResizeDirection" Value="Rows"/>
+        </Style>
     </Window.Resources>
-    <DockPanel>
-        <StackPanel Orientation="Horizontal" DockPanel.Dock="Top">
-            <Button Content="新規" Command="{Binding CreateDatabase}"/>
-            <ComboBox Height="auto" Width="200" IsEditable="True" IsTextSearchEnabled="True" IsReadOnly="False" ItemsSource="{Binding DataInput}" Text="{Binding InputPath, Mode=TwoWay}" AllowDrop="True">
+    <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="22"/>
+            <RowDefinition Height="1*"/>
+        </Grid.RowDefinitions>
+        <StackPanel Grid.Row="0"  Orientation="Horizontal" DockPanel.Dock="Top">
+            <Button Command="{Binding CreateDatabase}">
+                <StackPanel Orientation="Horizontal">
+                    <Image Source="/Image/action_add_16xLG.png" />
+                    <TextBlock Text="新規" Margin="4,0"/>
+                </StackPanel>
+            </Button>
+            <ComboBox Height="auto" Width="300" IsEditable="True" IsTextSearchEnabled="True" IsReadOnly="False" ItemsSource="{Binding DataInput}" Text="{Binding InputPath, Mode=TwoWay}" AllowDrop="True">
                 <i:Interaction.Behaviors>
                     <b:FileDropBehavior DropedCommand="{Binding DropFile}"/>
                 </i:Interaction.Behaviors>
             </ComboBox>
-            <Button Content="読込" Command="{Binding LoadDatabase}"/>
-            <Button Content="実行" Command="{Binding ExecuteQuery}"/>
+            <Button Command="{Binding LoadDatabase}">
+                <StackPanel Orientation="Horizontal">
+                    <Image Source="/Image/hardware_16xLG.png" />
+                    <TextBlock Text="読込" Margin="4,0"/>
+                </StackPanel>
+            </Button>
+            <Button Command="{Binding ExecuteQuery}" >
+                <StackPanel Orientation="Horizontal">
+                    <Image Source="/Image/base_exclamationmark_32.png" />
+                    <TextBlock Text="実行" Margin="4,0"/>
+                </StackPanel>
+            </Button>
+            <TextBlock Text="{Binding CurrentDatabase.Path}" VerticalAlignment="Center" />
         </StackPanel>
-        <DockPanel DockPanel.Dock="Left" >
-            <ListBox MinWidth="80" DockPanel.Dock="Left" ItemsSource="{Binding Databases}" HorizontalContentAlignment="Center" SelectedItem="{Binding CurrentDatabase}">
+        <Grid Grid.Row="1" HorizontalAlignment="Stretch">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="80" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="170" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="1*" />
+            </Grid.ColumnDefinitions>
+            <ListBox Grid.Column="0" HorizontalAlignment="Stretch" MinWidth="80" DockPanel.Dock="Left" ItemsSource="{Binding Databases}" HorizontalContentAlignment="Center" SelectedItem="{Binding CurrentDatabase}" AllowDrop="True">
+                <i:Interaction.Behaviors>
+                    <b:ListBoxDropBehavior ListBoxDropedCommand="{Binding DbListDropFile}"/>
+                </i:Interaction.Behaviors>
+                <ListBox.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="再読み込み" Command="{Binding ReloadDatabase}"/>
+                        <MenuItem Header="切断" Command="{Binding ShutdownDatabase}"/>
+                    </ContextMenu>
+                </ListBox.ContextMenu>
                 <ListBox.ItemTemplate>
                     <DataTemplate>
-                        <Canvas Height="70" Width="50">
+                        <Canvas Height="70" Width="50" ToolTip="{Binding Path}">
                             <Image Source="/Image/DbShape.bmp" Height="50" Width="50"/>
                             <TextBlock Text="{Binding DisplayName}" Canvas.Top="50" />
                         </Canvas>
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
-            <TreeView DockPanel.Dock="Right" MinWidth="170" ItemsSource="{Binding Tables}">
+            <GridSplitter Grid.Column="1" Style="{StaticResource VirticalSpliterStyle}" />
+            <TreeView Grid.Column="2" DockPanel.Dock="Right" MinWidth="170" ItemsSource="{Binding Tables}">
                 <i:Interaction.Behaviors>
                     <b:TreeViewSelectedItemBehavior SelectedItem="{Binding SelectedTableItem, Mode=TwoWay}" />
                 </i:Interaction.Behaviors>
@@ -47,7 +96,7 @@
                     <ContextMenu>
                         <MenuItem Header="Select *" Command="{Binding SetSelectSql}"/>
                     </ContextMenu>
-                </TreeView.ContextMenu>  
+                </TreeView.ContextMenu>
                 <TreeView.ItemContainerStyle>
                     <Style TargetType="{x:Type TreeViewItem}">
                         <EventSetter Event="TreeViewItem.MouseRightButtonDown" Handler="TreeViewItem_MouseRightButtonDown"/>
@@ -59,26 +108,40 @@
                     </HierarchicalDataTemplate>
                 </TreeView.ItemTemplate>
             </TreeView>
-        </DockPanel>
-        <TextBox MinHeight="150" DockPanel.Dock="Top" Text="{Binding Query, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" AcceptsReturn="True" >
-            <TextBox.Resources>
-                <Common:CommandReference x:Key="Execute" Command="{Binding ExecuteQuery}"/>
-            </TextBox.Resources>
-            <TextBox.InputBindings>
-                <KeyBinding Key="F5" Command="{StaticResource Execute}" />
-            </TextBox.InputBindings>
-        </TextBox>
-        <ListBox Height="auto" DockPanel.Dock="Top" ItemsSource="{Binding Datasource}" >
-            <ListBox.ItemContainerStyle>
-                <Style TargetType="{x:Type ListBoxItem}">
-                    <Setter Property="Focusable" Value="False"/>
-                </Style>
-            </ListBox.ItemContainerStyle>
-            <ListBox.ItemTemplate>
-                <DataTemplate>
-                    <toolkit:DataGrid ItemsSource="{Binding}" IsReadOnly="True" />
-                </DataTemplate>
-            </ListBox.ItemTemplate>
-        </ListBox>
-    </DockPanel>
+            <GridSplitter Grid.Column="3" Style="{StaticResource VirticalSpliterStyle}"  />
+            <Grid Grid.Column="4">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="150"/>
+                    <RowDefinition Height="4"/>
+                    <RowDefinition Height="1*"/>
+                </Grid.RowDefinitions>
+                <TextBox Grid.Row="0"  Text="{Binding Query, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" AcceptsReturn="True" TextWrapping="Wrap" Margin="0,2" Grid.RowSpan="2" >
+                    <TextBox.Resources>
+                        <Common:CommandReference x:Key="Execute" Command="{Binding ExecuteQuery}"/>
+                    </TextBox.Resources>
+                    <TextBox.InputBindings>
+                        <KeyBinding Key="F5" Command="{StaticResource Execute}" />
+                    </TextBox.InputBindings>
+                </TextBox>
+                <GridSplitter Grid.Row="1" Style="{StaticResource HorizontalSpliterStyle}" />
+                <ScrollViewer Grid.Row="2" HorizontalScrollBarVisibility="Auto" >
+                    <ListBox ItemsSource="{Binding Datasource}" >
+                        <i:Interaction.Behaviors>
+                            <b:ListBoxWheelScrollBehavior/>
+                        </i:Interaction.Behaviors>
+                        <ListBox.ItemContainerStyle>
+                            <Style TargetType="{x:Type ListBoxItem}">
+                                <Setter Property="Focusable" Value="False"/>
+                            </Style>
+                        </ListBox.ItemContainerStyle>
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <toolkit:DataGrid ItemsSource="{Binding}" IsReadOnly="True" Margin="0,0,0,5" />
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </ScrollViewer>
+            </Grid>
+        </Grid>
+    </Grid>
 </Window>

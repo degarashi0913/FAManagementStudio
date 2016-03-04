@@ -93,7 +93,7 @@ namespace FAManagementStudio.Models
                             "and(r.rdb$system_flag is null or r.rdb$system_flag = 0) " +
                         "join rdb$fields f on f.rdb$field_name = rf.rdb$field_source " +
                        $"where rf.rdb$relation_name = '{this.TableName}' " +
-                        "order by 1, rf.rdb$field_position; ";
+                        "order by rf.rdb$field_position; ";
                 var reader = command.ExecuteReader();
                 Chiled.Clear();
                 while (reader.Read())

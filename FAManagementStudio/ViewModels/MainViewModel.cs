@@ -53,13 +53,17 @@ namespace FAManagementStudio.ViewModels
 
         public ObservableCollection<DataView> Datasource { get { return _queryInf.Result; } }
 
+        #region CommandBind
         public ICommand CreateDatabase { get; private set; }
         public ICommand LoadDatabase { get; private set; }
         public ICommand ExecuteQuery { get; private set; }
 
         public ICommand DropFile { get; private set; }
+        public ICommand DbListDropFile { get; private set; }
 
         public ICommand SetSelectSql { get; private set; }
+        public ICommand ReloadDatabase { get; private set; }
+        public ICommand ShutdownDatabase { get; private set; }
 
         private PathHistoryRepository _history = new PathHistoryRepository();
         public ObservableCollection<string> DataInput { get { return _history.History; } }
@@ -100,13 +104,28 @@ namespace FAManagementStudio.ViewModels
                 RaisePropertyChanged(nameof(InputPath));
             });
 
+            DbListDropFile = new RelayCommand<string>((string path) =>
+            {
+                InputPath = path;
+                LoadDatabase.Execute(null);
+            });
+
             SetSelectSql = new RelayCommand(() =>
             {
                 Query = CreateSelectSentence(SelectedTableItem);
                 RaisePropertyChanged(nameof(Query));
             });
-        }
 
+            ReloadDatabase = new RelayCommand(() =>
+            {
+                CurrentDatabase.LoadDatabase(CurrentDatabase.Path);
+            });
+            ShutdownDatabase = new RelayCommand(() =>
+            {
+                Databases.Remove(CurrentDatabase);
+            });
+        }
+        #endregion
         private string CreateSelectSentence(object treeitem)
         {
             var table = treeitem as TableInfo;
