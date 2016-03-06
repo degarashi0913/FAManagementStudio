@@ -86,33 +86,61 @@ namespace FAManagementStudio.Models
             using (var command = con.CreateCommand())
             {
                 command.CommandText =
-                    $"select rf.rdb$field_name Name, f.rdb$field_type Type, f.rdb$field_length Size " +
+                    $"select rf.rdb$field_name Name, f.rdb$field_type Type, f.rdb$character_length CharSize, ky.rdb$constraint_type Key " +
                         "from rdb$relation_fields rf " +
                         "join rdb$relations r on rf.rdb$relation_name = r.rdb$relation_name " +
-                            "and r.rdb$view_blr is null " +
-                            "and(r.rdb$system_flag is null or r.rdb$system_flag = 0) " +
+                                            "and r.rdb$view_blr is null " +
+                                            "and(r.rdb$system_flag is null or r.rdb$system_flag = 0) " +
                         "join rdb$fields f on f.rdb$field_name = rf.rdb$field_source " +
-                       $"where rf.rdb$relation_name = '{this.TableName}' " +
-                        "order by rf.rdb$field_position; ";
+                        "left outer join (select rel.rdb$relation_name, seg.rdb$field_name, rel.rdb$constraint_type " +
+                                            "from rdb$relation_constraints rel " +
+                                            "left outer join  rdb$indices  idx on rel.rdb$index_name = idx.rdb$index_name " +
+                                            "left outer join rdb$index_segments seg on idx.rdb$index_name = seg.rdb$index_name " +
+                                            "where rel.rdb$constraint_type = 'PRIMARY KEY' or rel.rdb$constraint_type = 'FOREIGN KEY') ky " +
+                         "on ky.rdb$relation_name = rf.rdb$relation_name and  ky.rdb$field_name = rf.rdb$field_name " +
+                     $"where rf.rdb$relation_name = '{this.TableName}' " +
+                      "order by rf.rdb$field_position; ";
                 var reader = command.ExecuteReader();
                 Chiled.Clear();
                 while (reader.Read())
                 {
-                    Chiled.Add(new ColumInfo(((string)reader["Name"]).TrimEnd(), (short)reader["Type"], (short)reader["Size"]));
+                    var key = (reader["Key"] == DBNull.Value) ? "" : (string)reader["Key"];
+                    var size = (reader["CharSize"] == DBNull.Value) ? null : (short?)reader["CharSize"];
+                    Chiled.Add(new ColumInfo(((string)reader["Name"]).TrimEnd(), (short)reader["Type"], size, GetKey(key)));
                 }
             }
         }
+
+        public ConstraintsKeyKind GetKey(string keyName)
+        {
+            if (string.IsNullOrEmpty(keyName)) return ConstraintsKeyKind.None;
+            if (keyName == "PRIMARY KEY")
+            {
+                return ConstraintsKeyKind.Primary;
+            }
+            else if (keyName == "FOREIGN KEY")
+            {
+                return ConstraintsKeyKind.Foreign;
+            }
+            //not define UNIQUE, CHECK , NOT NULL
+            return ConstraintsKeyKind.None;
+        }
     }
+
+
 
     public class ColumInfo
     {
         public string ColumName { get; set; }
         public string ColumType { get; set; }
         public string DisplayName { get { return $"{ColumName}({ColumType})"; } }
-        public ColumInfo(string name, int type, int size)
+        public ConstraintsKeyKind KeyKind { get; set; }
+
+        public ColumInfo(string name, int type, short? size, ConstraintsKeyKind keyKind)
         {
             ColumName = name;
-            ColumType = GetTypeFromFirebirdType(type) + $"({size.ToString()})";
+            ColumType = GetTypeFromFirebirdType(type) + (size.HasValue ? $"({size.ToString()})" : "");
+            KeyKind = keyKind;
         }
         public string GetTypeFromFirebirdType(int i)
         {

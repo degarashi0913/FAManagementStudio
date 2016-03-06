@@ -3,15 +3,12 @@ using FirebirdSql.Data.FirebirdClient;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Data;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 
 namespace FAManagementStudio.Models
 {
-    class QueryInfo : BindableBase
+    public class QueryInfo : BindableBase
     {
         public ObservableCollection<DataView> Result = new ObservableCollection<DataView>();
         public void ExecuteQuery(string connectionString, string query)
@@ -129,7 +126,7 @@ namespace FAManagementStudio.Models
 
         private List<AnalyzedQuery> AnalyzeQuery(string input)
         {
-            var querys = input.Trim().Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
+            var querys = GetStatement(input.Trim());
             var list = new List<AnalyzedQuery>();
 
             for (int i = 0; i < querys.Length; i++)
@@ -149,6 +146,147 @@ namespace FAManagementStudio.Models
                 }
             }
             return list;
+        }
+
+        private string[] GetStatement(string input)
+        {
+            var list = new List<string>();
+            var inputStr = input;
+            var lowerString = input.ToLower();
+
+            var key = "(create|alter)[\\s\\n]+(trigger|procedure)[\\s\\n]+";
+            var reg = Regex.Match(inputStr, key, RegexOptions.IgnoreCase);
+            var idx = 0;
+            if (reg.Success)
+            {
+                while (reg.Success)
+                {
+                    //prev
+                    if (idx < reg.Index)
+                    {
+                        foreach (var item in EscapeNewLine(inputStr.Substring(idx, reg.Index - idx)))
+                        {
+                            list.Add(item);
+                        }
+                    }
+
+                    var chIdx = Regex.Match(inputStr.Substring(reg.Index), "\\s+begin\\s+", RegexOptions.IgnoreCase).Index + reg.Index + 6;
+                    var nestedCount = 1;
+                    while ((0 < nestedCount) && (chIdx < inputStr.Length))
+                    {
+                        chIdx++;
+                        if (chIdx + 6 < inputStr.Length)
+                        {
+                            if (((lowerString[chIdx] == ' ') || (lowerString[chIdx] == '\n') || (lowerString[chIdx] == ';')) &&
+                                (lowerString[chIdx + 1] == 'b') &&
+                                (lowerString[chIdx + 2] == 'e') &&
+                                (lowerString[chIdx + 3] == 'g') &&
+                                (lowerString[chIdx + 4] == 'i') &&
+                                (lowerString[chIdx + 5] == 'n') &&
+                                ((lowerString[chIdx + 6] == ' ') || (lowerString[chIdx + 6] == '\r')))
+                            {
+                                nestedCount++;
+                                chIdx += 7;
+                            }
+                        }
+                        if (chIdx + 3 < inputStr.Length)
+                        {
+                            if (((lowerString[chIdx] == ' ') || (lowerString[chIdx] == '\n') || (lowerString[chIdx] == ';')) &&
+                                (lowerString[chIdx + 1] == 'e') &&
+                                (lowerString[chIdx + 2] == 'n') &&
+                                (lowerString[chIdx + 3] == 'd'))
+                            {
+                                nestedCount--;
+                                chIdx += 4;
+                            }
+                        }
+                    }
+
+                    var query = reg.Index < chIdx ? inputStr.Substring(reg.Index, chIdx - reg.Index) : inputStr.Substring(reg.Index).Trim();
+                    list.Add(query);
+                    idx = chIdx;
+                    reg = reg.NextMatch();
+                }
+            }
+            //reminder
+            if (idx < inputStr.Length)
+            {
+                foreach (var item in EscapeNewLine(inputStr.Substring(idx)))
+                {
+                    list.Add(item);
+                }
+            }
+            return list.ToArray();
+        }
+
+        private IEnumerable<string> GetWord(string stetmenet, int startIdx = 0, int length = 0)
+        {
+            var stIdx = startIdx;
+            var edIdx = startIdx;
+            var flg = false;
+            var limit = 0 < length ? length : stetmenet.Length;
+            while (edIdx < limit)
+            {
+                var ch = stetmenet[edIdx];
+                switch (ch)
+                {
+                    case ' ':
+                    case '\r':
+                    case '\n':
+                        if (flg)
+                        {
+                            yield return stetmenet.Substring(stIdx, edIdx - stIdx);
+                            stIdx = edIdx + 1;
+                            flg = false;
+                        }
+                        else {
+                            stIdx = edIdx + 1;
+                        }
+                        break;
+                    case ';':
+                        if (flg)
+                        {
+                            yield return stetmenet.Substring(stIdx, edIdx - stIdx);
+                            yield return ";";
+                            stIdx = edIdx + 1;
+                            flg = false;
+                        }
+                        else {
+                            stIdx = edIdx + 1;
+                        }
+                        break;
+                    default:
+                        flg = true;
+                        break;
+                }
+                edIdx++;
+            }
+            if (stIdx < edIdx)
+            {
+                yield return stetmenet.Substring(stIdx, edIdx - stIdx);
+            }
+        }
+
+        private IEnumerable<string> EscapeNewLine(string statement)
+        {
+            var array = statement.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
+            for (var i = 0; i < array.Length; i++)
+            {
+                var query = array[i].Trim();
+                if (string.IsNullOrEmpty(query)) continue;
+                var chIdx = 0;
+                while ((query[chIdx] == '\r') || (query[chIdx] == '\n'))
+                {
+                    chIdx++;
+                }
+                if (chIdx == query.Length) continue;
+                if (0 < chIdx)
+                {
+                    query = query.Substring(chIdx);
+                }
+
+                yield return query;
+            }
         }
     }
 }

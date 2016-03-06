@@ -54,6 +54,9 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <UseVSHostingProcess>false</UseVSHostingProcess>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>Image\systemicon.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="FirebirdSql.Data.FirebirdClient, Version=3.2.0.0, Culture=neutral, PublicKeyToken=3750abcc3150b00c, processorArchitecture=MSIL">
       <HintPath>..\packages\FirebirdSql.Data.FirebirdClient.3.2.0.0\lib\net35\FirebirdSql.Data.FirebirdClient.dll</HintPath>
@@ -90,6 +93,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Common\Definitions.cs" />
     <Compile Include="Views\Behaviors\FileDropBehavior.cs" />
     <Compile Include="Views\Behaviors\ListBoxDropBehavior.cs" />
     <Compile Include="Views\Behaviors\ListBoxWheelScrollBehavior.cs" />
@@ -100,6 +104,7 @@
     <Compile Include="Models\PathHistory.cs" />
     <Compile Include="Models\QueryInfo.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
+    <Compile Include="Views\Converters\ConstraintsKeyToIconConverter.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -153,6 +158,13 @@
   <ItemGroup>
     <Resource Include="Image\action_add_16xLG.png" />
     <Resource Include="Image\hardware_16xLG.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Image\ForeigenKey.png" />
+    <Resource Include="Image\PrimaryKey.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Image\systemicon.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
