@@ -8,7 +8,7 @@ using System.Text.RegularExpressions;
 
 namespace FAManagementStudio.Models
 {
-    class QueryInfo : BindableBase
+    public class QueryInfo : BindableBase
     {
         public ObservableCollection<DataView> Result = new ObservableCollection<DataView>();
         public void ExecuteQuery(string connectionString, string query)
@@ -217,6 +217,54 @@ namespace FAManagementStudio.Models
                 }
             }
             return list.ToArray();
+        }
+
+        private IEnumerable<string> GetWord(string stetmenet, int startIdx = 0, int length = 0)
+        {
+            var stIdx = startIdx;
+            var edIdx = startIdx;
+            var flg = false;
+            var limit = 0 < length ? length : stetmenet.Length;
+            while (edIdx < limit)
+            {
+                var ch = stetmenet[edIdx];
+                switch (ch)
+                {
+                    case ' ':
+                    case '\r':
+                    case '\n':
+                        if (flg)
+                        {
+                            yield return stetmenet.Substring(stIdx, edIdx - stIdx);
+                            stIdx = edIdx + 1;
+                            flg = false;
+                        }
+                        else {
+                            stIdx = edIdx + 1;
+                        }
+                        break;
+                    case ';':
+                        if (flg)
+                        {
+                            yield return stetmenet.Substring(stIdx, edIdx - stIdx);
+                            yield return ";";
+                            stIdx = edIdx + 1;
+                            flg = false;
+                        }
+                        else {
+                            stIdx = edIdx + 1;
+                        }
+                        break;
+                    default:
+                        flg = true;
+                        break;
+                }
+                edIdx++;
+            }
+            if (stIdx < edIdx)
+            {
+                yield return stetmenet.Substring(stIdx, edIdx - stIdx);
+            }
         }
 
         private IEnumerable<string> EscapeNewLine(string statement)

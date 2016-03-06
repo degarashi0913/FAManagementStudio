@@ -6,7 +6,7 @@ using System.Text;
 
 namespace FAManagementStudio.Common
 {
-    class BindableBase : INotifyPropertyChanged
+    public class BindableBase : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
         public void RaisePropertyChanged(string propertyName)
