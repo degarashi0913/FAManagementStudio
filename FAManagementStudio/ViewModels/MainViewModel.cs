@@ -44,6 +44,7 @@ namespace FAManagementStudio.ViewModels
                 _dbInf = value;
                 RaisePropertyChanged(nameof(Tables));
                 RaisePropertyChanged(nameof(CurrentDatabase));
+                RaisePropertyChanged(nameof(Triggers));
             }
         }
 
@@ -52,6 +53,8 @@ namespace FAManagementStudio.ViewModels
         public ObservableCollection<DatabaseInfo> Databases { get; set; } = new ObservableCollection<DatabaseInfo>();
 
         public ObservableCollection<DataView> Datasource { get { return _queryInf.Result; } }
+
+        public ObservableCollection<TriggerInfo> Triggers { get { return _dbInf.Trrigers; } }
 
         #region CommandBind
         public ICommand CreateDatabase { get; private set; }

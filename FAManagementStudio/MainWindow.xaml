@@ -35,7 +35,7 @@
             <RowDefinition Height="22"/>
             <RowDefinition Height="1*"/>
         </Grid.RowDefinitions>
-        <StackPanel Grid.Row="0"  Orientation="Horizontal" DockPanel.Dock="Top">
+        <StackPanel Grid.Row="0"  Orientation="Horizontal">
             <Button Command="{Binding CreateDatabase}">
                 <StackPanel Orientation="Horizontal">
                     <Image Source="/Image/action_add_16xLG.png" />
@@ -69,7 +69,7 @@
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="1*" />
             </Grid.ColumnDefinitions>
-            <ListBox Grid.Column="0" HorizontalAlignment="Stretch" MinWidth="80" DockPanel.Dock="Left" ItemsSource="{Binding Databases}" HorizontalContentAlignment="Center" SelectedItem="{Binding CurrentDatabase}" AllowDrop="True">
+            <ListBox Grid.Column="0" HorizontalAlignment="Stretch" MinWidth="80" ItemsSource="{Binding Databases}" HorizontalContentAlignment="Center" SelectedItem="{Binding CurrentDatabase}" AllowDrop="True">
                 <i:Interaction.Behaviors>
                     <b:ListBoxDropBehavior ListBoxDropedCommand="{Binding DbListDropFile}"/>
                 </i:Interaction.Behaviors>
@@ -89,37 +89,55 @@
                 </ListBox.ItemTemplate>
             </ListBox>
             <GridSplitter Grid.Column="1" Style="{StaticResource VirticalSpliterStyle}" />
-            <TreeView Grid.Column="2" DockPanel.Dock="Right" MinWidth="170" ItemsSource="{Binding Tables}">
-                <i:Interaction.Behaviors>
-                    <b:TreeViewSelectedItemBehavior SelectedItem="{Binding SelectedTableItem, Mode=TwoWay}" />
-                </i:Interaction.Behaviors>
-                <TreeView.Resources>
-                    <c:ConstraintsKeyToIconConverter x:Key="KeyConverter"/>
-                </TreeView.Resources>
-                <TreeView.ContextMenu>
-                    <ContextMenu>
-                        <MenuItem Header="Select *" Command="{Binding SetSelectSql}"/>
-                    </ContextMenu>
-                </TreeView.ContextMenu>
-                <TreeView.ItemContainerStyle>
-                    <Style TargetType="{x:Type TreeViewItem}">
-                        <EventSetter Event="TreeViewItem.MouseRightButtonDown" Handler="TreeViewItem_MouseRightButtonDown"/>
-                    </Style>
-                </TreeView.ItemContainerStyle>
-                <TreeView.ItemTemplate>
-                    <HierarchicalDataTemplate ItemsSource="{Binding Chiled}">
-                        <TextBlock Text="{Binding Path=DisplayName}" />
-                        <HierarchicalDataTemplate.ItemTemplate>
-                            <HierarchicalDataTemplate >
-                                <StackPanel Orientation="Horizontal" Margin="-11,0,0,0">
-                                    <Image Source="{Binding KeyKind, Converter={StaticResource KeyConverter}}" Width="11" Stretch="Uniform"/>
-                                    <TextBlock Text="{Binding Path=DisplayName}" />
-                                </StackPanel>
-                            </HierarchicalDataTemplate>
-                        </HierarchicalDataTemplate.ItemTemplate>
-                    </HierarchicalDataTemplate>
-                </TreeView.ItemTemplate>
-            </TreeView>
+            <Grid Grid.Column="2" >
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="2"/>
+                    <RowDefinition Height="150"/>
+                </Grid.RowDefinitions>
+                <TreeView Grid.Row="0" MinWidth="170" ItemsSource="{Binding Tables}">
+                    <i:Interaction.Behaviors>
+                        <b:TreeViewSelectedItemBehavior SelectedItem="{Binding SelectedTableItem, Mode=TwoWay}" />
+                    </i:Interaction.Behaviors>
+                    <TreeView.Resources>
+                        <c:ConstraintsKeyToIconConverter x:Key="KeyConverter"/>
+                    </TreeView.Resources>
+                    <TreeView.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Header="Select *" Command="{Binding SetSelectSql}"/>
+                        </ContextMenu>
+                    </TreeView.ContextMenu>
+                    <TreeView.ItemContainerStyle>
+                        <Style TargetType="{x:Type TreeViewItem}">
+                            <EventSetter Event="TreeViewItem.MouseRightButtonDown" Handler="TreeViewItem_MouseRightButtonDown"/>
+                        </Style>
+                    </TreeView.ItemContainerStyle>
+                    <TreeView.ItemTemplate>
+                        <HierarchicalDataTemplate ItemsSource="{Binding Chiled}">
+                            <TextBlock Text="{Binding Path=DisplayName}" />
+                            <HierarchicalDataTemplate.ItemTemplate>
+                                <HierarchicalDataTemplate >
+                                    <StackPanel Orientation="Horizontal" Margin="-11,0,0,0">
+                                        <Image Source="{Binding KeyKind, Converter={StaticResource KeyConverter}}" Width="11" Stretch="Uniform"/>
+                                        <TextBlock Text="{Binding Path=DisplayName}" />
+                                    </StackPanel>
+                                </HierarchicalDataTemplate>
+                            </HierarchicalDataTemplate.ItemTemplate>
+                        </HierarchicalDataTemplate>
+                    </TreeView.ItemTemplate>
+                </TreeView>
+                <GridSplitter Grid.Row="1" Style="{StaticResource HorizontalSpliterStyle}" />
+                <ListBox Grid.Row="2"  Height="150" ItemsSource="{Binding Triggers}" >
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal" ToolTip="{Binding Source}">
+                                <TextBlock Text="{Binding TableName}" Width="50"/>
+                                <TextBlock Text="{Binding Name}"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </Grid>
             <GridSplitter Grid.Column="3" Style="{StaticResource VirticalSpliterStyle}"  />
             <Grid Grid.Column="4">
                 <Grid.RowDefinitions>
