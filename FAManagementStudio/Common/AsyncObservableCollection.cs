@@ -11,10 +11,11 @@ namespace FAManagementStudio.Common
 {
     public class AsyncObservableCollection<T> : ObservableCollection<T>
     {
-        Dispatcher _dispatcher = Application.Current.Dispatcher;
+        Dispatcher _dispatcher = Application.Current?.Dispatcher;
         protected override void OnCollectionChanged(NotifyCollectionChangedEventArgs e)
         {
-            if (_dispatcher.CheckAccess())
+
+            if (_dispatcher == null || _dispatcher.CheckAccess())
             {
                 base.OnCollectionChanged(e);
             }
