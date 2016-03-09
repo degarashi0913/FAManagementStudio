@@ -10,13 +10,9 @@
         xmlns:b="clr-namespace:FAManagementStudio.Views.Behaviors"
         xmlns:c="clr-namespace:FAManagementStudio.Views.Converters"
         mc:Ignorable="d"
-        Title="FAManagementStudio" Height="700" Width="1000" Icon="Image/systemicon.ico"
+        Title="FAManagementStudio" Height="700" Width="1000" Icon="Image/systemicon.ico" Loaded="Window_Loaded"
         >
-
     <Window.Resources>
-        <ContextMenu x:Key="MenuItem">
-            <MenuItem Header="Select *" Command="{Binding SetSelectSql}"/>
-        </ContextMenu>
         <Style x:Key="VirticalSpliterStyle" TargetType="GridSplitter">
             <Setter Property="Width" Value="2"/>
             <Setter Property="HorizontalAlignment" Value="Center"/>
@@ -35,7 +31,7 @@
             <RowDefinition Height="22"/>
             <RowDefinition Height="1*"/>
         </Grid.RowDefinitions>
-        <StackPanel Grid.Row="0"  Orientation="Horizontal" DockPanel.Dock="Top">
+        <StackPanel Grid.Row="0"  Orientation="Horizontal">
             <Button Command="{Binding CreateDatabase}">
                 <StackPanel Orientation="Horizontal">
                     <Image Source="/Image/action_add_16xLG.png" />
@@ -69,7 +65,7 @@
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="1*" />
             </Grid.ColumnDefinitions>
-            <ListBox Grid.Column="0" HorizontalAlignment="Stretch" MinWidth="80" DockPanel.Dock="Left" ItemsSource="{Binding Databases}" HorizontalContentAlignment="Center" SelectedItem="{Binding CurrentDatabase}" AllowDrop="True">
+            <ListBox Grid.Column="0" HorizontalAlignment="Stretch" MinWidth="80" ItemsSource="{Binding Databases}" HorizontalContentAlignment="Center" SelectedItem="{Binding CurrentDatabase}" AllowDrop="True">
                 <i:Interaction.Behaviors>
                     <b:ListBoxDropBehavior ListBoxDropedCommand="{Binding DbListDropFile}"/>
                 </i:Interaction.Behaviors>
@@ -89,52 +85,93 @@
                 </ListBox.ItemTemplate>
             </ListBox>
             <GridSplitter Grid.Column="1" Style="{StaticResource VirticalSpliterStyle}" />
-            <TreeView Grid.Column="2" DockPanel.Dock="Right" MinWidth="170" ItemsSource="{Binding Tables}">
-                <i:Interaction.Behaviors>
-                    <b:TreeViewSelectedItemBehavior SelectedItem="{Binding SelectedTableItem, Mode=TwoWay}" />
-                </i:Interaction.Behaviors>
-                <TreeView.Resources>
-                    <c:ConstraintsKeyToIconConverter x:Key="KeyConverter"/>
-                </TreeView.Resources>
-                <TreeView.ContextMenu>
-                    <ContextMenu>
-                        <MenuItem Header="Select *" Command="{Binding SetSelectSql}"/>
-                    </ContextMenu>
-                </TreeView.ContextMenu>
-                <TreeView.ItemContainerStyle>
-                    <Style TargetType="{x:Type TreeViewItem}">
-                        <EventSetter Event="TreeViewItem.MouseRightButtonDown" Handler="TreeViewItem_MouseRightButtonDown"/>
-                    </Style>
-                </TreeView.ItemContainerStyle>
-                <TreeView.ItemTemplate>
-                    <HierarchicalDataTemplate ItemsSource="{Binding Chiled}">
-                        <TextBlock Text="{Binding Path=DisplayName}" />
-                        <HierarchicalDataTemplate.ItemTemplate>
-                            <HierarchicalDataTemplate >
-                                <StackPanel Orientation="Horizontal" Margin="-11,0,0,0">
-                                    <Image Source="{Binding KeyKind, Converter={StaticResource KeyConverter}}" Width="11" Stretch="Uniform"/>
-                                    <TextBlock Text="{Binding Path=DisplayName}" />
-                                </StackPanel>
-                            </HierarchicalDataTemplate>
-                        </HierarchicalDataTemplate.ItemTemplate>
-                    </HierarchicalDataTemplate>
-                </TreeView.ItemTemplate>
-            </TreeView>
+            <Grid Grid.Column="2" >
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="2"/>
+                    <RowDefinition Height="150"/>
+                </Grid.RowDefinitions>
+                <TreeView Grid.Row="0" MinWidth="170" ItemsSource="{Binding Tables}">
+                    <i:Interaction.Behaviors>
+                        <b:TreeViewSelectedItemBehavior SelectedItem="{Binding SelectedTableItem, Mode=TwoWay}" />
+                    </i:Interaction.Behaviors>
+                    <TreeView.Resources>
+                        <c:ConstraintsKeyToIconConverter x:Key="KeyConverter"/>
+                    </TreeView.Resources>
+                    <TreeView.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Header="Select *" Command="{Binding SetSelectSql}"/>
+                        </ContextMenu>
+                    </TreeView.ContextMenu>
+                    <TreeView.ItemContainerStyle>
+                        <Style TargetType="{x:Type TreeViewItem}">
+                            <EventSetter Event="TreeViewItem.MouseRightButtonDown" Handler="TreeViewItem_MouseRightButtonDown"/>
+                        </Style>
+                    </TreeView.ItemContainerStyle>
+                    <TreeView.ItemTemplate>
+                        <HierarchicalDataTemplate ItemsSource="{Binding Chiled}">
+                            <TextBlock Text="{Binding Path=DisplayName}" />
+                            <HierarchicalDataTemplate.ItemTemplate>
+                                <HierarchicalDataTemplate >
+                                    <StackPanel Orientation="Horizontal" Margin="-11,0,0,0">
+                                        <Image Source="{Binding KeyKind, Converter={StaticResource KeyConverter}}" Width="11" Stretch="Uniform"/>
+                                        <TextBlock Text="{Binding Path=DisplayName}" />
+                                    </StackPanel>
+                                </HierarchicalDataTemplate>
+                            </HierarchicalDataTemplate.ItemTemplate>
+                        </HierarchicalDataTemplate>
+                    </TreeView.ItemTemplate>
+                </TreeView>
+                <GridSplitter Grid.Row="1" Style="{StaticResource HorizontalSpliterStyle}" />
+                <ListBox Grid.Row="2"  Height="150" ItemsSource="{Binding Triggers}" >
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal" ToolTip="{Binding Source}">
+                                <TextBlock Text="{Binding TableName}" Width="50"/>
+                                <TextBlock Text="{Binding Name}"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </Grid>
             <GridSplitter Grid.Column="3" Style="{StaticResource VirticalSpliterStyle}"  />
             <Grid Grid.Column="4">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="150"/>
+                    <RowDefinition Height="160"/>
                     <RowDefinition Height="4"/>
                     <RowDefinition Height="1*"/>
                 </Grid.RowDefinitions>
-                <TextBox Grid.Row="0"  Text="{Binding Query, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" AcceptsReturn="True" TextWrapping="Wrap" Margin="0,2" Grid.RowSpan="2" >
-                    <TextBox.Resources>
+                <TabControl x:Name="QueryTab" Grid.Row="0" ItemsSource="{Binding Queries}" SelectedIndex="{Binding TagSelectedIndex, Mode=TwoWay,UpdateSourceTrigger=PropertyChanged,IsAsync=False}" SelectedValue="{Binding TagSelectedValue, Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"  >
+                    <i:Interaction.Behaviors>
+                        <b:DynamicTabControlBehavior AddTabCommand="{Binding AddTab}"/>
+                    </i:Interaction.Behaviors>
+                    <TabControl.ContextMenu>
+                        <ContextMenu >
+                            <MenuItem Header="削除" Command="{Binding DeleteTabItem}"/>
+                        </ContextMenu>
+                    </TabControl.ContextMenu>
+                    <TabControl.Resources>
+                        <Style TargetType="{x:Type TabItem}">
+                            <EventSetter Event="TabItem.MouseRightButtonDown" Handler="TabItem_MouseRightButtonDown"/>
+                        </Style>
                         <Common:CommandReference x:Key="Execute" Command="{Binding ExecuteQuery}"/>
-                    </TextBox.Resources>
-                    <TextBox.InputBindings>
-                        <KeyBinding Key="F5" Command="{StaticResource Execute}" />
-                    </TextBox.InputBindings>
-                </TextBox>
+                    </TabControl.Resources>
+                    <TabControl.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Header}" />
+                        </DataTemplate>
+                    </TabControl.ItemTemplate>
+                    <TabControl.ContentTemplate>
+                        <DataTemplate>
+                            <TextBox  Text="{Binding Query, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" AcceptsReturn="True" TextWrapping="Wrap" Margin="0,2" Grid.RowSpan="2" >
+
+                                <TextBox.InputBindings>
+                                    <KeyBinding Key="F5" Command="{StaticResource Execute}" />
+                                </TextBox.InputBindings>
+                            </TextBox>
+                        </DataTemplate>
+                    </TabControl.ContentTemplate>
+                </TabControl>
                 <GridSplitter Grid.Row="1" Style="{StaticResource HorizontalSpliterStyle}" />
                 <ScrollViewer Grid.Row="2" HorizontalScrollBarVisibility="Auto" >
                     <ListBox ItemsSource="{Binding Datasource}" >

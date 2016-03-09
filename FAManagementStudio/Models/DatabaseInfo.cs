@@ -1,16 +1,11 @@
 ﻿using FAManagementStudio.Common;
 using FirebirdSql.Data.FirebirdClient;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.IO;
-using System.Linq;
-using System.Text;
 
 namespace FAManagementStudio.Models
 {
-    class DatabaseInfo : BindableBase
+    public class DatabaseInfo : BindableBase
     {
         public string Path
         {
@@ -24,6 +19,8 @@ namespace FAManagementStudio.Models
         internal string ConnectionString { get; private set; }
 
         public ObservableCollection<TableInfo> Chiled { get; } = new ObservableCollection<TableInfo>();
+
+        public ObservableCollection<TriggerInfo> Trrigers { get; } = new ObservableCollection<TriggerInfo>();
 
         public void CreateDatabase(string path)
         {
@@ -56,7 +53,7 @@ namespace FAManagementStudio.Models
             using (var con = new FbConnection(builder.ConnectionString))
             using (var command = con.CreateCommand())
             {
-                command.CommandText = @"select rdb$relation_name AS Name from rdb$relations where rdb$view_source is null and rdb$system_flag = 0 order by rdb$relation_name asc";
+                command.CommandText = @"select rdb$relation_name AS Name from rdb$relations where rdb$relation_type = 0 and rdb$system_flag = 0 order by rdb$relation_name asc";
                 con.Open();
                 var reader = command.ExecuteReader();
                 Chiled.Clear();
@@ -67,10 +64,39 @@ namespace FAManagementStudio.Models
                     table.GetColums(con);
                 }
             }
+            GetTrigger();
+        }
+
+        private void GetTrigger()
+        {
+            using (var con = new FbConnection(this.ConnectionString))
+            using (var command = con.CreateCommand())
+            {
+                command.CommandText = @"select rdb$trigger_name Name, rdb$relation_name TableName, rdb$trigger_source Source from rdb$triggers where rdb$system_flag = 0";
+                con.Open();
+                var reader = command.ExecuteReader();
+                while (reader.Read())
+                {
+                    Trrigers.Add(new TriggerInfo((string)reader["Name"], (string)reader["TableName"], (string)reader["Source"]));
+                }
+            }
         }
     }
 
-    class TableInfo
+    public class TriggerInfo
+    {
+        public TriggerInfo(string name, string tableName, string source)
+        {
+            Name = name;
+            TableName = tableName;
+            Source = source;
+        }
+        public string Name { get; set; }
+        public string Source { get; set; }
+        public string TableName { get; set; }
+    }
+
+    public class TableInfo
     {
         public TableInfo(string name)
         {
@@ -90,7 +116,7 @@ namespace FAManagementStudio.Models
                         "from rdb$relation_fields rf " +
                         "join rdb$relations r on rf.rdb$relation_name = r.rdb$relation_name " +
                                             "and r.rdb$view_blr is null " +
-                                            "and(r.rdb$system_flag is null or r.rdb$system_flag = 0) " +
+                                            "and rdb$relation_type = 0 and r.rdb$system_flag = 0 " +
                         "join rdb$fields f on f.rdb$field_name = rf.rdb$field_source " +
                         "left outer join (select rel.rdb$relation_name, seg.rdb$field_name, rel.rdb$constraint_type " +
                                             "from rdb$relation_constraints rel " +
@@ -133,7 +159,7 @@ namespace FAManagementStudio.Models
     {
         public string ColumName { get; set; }
         public string ColumType { get; set; }
-        public string DisplayName { get { return $"{ColumName}({ColumType})"; } }
+        public string DisplayName { get { return $"{ColumName} ({ColumType})"; } }
         public ConstraintsKeyKind KeyKind { get; set; }
 
         public ColumInfo(string name, int type, short? size, ConstraintsKeyKind keyKind)
