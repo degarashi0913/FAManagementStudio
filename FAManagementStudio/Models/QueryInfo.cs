@@ -10,7 +10,7 @@ namespace FAManagementStudio.Models
 {
     public class QueryInfo : BindableBase
     {
-        public ObservableCollection<DataView> Result = new ObservableCollection<DataView>();
+        public AsyncObservableCollection<DataView> Result = new AsyncObservableCollection<DataView>();
         public void ExecuteQuery(string connectionString, string query)
         {
             if (string.IsNullOrEmpty(query?.Trim())) return;

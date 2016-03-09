@@ -34,5 +34,19 @@ namespace FAManagementStudio
                 e.Handled = true;
             }
         }
+        private void TabItem_MouseRightButtonDown(Object sender, MouseButtonEventArgs e)
+        {
+            TabItem item = sender as TabItem;
+            if (item != null)
+            {
+                item.IsSelected = true;
+                e.Handled = true;
+            }
+        }
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            QueryTab.SelectedIndex = 0;
+        }
     }
 }

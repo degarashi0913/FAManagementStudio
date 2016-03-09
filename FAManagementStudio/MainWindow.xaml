@@ -10,13 +10,9 @@
         xmlns:b="clr-namespace:FAManagementStudio.Views.Behaviors"
         xmlns:c="clr-namespace:FAManagementStudio.Views.Converters"
         mc:Ignorable="d"
-        Title="FAManagementStudio" Height="700" Width="1000" Icon="Image/systemicon.ico"
+        Title="FAManagementStudio" Height="700" Width="1000" Icon="Image/systemicon.ico" Loaded="Window_Loaded"
         >
-
     <Window.Resources>
-        <ContextMenu x:Key="MenuItem">
-            <MenuItem Header="Select *" Command="{Binding SetSelectSql}"/>
-        </ContextMenu>
         <Style x:Key="VirticalSpliterStyle" TargetType="GridSplitter">
             <Setter Property="Width" Value="2"/>
             <Setter Property="HorizontalAlignment" Value="Center"/>
@@ -141,18 +137,41 @@
             <GridSplitter Grid.Column="3" Style="{StaticResource VirticalSpliterStyle}"  />
             <Grid Grid.Column="4">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="150"/>
+                    <RowDefinition Height="160"/>
                     <RowDefinition Height="4"/>
                     <RowDefinition Height="1*"/>
                 </Grid.RowDefinitions>
-                <TextBox Grid.Row="0"  Text="{Binding Query, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" AcceptsReturn="True" TextWrapping="Wrap" Margin="0,2" Grid.RowSpan="2" >
-                    <TextBox.Resources>
+                <TabControl x:Name="QueryTab" Grid.Row="0" ItemsSource="{Binding Queries}" SelectedIndex="{Binding TagSelectedIndex, Mode=TwoWay,UpdateSourceTrigger=PropertyChanged,IsAsync=False}" SelectedValue="{Binding TagSelectedValue, Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"  >
+                    <i:Interaction.Behaviors>
+                        <b:DynamicTabControlBehavior AddTabCommand="{Binding AddTab}"/>
+                    </i:Interaction.Behaviors>
+                    <TabControl.ContextMenu>
+                        <ContextMenu >
+                            <MenuItem Header="削除" Command="{Binding DeleteTabItem}"/>
+                        </ContextMenu>
+                    </TabControl.ContextMenu>
+                    <TabControl.Resources>
+                        <Style TargetType="{x:Type TabItem}">
+                            <EventSetter Event="TabItem.MouseRightButtonDown" Handler="TabItem_MouseRightButtonDown"/>
+                        </Style>
                         <Common:CommandReference x:Key="Execute" Command="{Binding ExecuteQuery}"/>
-                    </TextBox.Resources>
-                    <TextBox.InputBindings>
-                        <KeyBinding Key="F5" Command="{StaticResource Execute}" />
-                    </TextBox.InputBindings>
-                </TextBox>
+                    </TabControl.Resources>
+                    <TabControl.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Header}" />
+                        </DataTemplate>
+                    </TabControl.ItemTemplate>
+                    <TabControl.ContentTemplate>
+                        <DataTemplate>
+                            <TextBox  Text="{Binding Query, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" AcceptsReturn="True" TextWrapping="Wrap" Margin="0,2" Grid.RowSpan="2" >
+
+                                <TextBox.InputBindings>
+                                    <KeyBinding Key="F5" Command="{StaticResource Execute}" />
+                                </TextBox.InputBindings>
+                            </TextBox>
+                        </DataTemplate>
+                    </TabControl.ContentTemplate>
+                </TabControl>
                 <GridSplitter Grid.Row="1" Style="{StaticResource HorizontalSpliterStyle}" />
                 <ScrollViewer Grid.Row="2" HorizontalScrollBarVisibility="Auto" >
                     <ListBox ItemsSource="{Binding Datasource}" >

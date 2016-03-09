@@ -8,6 +8,7 @@ using System.Data;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows.Data;
 using System.Windows.Input;
 
@@ -23,7 +24,9 @@ namespace FAManagementStudio.ViewModels
         private QueryInfo _queryInf = new QueryInfo();
         public string InputPath { get; set; }
 
-        public string Query { get; set; }
+        public ObservableCollection<QueryTabView> Queries { get; } = new ObservableCollection<QueryTabView> { new QueryTabView("Query1", ""), QueryTabView.GetNewInstance() };
+        public int TagSelectedIndex { get; set; } = 0;
+        public QueryTabView TagSelectedValue { get; set; }
 
         public ObservableCollection<TableInfo> Tables
         {
@@ -67,6 +70,8 @@ namespace FAManagementStudio.ViewModels
         public ICommand SetSelectSql { get; private set; }
         public ICommand ReloadDatabase { get; private set; }
         public ICommand ShutdownDatabase { get; private set; }
+        public ICommand AddTab { get; private set; }
+        public ICommand DeleteTabItem { get; private set; }
 
         private PathHistoryRepository _history = new PathHistoryRepository();
         public ObservableCollection<string> DataInput { get { return _history.History; } }
@@ -95,11 +100,12 @@ namespace FAManagementStudio.ViewModels
                 _history.DataAdd(this.InputPath);
             });
             ExecuteQuery = new RelayCommand(() =>
-            {
-                if (string.IsNullOrEmpty(CurrentDatabase.ConnectionString)) return;
-                _queryInf.ExecuteQuery(CurrentDatabase.ConnectionString, Query);
-                RaisePropertyChanged(nameof(Datasource));
-            });
+           {
+               if (string.IsNullOrEmpty(CurrentDatabase.ConnectionString)) return;
+               _queryInf.ExecuteQuery(CurrentDatabase.ConnectionString, TagSelectedValue.Query);
+               //await TaskEx.Run(() => _queryInf.ExecuteQuery(CurrentDatabase.ConnectionString, TagSelectedValue.Query));
+               RaisePropertyChanged(nameof(Datasource));
+           });
 
             DropFile = new RelayCommand<string>((string path) =>
             {
@@ -115,19 +121,37 @@ namespace FAManagementStudio.ViewModels
 
             SetSelectSql = new RelayCommand(() =>
             {
-                Query = CreateSelectSentence(SelectedTableItem);
-                RaisePropertyChanged(nameof(Query));
+                TagSelectedValue.Query = CreateSelectSentence(SelectedTableItem);
+                RaisePropertyChanged(nameof(Queries));
             });
 
             ReloadDatabase = new RelayCommand(() =>
             {
                 CurrentDatabase.LoadDatabase(CurrentDatabase.Path);
             });
+
             ShutdownDatabase = new RelayCommand(() =>
             {
                 Databases.Remove(CurrentDatabase);
             });
+
+            AddTab = new RelayCommand(() =>
+            {
+                TagSelectedValue.Header = $"Query{Queries.Count}";
+                Queries.Add(QueryTabView.GetNewInstance());
+                RaisePropertyChanged(nameof(Queries));
+            });
+
+            DeleteTabItem = new RelayCommand(() =>
+            {
+                var item = TagSelectedValue;
+                var idx = Queries.IndexOf(item);
+                TagSelectedIndex = idx - 1;
+                RaisePropertyChanged(nameof(TagSelectedIndex));
+                Queries.Remove(item);
+            });
         }
+
         #endregion
         private string CreateSelectSentence(object treeitem)
         {
@@ -157,6 +181,39 @@ namespace FAManagementStudio.ViewModels
         ~MainViewModel()
         {
             _history.SaveData();
+        }
+    }
+
+    public class QueryTabView : BindableBase
+    {
+        private string _header;
+        public string Header
+        {
+            get { return _header; }
+            set
+            {
+                _header = value;
+                RaisePropertyChanged(nameof(Header));
+            }
+        }
+        private string _query;
+        public string Query
+        {
+            get { return _query; }
+            set
+            {
+                _query = value;
+                RaisePropertyChanged(nameof(Query));
+            }
+        }
+        public QueryTabView(string header, string query)
+        {
+            _header = header;
+            _query = query;
+        }
+        public static QueryTabView GetNewInstance()
+        {
+            return new QueryTabView("+", "");
         }
     }
 }
