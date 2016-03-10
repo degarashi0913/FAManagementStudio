@@ -101,7 +101,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Common\AsyncObservableCollection.cs" />
     <Compile Include="Common\Definitions.cs" />
     <Compile Include="Views\Behaviors\DynamicTabControlBehavior.cs" />
     <Compile Include="Views\Behaviors\FileDropBehavior.cs" />

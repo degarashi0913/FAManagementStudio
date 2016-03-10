@@ -3,13 +3,11 @@ using FAManagementStudio.Models;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Data;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Data;
+using System.Windows;
 using System.Windows.Input;
 
 namespace FAManagementStudio.ViewModels
@@ -55,7 +53,7 @@ namespace FAManagementStudio.ViewModels
 
         public ObservableCollection<DatabaseInfo> Databases { get; set; } = new ObservableCollection<DatabaseInfo>();
 
-        public ObservableCollection<DataView> Datasource { get { return _queryInf.Result; } }
+        public ObservableCollection<DataTable> Datasource { get; set; } = new ObservableCollection<DataTable>();
 
         public ObservableCollection<TriggerInfo> Triggers { get { return _dbInf.Trrigers; } }
 
@@ -99,12 +97,22 @@ namespace FAManagementStudio.ViewModels
                 Databases.Add(db);
                 _history.DataAdd(this.InputPath);
             });
-            ExecuteQuery = new RelayCommand(() =>
+            ExecuteQuery = new RelayCommand(async () =>
            {
                if (string.IsNullOrEmpty(CurrentDatabase.ConnectionString)) return;
-               _queryInf.ExecuteQuery(CurrentDatabase.ConnectionString, TagSelectedValue.Query);
-               //await TaskEx.Run(() => _queryInf.ExecuteQuery(CurrentDatabase.ConnectionString, TagSelectedValue.Query));
-               RaisePropertyChanged(nameof(Datasource));
+               Datasource.Clear();
+               await TaskEx.Run(() =>
+               {
+                   _queryInf.ExecuteQuery(CurrentDatabase.ConnectionString, TagSelectedValue.Query);
+                   Application.Current.Dispatcher.Invoke(new Action(() =>
+                   {
+                       foreach (var table in _queryInf.Result)
+                       {
+                           Datasource.Add(table);
+                       }
+                   }));
+               });
+
            });
 
             DropFile = new RelayCommand<string>((string path) =>

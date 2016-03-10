@@ -185,7 +185,7 @@
                         </ListBox.ItemContainerStyle>
                         <ListBox.ItemTemplate>
                             <DataTemplate>
-                                <toolkit:DataGrid ItemsSource="{Binding}" IsReadOnly="True" Margin="0,0,0,5" />
+                                <toolkit:DataGrid ItemsSource="{Binding}" IsReadOnly="True" Margin="0,0,0,5" EnableColumnVirtualization="True" EnableRowVirtualization="True" VirtualizingStackPanel.IsVirtualizing="True" VirtualizingStackPanel.VirtualizationMode="Recycling" />
                             </DataTemplate>
                         </ListBox.ItemTemplate>
                     </ListBox>
