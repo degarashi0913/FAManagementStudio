@@ -1,83 +1,45 @@
 ﻿using FAManagementStudio.Common;
 using FirebirdSql.Data.FirebirdClient;
 using System;
-using System.Collections.ObjectModel;
+using System.Collections.Generic;
 
 namespace FAManagementStudio.Models
 {
     public class DatabaseInfo : BindableBase
     {
-        public string Path
-        {
-            get; set;
-        }
+        public string Path { get; set; }
         public string UserId { get; set; }
         public string Password { get; set; }
 
-        public string DisplayName { get { return Path.Substring(Path.LastIndexOf('\\') + 1); } }
-
         internal string ConnectionString { get; private set; }
 
-        public ObservableCollection<TableInfo> Chiled { get; } = new ObservableCollection<TableInfo>();
-
-        public ObservableCollection<TriggerInfo> Trrigers { get; } = new ObservableCollection<TriggerInfo>();
-
-        public void CreateDatabase(string path)
+        public void CreateDatabase(FbConnection con)
         {
-            this.Path = path;
-            var builder = new FbConnectionStringBuilder();
-            builder.DataSource = "localhost";
-            builder.Database = path;
-            builder.Charset = FbCharset.Utf8.ToString();
-            builder.UserID = "SYSDBA";
-            builder.Password = "masterkey";
-            builder.ServerType = FbServerType.Embedded;
-            builder.Pooling = false;
-
-            FbConnection.CreateDatabase(builder.ConnectionString);
+            FbConnection.CreateDatabase(con.ConnectionString);
         }
-        public void LoadDatabase(string path)
+        public IEnumerable<TableInfo> GetTables(FbConnection con)
         {
-            this.Path = path;
-
-            var builder = new FbConnectionStringBuilder();
-            builder.DataSource = "localhost";
-            builder.Database = path;
-            builder.Charset = FbCharset.Utf8.ToString();
-            builder.UserID = "SYSDBA";
-            builder.Password = "masterkey";
-            builder.ServerType = FbServerType.Embedded;
-            builder.Pooling = false;
-
-            ConnectionString = builder.ConnectionString;
-            using (var con = new FbConnection(builder.ConnectionString))
+            ConnectionString = con.ConnectionString;
             using (var command = con.CreateCommand())
             {
                 command.CommandText = @"select rdb$relation_name AS Name from rdb$relations where rdb$relation_type = 0 and rdb$system_flag = 0 order by rdb$relation_name asc";
-                con.Open();
                 var reader = command.ExecuteReader();
-                Chiled.Clear();
                 while (reader.Read())
                 {
-                    var table = new TableInfo(((string)reader["Name"]).TrimEnd());
-                    Chiled.Add(table);
-                    table.GetColums(con);
+                    yield return new TableInfo(((string)reader["Name"]).TrimEnd());
                 }
             }
-            GetTrigger();
         }
 
-        private void GetTrigger()
+        public IEnumerable<TriggerInfo> GetTrigger(FbConnection con)
         {
-            using (var con = new FbConnection(this.ConnectionString))
             using (var command = con.CreateCommand())
             {
                 command.CommandText = @"select rdb$trigger_name Name, rdb$relation_name TableName, rdb$trigger_source Source from rdb$triggers where rdb$system_flag = 0";
-                con.Open();
                 var reader = command.ExecuteReader();
                 while (reader.Read())
                 {
-                    Trrigers.Add(new TriggerInfo((string)reader["Name"], (string)reader["TableName"], (string)reader["Source"]));
+                    yield return new TriggerInfo((string)reader["Name"], (string)reader["TableName"], (string)reader["Source"]);
                 }
             }
         }
@@ -103,11 +65,8 @@ namespace FAManagementStudio.Models
             this.TableName = name;
         }
         public string TableName { get; set; }
-        public string DisplayName { get { return TableName; } }
 
-        public ObservableCollection<ColumInfo> Chiled { get; set; } = new ObservableCollection<ColumInfo>();
-
-        public void GetColums(FbConnection con)
+        public IEnumerable<ColumInfo> GetColums(FbConnection con)
         {
             using (var command = con.CreateCommand())
             {
@@ -127,12 +86,11 @@ namespace FAManagementStudio.Models
                      $"where rf.rdb$relation_name = '{this.TableName}' " +
                       "order by rf.rdb$field_position; ";
                 var reader = command.ExecuteReader();
-                Chiled.Clear();
                 while (reader.Read())
                 {
                     var key = (reader["Key"] == DBNull.Value) ? "" : (string)reader["Key"];
                     var size = (reader["CharSize"] == DBNull.Value) ? null : (short?)reader["CharSize"];
-                    Chiled.Add(new ColumInfo(((string)reader["Name"]).TrimEnd(), (short)reader["Type"], size, GetKey(key)));
+                    yield return new ColumInfo(((string)reader["Name"]).TrimEnd(), (short)reader["Type"], size, GetKey(key));
                 }
             }
         }
@@ -159,7 +117,7 @@ namespace FAManagementStudio.Models
     {
         public string ColumName { get; set; }
         public string ColumType { get; set; }
-        public string DisplayName { get { return $"{ColumName} ({ColumType})"; } }
+
         public ConstraintsKeyKind KeyKind { get; set; }
 
         public ColumInfo(string name, int type, short? size, ConstraintsKeyKind keyKind)
