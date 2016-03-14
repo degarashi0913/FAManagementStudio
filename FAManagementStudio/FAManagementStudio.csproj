@@ -102,6 +102,8 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Common\Definitions.cs" />
+    <Compile Include="ViewModels\DbViewModel.cs" />
+    <Compile Include="ViewModels\QueryTabViewModel.cs" />
     <Compile Include="Views\Behaviors\DynamicTabControlBehavior.cs" />
     <Compile Include="Views\Behaviors\FileDropBehavior.cs" />
     <Compile Include="Views\Behaviors\ListBoxDropBehavior.cs" />
