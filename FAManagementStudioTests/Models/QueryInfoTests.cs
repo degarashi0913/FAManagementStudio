@@ -1,7 +1,10 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using FirebirdSql.Data.FirebirdClient;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Data;
+using System.Text;
 
 namespace FAManagementStudio.Models.Tests
 {
@@ -33,7 +36,7 @@ namespace FAManagementStudio.Models.Tests
         }
 
         [TestMethod()]
-        public void GetStatement()
+        public void GetStatementTest()
         {
             var inf = new QueryInfo();
             var input1 = "select * from A";
@@ -65,6 +68,69 @@ namespace FAManagementStudio.Models.Tests
                       @"new.a = gen_id(gen_foo, 1);" + Environment.NewLine +
                       @"end" ,
                 "select* from A", "create table V(a integer, b nvarchar(5))" });
+        }
+
+        private void SetupTestDb()
+        {
+            FbConnection.CreateDatabase(GetConnectionString(), 4096, true, true);
+            CreateTestTables(GetConnectionString());
+        }
+
+        private void CreateTestTables(string connectionString)
+        {
+            using (var con = new FbConnection(connectionString))
+            using (var command = con.CreateCommand())
+            {
+                var sb = new StringBuilder();
+
+                sb.Append("recreate table test(");
+                sb.Append("int_test integer default 0 not null primary key,");
+                sb.Append("bigint_test bigint,");
+                sb.Append("blob_test blob,");
+                sb.Append("char_test char(20),");
+                sb.Append("date_test date,");
+                sb.Append("decimal_test decimal,");
+                sb.Append("double_test double precision,");
+                sb.Append("float_test float,");
+                sb.Append("numeric_test numeric,");
+                sb.Append("smallint_test smallint,");
+                sb.Append("time_test time,");
+                sb.Append("timestamp_test timestamp,");
+                sb.Append("varchar_test varchar(100)");
+                sb.Append(")");
+
+                command.CommandText = sb.ToString();
+                con.Open();
+                command.ExecuteNonQuery();
+            }
+        }
+
+        private string GetConnectionString()
+        {
+            var builder = new FbConnectionStringBuilder();
+            builder.DataSource = "localhost";
+            builder.Database = @"tests.fdb";
+            builder.Charset = FbCharset.Utf8.ToString();
+            builder.UserID = "SYSDBA";
+            builder.Password = "masterkey";
+            builder.ServerType = FbServerType.Embedded;
+            builder.Pooling = false;
+
+            return builder.ToString();
+        }
+
+        [TestMethod]
+        public void ExecuteQueryTest()
+        {
+            SetupTestDb();
+            var inf = new QueryInfo();
+            inf.ExecuteQuery(GetConnectionString(), "select * from test");
+            inf.Result[0].Rows.Count.Is(0);
+
+            inf.ExecuteQuery(GetConnectionString(), "insert into test(int_test, char_test) values (1, 'aaaaaaaaaa');update test set varchar_test = 'testtesttesttest' where int_test = 1;select * from test");
+            inf.Result[0].Rows[0].Is(x => ((string)x[0]).Contains("実行しました。"));
+            inf.Result[1].Rows[0].Is(x => ((string)x[0]).Contains("更新しました。"));
+            inf.Result[2].Rows.Count.Is(1);
         }
     }
 }

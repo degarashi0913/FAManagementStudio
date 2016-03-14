@@ -184,8 +184,8 @@ xcopy  /y $(SolutionDir)Assemblies\Firebird\x64_dll\*.* $(TargetDir)
 ) else (
 xcopy /y  $(SolutionDir)Assemblies\Firebird\x86_dll\*.* $(TargetDir)
 )
-del $(TargetDir)*.pdb
-del $(TargetDir)*.xml</PostBuildEvent>
+ if $(ConfigurationName) equ Release (del $(TargetDir)*.pdb
+del $(TargetDir)*.xml)</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
