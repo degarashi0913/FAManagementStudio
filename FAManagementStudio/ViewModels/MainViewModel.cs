@@ -3,13 +3,11 @@ using FAManagementStudio.Models;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Data;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Data;
+using System.Windows;
 using System.Windows.Input;
 
 namespace FAManagementStudio.ViewModels
@@ -20,31 +18,33 @@ namespace FAManagementStudio.ViewModels
         {
             SetCommand();
         }
-        private DatabaseInfo _dbInf = new DatabaseInfo();
+        private DbViewModel _db = new DbViewModel();
         private QueryInfo _queryInf = new QueryInfo();
         public string InputPath { get; set; }
 
-        public ObservableCollection<QueryTabView> Queries { get; } = new ObservableCollection<QueryTabView> { new QueryTabView("Query1", ""), QueryTabView.GetNewInstance() };
+        public ObservableCollection<QueryTabViewModel> Queries { get; } = new ObservableCollection<QueryTabViewModel> { new QueryTabViewModel("Query1", ""), QueryTabViewModel.GetNewInstance() };
         public int TagSelectedIndex { get; set; } = 0;
-        public QueryTabView TagSelectedValue { get; set; }
+        public QueryTabViewModel TagSelectedValue { get; set; }
 
-        public ObservableCollection<TableInfo> Tables
+        public List<TableViewModel> Tables
         {
             get
             {
-                return CurrentDatabase.Chiled;
+                return CurrentDatabase.Tables;
             }
         }
 
-        public DatabaseInfo CurrentDatabase
+        public List<TriggerViewModel> Triggers { get { return _db.Triggers; } }
+
+        public DbViewModel CurrentDatabase
         {
             get
             {
-                return _dbInf;
+                return _db;
             }
             set
             {
-                _dbInf = value;
+                _db = value;
                 RaisePropertyChanged(nameof(Tables));
                 RaisePropertyChanged(nameof(CurrentDatabase));
                 RaisePropertyChanged(nameof(Triggers));
@@ -53,11 +53,9 @@ namespace FAManagementStudio.ViewModels
 
         public object SelectedTableItem { get; set; }
 
-        public ObservableCollection<DatabaseInfo> Databases { get; set; } = new ObservableCollection<DatabaseInfo>();
+        public ObservableCollection<DbViewModel> Databases { get; set; } = new ObservableCollection<DbViewModel>();
 
-        public ObservableCollection<DataView> Datasource { get { return _queryInf.Result; } }
-
-        public ObservableCollection<TriggerInfo> Triggers { get { return _dbInf.Trrigers; } }
+        public ObservableCollection<DataTable> Datasource { get; set; } = new ObservableCollection<DataTable>();
 
         #region CommandBind
         public ICommand CreateDatabase { get; private set; }
@@ -83,28 +81,40 @@ namespace FAManagementStudio.ViewModels
                 if (string.IsNullOrEmpty(this.InputPath)) return;
                 if (File.Exists(this.InputPath)) return;
 
-                var db = new DatabaseInfo();
+                var db = new DbViewModel();
                 db.CreateDatabase(this.InputPath);
                 db.LoadDatabase(this.InputPath);
                 Databases.Add(db);
                 _history.DataAdd(this.InputPath);
             });
+
             LoadDatabase = new RelayCommand(() =>
             {
                 if (string.IsNullOrEmpty(this.InputPath)) return;
                 if (!File.Exists(this.InputPath)) return;
 
-                var db = new DatabaseInfo();
+                var db = new DbViewModel();
                 db.LoadDatabase(this.InputPath);
                 Databases.Add(db);
                 _history.DataAdd(this.InputPath);
             });
-            ExecuteQuery = new RelayCommand(() =>
+
+            ExecuteQuery = new RelayCommand(async () =>
            {
-               if (string.IsNullOrEmpty(CurrentDatabase.ConnectionString)) return;
-               _queryInf.ExecuteQuery(CurrentDatabase.ConnectionString, TagSelectedValue.Query);
-               //await TaskEx.Run(() => _queryInf.ExecuteQuery(CurrentDatabase.ConnectionString, TagSelectedValue.Query));
-               RaisePropertyChanged(nameof(Datasource));
+               if (!CurrentDatabase.CanExecute()) return;
+               Datasource.Clear();
+               await TaskEx.Run(() =>
+               {
+                   _queryInf.ExecuteQuery(CurrentDatabase.ConnectionString, TagSelectedValue.Query);
+                   Application.Current.Dispatcher.Invoke(new Action(() =>
+                   {
+                       foreach (var table in _queryInf.Result)
+                       {
+                           Datasource.Add(table);
+                       }
+                   }));
+               });
+
            });
 
             DropFile = new RelayCommand<string>((string path) =>
@@ -127,7 +137,7 @@ namespace FAManagementStudio.ViewModels
 
             ReloadDatabase = new RelayCommand(() =>
             {
-                CurrentDatabase.LoadDatabase(CurrentDatabase.Path);
+                CurrentDatabase.ReloadDatabase();
             });
 
             ShutdownDatabase = new RelayCommand(() =>
@@ -138,7 +148,7 @@ namespace FAManagementStudio.ViewModels
             AddTab = new RelayCommand(() =>
             {
                 TagSelectedValue.Header = $"Query{Queries.Count}";
-                Queries.Add(QueryTabView.GetNewInstance());
+                Queries.Add(QueryTabViewModel.GetNewInstance());
                 RaisePropertyChanged(nameof(Queries));
             });
 
@@ -152,13 +162,12 @@ namespace FAManagementStudio.ViewModels
             });
         }
 
-        #endregion
         private string CreateSelectSentence(object treeitem)
         {
-            var table = treeitem as TableInfo;
+            var table = treeitem as TableViewModel;
             if (table == null)
             {
-                var col = treeitem as ColumInfo;
+                var col = treeitem as ColumViewMoodel;
                 return CreateFromColumName(Tables.ToList(), col);
             }
             else {
@@ -166,54 +175,23 @@ namespace FAManagementStudio.ViewModels
             }
         }
 
-        private string CreateFromTableName(TableInfo table)
+        #endregion
+
+        private string CreateFromTableName(TableViewModel table)
         {
-            var colums = string.Join(", ", table.Chiled.Select(x => x.ColumName).ToArray());
+            var colums = string.Join(", ", table.ChildItems.Select(x => x.ColumName).ToArray());
             return $"select {colums} from {table.TableName}";
         }
 
-        private string CreateFromColumName(List<TableInfo> tables, ColumInfo targetCol)
+        private string CreateFromColumName(List<TableViewModel> tables, ColumViewMoodel targetCol)
         {
-            var table = tables.Where(x => 0 < x.Chiled.Count(col => col == targetCol)).First();
+            var table = tables.Where(x => 0 < x.ChildItems.Count(col => col == targetCol)).First();
             return $"select {targetCol.ColumName} from {table.TableName}";
         }
 
         ~MainViewModel()
         {
             _history.SaveData();
-        }
-    }
-
-    public class QueryTabView : BindableBase
-    {
-        private string _header;
-        public string Header
-        {
-            get { return _header; }
-            set
-            {
-                _header = value;
-                RaisePropertyChanged(nameof(Header));
-            }
-        }
-        private string _query;
-        public string Query
-        {
-            get { return _query; }
-            set
-            {
-                _query = value;
-                RaisePropertyChanged(nameof(Query));
-            }
-        }
-        public QueryTabView(string header, string query)
-        {
-            _header = header;
-            _query = query;
-        }
-        public static QueryTabView GetNewInstance()
-        {
-            return new QueryTabView("+", "");
         }
     }
 }

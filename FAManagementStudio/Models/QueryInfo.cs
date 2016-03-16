@@ -2,7 +2,6 @@
 using FirebirdSql.Data.FirebirdClient;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Data;
 using System.Text.RegularExpressions;
 
@@ -10,7 +9,7 @@ namespace FAManagementStudio.Models
 {
     public class QueryInfo : BindableBase
     {
-        public AsyncObservableCollection<DataView> Result = new AsyncObservableCollection<DataView>();
+        public List<DataTable> Result = new List<DataTable>();
         public void ExecuteQuery(string connectionString, string query)
         {
             if (string.IsNullOrEmpty(query?.Trim())) return;
@@ -22,7 +21,7 @@ namespace FAManagementStudio.Models
                     con.Open();
                     foreach (var item in AnalyzeQuery(query))
                     {
-                        DataView view = null;
+                        DataTable view = null;
                         try
                         {
                             switch (item.Type)
@@ -52,7 +51,7 @@ namespace FAManagementStudio.Models
             }
         }
 
-        private DataView GetScalaView(string colName, string messege)
+        private DataTable GetScalaView(string colName, string messege)
         {
             var table = new DataTable();
 
@@ -65,15 +64,16 @@ namespace FAManagementStudio.Models
             row[0] = messege;
             table.Rows.Add(row);
 
-            return table.DefaultView;
+            return table;
         }
 
-        private DataView ExecuteReader(FbConnection con, string query)
+        private DataTable ExecuteReader(FbConnection con, string query)
         {
             using (var command = con.CreateCommand())
             {
                 command.CommandText = query;
-                var reader = command.ExecuteReader();
+                var res = command.BeginExecuteReader(null, null);
+                var reader = command.EndExecuteReader(res);
 
                 var schema = reader.GetSchemaTable();
                 var table = new DataTable();
@@ -94,27 +94,29 @@ namespace FAManagementStudio.Models
                     }
                     table.Rows.Add(row);
                 }
-                return table.DefaultView;
+                return table;
             }
         }
 
-        private DataView ExecuteUpdate(FbConnection con, string query)
+        private DataTable ExecuteUpdate(FbConnection con, string query)
         {
             using (var command = con.CreateCommand())
             {
                 command.CommandText = query;
-                var num = command.ExecuteNonQuery();
+                var res = command.BeginExecuteNonQuery(null, null);
+                var num = command.EndExecuteNonQuery(res);
 
                 return GetScalaView("Message", $"{num}行更新しました。");
             }
         }
 
-        private DataView ExecuteNonQeuery(FbConnection con, string query)
+        private DataTable ExecuteNonQeuery(FbConnection con, string query)
         {
             using (var command = con.CreateCommand())
             {
                 command.CommandText = query;
-                command.ExecuteNonQuery();
+                var res = command.BeginExecuteNonQuery(null, null);
+                var num = command.EndExecuteNonQuery(res);
 
                 return GetScalaView("Message", $"実行しました。");
             }

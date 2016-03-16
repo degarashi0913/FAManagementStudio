@@ -9,9 +9,12 @@
         xmlns:Common="clr-namespace:FAManagementStudio.Common"
         xmlns:b="clr-namespace:FAManagementStudio.Views.Behaviors"
         xmlns:c="clr-namespace:FAManagementStudio.Views.Converters"
+        xmlns:vm="clr-namespace:FAManagementStudio.ViewModels"
         mc:Ignorable="d"
-        Title="FAManagementStudio" Height="700" Width="1000" Icon="Image/systemicon.ico" Loaded="Window_Loaded"
-        >
+        Title="FAManagementStudio" Height="700" Width="1000" Icon="Image/systemicon.ico" Loaded="Window_Loaded">
+    <Window.DataContext>
+        <vm:MainViewModel/>
+    </Window.DataContext>
     <Window.Resources>
         <Style x:Key="VirticalSpliterStyle" TargetType="GridSplitter">
             <Setter Property="Width" Value="2"/>
@@ -67,7 +70,7 @@
             </Grid.ColumnDefinitions>
             <ListBox Grid.Column="0" HorizontalAlignment="Stretch" MinWidth="80" ItemsSource="{Binding Databases}" HorizontalContentAlignment="Center" SelectedItem="{Binding CurrentDatabase}" AllowDrop="True">
                 <i:Interaction.Behaviors>
-                    <b:ListBoxDropBehavior ListBoxDropedCommand="{Binding DbListDropFile}"/>
+                    <b:ListBoxDropBehavior DropedCommand="{Binding DbListDropFile}"/>
                 </i:Interaction.Behaviors>
                 <ListBox.ContextMenu>
                     <ContextMenu>
@@ -78,8 +81,8 @@
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <Canvas Height="70" Width="50" ToolTip="{Binding Path}">
-                            <Image Source="/Image/DbShape.bmp" Height="50" Width="50"/>
-                            <TextBlock Text="{Binding DisplayName}" Canvas.Top="50" />
+                            <Image Source="/Image/DbShape.bmp" Height="50" Width="50" Margin="0,3,0,0"/>
+                            <TextBlock Text="{Binding DisplayDbName}" Canvas.Top="50" TextAlignment="Center" Margin="-15,2,0,0" Width="80" />
                         </Canvas>
                     </DataTemplate>
                 </ListBox.ItemTemplate>
@@ -109,7 +112,7 @@
                         </Style>
                     </TreeView.ItemContainerStyle>
                     <TreeView.ItemTemplate>
-                        <HierarchicalDataTemplate ItemsSource="{Binding Chiled}">
+                        <HierarchicalDataTemplate ItemsSource="{Binding ChildItems}">
                             <TextBlock Text="{Binding Path=DisplayName}" />
                             <HierarchicalDataTemplate.ItemTemplate>
                                 <HierarchicalDataTemplate >
@@ -185,7 +188,7 @@
                         </ListBox.ItemContainerStyle>
                         <ListBox.ItemTemplate>
                             <DataTemplate>
-                                <toolkit:DataGrid ItemsSource="{Binding}" IsReadOnly="True" Margin="0,0,0,5" />
+                                <toolkit:DataGrid ItemsSource="{Binding}" IsReadOnly="True" Margin="0,0,0,5" EnableColumnVirtualization="True" EnableRowVirtualization="True" VirtualizingStackPanel.IsVirtualizing="True" VirtualizingStackPanel.VirtualizationMode="Recycling" />
                             </DataTemplate>
                         </ListBox.ItemTemplate>
                     </ListBox>
