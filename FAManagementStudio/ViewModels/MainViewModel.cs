@@ -6,13 +6,14 @@ using System.Collections.ObjectModel;
 using System.Data;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 
 namespace FAManagementStudio.ViewModels
 {
-    class MainViewModel : BindableBase
+    public class MainViewModel : BindableBase
     {
         public MainViewModel()
         {
@@ -65,11 +66,14 @@ namespace FAManagementStudio.ViewModels
         public ICommand DropFile { get; private set; }
         public ICommand DbListDropFile { get; private set; }
 
-        public ICommand SetSelectSql { get; private set; }
+        public ICommand SetSqlTemplate { get; private set; }
         public ICommand ReloadDatabase { get; private set; }
         public ICommand ShutdownDatabase { get; private set; }
         public ICommand AddTab { get; private set; }
         public ICommand DeleteTabItem { get; private set; }
+
+        public ICommand LoadHistry { get; private set; }
+        public ICommand SaveHistry { get; private set; }
 
         private PathHistoryRepository _history = new PathHistoryRepository();
         public ObservableCollection<string> DataInput { get { return _history.History; } }
@@ -129,21 +133,15 @@ namespace FAManagementStudio.ViewModels
                 LoadDatabase.Execute(null);
             });
 
-            SetSelectSql = new RelayCommand(() =>
+            SetSqlTemplate = new RelayCommand<string>((string sqlKind) =>
             {
-                TagSelectedValue.Query = CreateSelectSentence(SelectedTableItem);
+                TagSelectedValue.Query = CreateSqlSentence(SelectedTableItem, sqlKind);
                 RaisePropertyChanged(nameof(Queries));
             });
 
-            ReloadDatabase = new RelayCommand(() =>
-            {
-                CurrentDatabase.ReloadDatabase();
-            });
+            ReloadDatabase = new RelayCommand(() => { CurrentDatabase.ReloadDatabase(); });
 
-            ShutdownDatabase = new RelayCommand(() =>
-            {
-                Databases.Remove(CurrentDatabase);
-            });
+            ShutdownDatabase = new RelayCommand(() => { Databases.Remove(CurrentDatabase); });
 
             AddTab = new RelayCommand(() =>
             {
@@ -160,38 +158,61 @@ namespace FAManagementStudio.ViewModels
                 RaisePropertyChanged(nameof(TagSelectedIndex));
                 Queries.Remove(item);
             });
+
+            LoadHistry = new RelayCommand(() => _history.LoadData(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)));
+
+            SaveHistry = new RelayCommand(() => _history.SaveData(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)));
         }
 
-        private string CreateSelectSentence(object treeitem)
+        private string CreateSqlSentence(object treeitem, string sqlKind)
         {
             var table = treeitem as TableViewModel;
+            string[] colums;
+            string tableName;
             if (table == null)
             {
                 var col = treeitem as ColumViewMoodel;
-                return CreateFromColumName(Tables.ToList(), col);
+                tableName = Tables.Where(x => 0 < x.ChildItems.Count(c => c == col)).First().TableName;
+                colums = new[] { col.ColumName };
             }
             else {
-                return CreateFromTableName(table);
+                colums = table.ChildItems.Select(x => x.ColumName).ToArray();
+                tableName = table.TableName;
+            }
+            if (sqlKind == "select")
+            {
+                return CreateSelectStatement(tableName, colums);
+            }
+            else if (sqlKind == "insert")
+            {
+                return CreateInsertStatement(tableName, colums);
+            }
+            else if (sqlKind == "update")
+            {
+                return CreateUpdateStatement(tableName, colums);
+            }
+            else {
+                return "";
             }
         }
 
         #endregion
 
-        private string CreateFromTableName(TableViewModel table)
+        private string CreateSelectStatement(string tableName, string[] colums)
         {
-            var colums = string.Join(", ", table.ChildItems.Select(x => x.ColumName).ToArray());
-            return $"select {colums} from {table.TableName}";
+            return $"select {string.Join(", ", colums)} from {tableName}";
         }
 
-        private string CreateFromColumName(List<TableViewModel> tables, ColumViewMoodel targetCol)
+        private string CreateInsertStatement(string tableName, string[] colums)
         {
-            var table = tables.Where(x => 0 < x.ChildItems.Count(col => col == targetCol)).First();
-            return $"select {targetCol.ColumName} from {table.TableName}";
+            var valuesStr = string.Join(", ", colums.Select(x => $"@{x.ToLower()}").ToArray());
+            return $"insert into {tableName} ({string.Join(", ", colums)}) values ({valuesStr})";
         }
 
-        ~MainViewModel()
+        private string CreateUpdateStatement(string tableName, string[] colums)
         {
-            _history.SaveData();
+            var setStr = string.Join(", ", colums.Select(x => $"{x} = @{x.ToLower()}").ToArray());
+            return $"update {tableName} set {setStr}";
         }
     }
 }

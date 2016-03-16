@@ -115,6 +115,7 @@
     <Compile Include="Models\PathHistory.cs" />
     <Compile Include="Models\QueryInfo.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
+    <Compile Include="Views\Behaviors\WindowBehavior.cs" />
     <Compile Include="Views\Converters\ConstraintsKeyToIconConverter.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>

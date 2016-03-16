@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -19,25 +20,30 @@ namespace FAManagementStudio.Models
     public class PathHistoryRepository
     {
         public ObservableCollection<string> History { get; set; } = new ObservableCollection<string>();
-        private readonly string _dataPath;
+        private const string _fileName = "his";
         public PathHistoryRepository()
         {
-            _dataPath = Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), "his");
-            DataLoad(_dataPath, History);
         }
 
-        private void DataLoad(string path, ObservableCollection<string> history)
+        public void LoadData(string entryPath)
         {
+            var path = Path.Combine(entryPath, _fileName);
             if (!File.Exists(path)) return;
-
-            using (var stream = new FileStream(path, FileMode.Open))
+            try
             {
-                var ser = new DataContractSerializer(typeof(PathHistory));
-                var loadedHistory = (PathHistory)ser.ReadObject(stream);
-                for (int i = 0; i < loadedHistory.Path.Length; i++)
+                using (var stream = new FileStream(path, FileMode.Open))
                 {
-                    history.Add(loadedHistory.Path[i]);
+                    var ser = new DataContractSerializer(typeof(PathHistory));
+                    var loadedHistory = (PathHistory)ser.ReadObject(stream);
+                    for (int i = 0; i < loadedHistory.Path.Length; i++)
+                    {
+                        History.Add(loadedHistory.Path[i]);
+                    }
                 }
+            }
+            //失敗したらそのまま
+            catch
+            {
             }
         }
 
@@ -55,14 +61,11 @@ namespace FAManagementStudio.Models
             History.Insert(0, newPath);
         }
 
-        public void SaveData()
+        public void SaveData(string entryPath)
         {
-            InnnerSaveData(_dataPath, History);
-        }
-        private void InnnerSaveData(string path, ObservableCollection<string> history)
-        {
+            var path = Path.Combine(entryPath, _fileName);
             var data = new PathHistory();
-            data.Path = history.ToArray();
+            data.Path = History.ToArray();
 
             using (var stream = new FileStream(path, FileMode.OpenOrCreate))
             {

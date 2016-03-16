@@ -30,7 +30,6 @@ namespace FAManagementStudio.ViewModels
         {
             using (var con = GetConnection(path))
             {
-                con.Open();
                 _dbInfo.CreateDatabase(con);
             }
             LoadDatabase(path);
