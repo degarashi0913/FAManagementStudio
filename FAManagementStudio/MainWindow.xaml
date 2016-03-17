@@ -29,6 +29,11 @@
             <Setter Property="ResizeDirection" Value="Rows"/>
         </Style>
     </Window.Resources>
+
+    <i:Interaction.Behaviors>
+        <b:WindowBehavior LoadedCommand="{Binding LoadHistry}" ClosedCommand="{Binding SaveHistry}"/>
+    </i:Interaction.Behaviors>
+
     <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
         <Grid.RowDefinitions>
             <RowDefinition Height="22"/>
@@ -103,7 +108,9 @@
                     </TreeView.Resources>
                     <TreeView.ContextMenu>
                         <ContextMenu>
-                            <MenuItem Header="Select *" Command="{Binding SetSelectSql}"/>
+                            <MenuItem Header="SELECT *" Command="{Binding SetSqlTemplate}" CommandParameter="select" />
+                            <MenuItem Header="INSERT *" Command="{Binding SetSqlTemplate}" CommandParameter="insert" />
+                            <MenuItem Header="UPDATE *" Command="{Binding SetSqlTemplate}" CommandParameter="update" />
                         </ContextMenu>
                     </TreeView.ContextMenu>
                     <TreeView.ItemContainerStyle>

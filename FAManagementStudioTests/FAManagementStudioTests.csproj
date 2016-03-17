@@ -79,6 +79,7 @@
     <Compile Include="ChainingAssertion.MSTest.cs" />
     <Compile Include="Models\QueryInfoTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ViewModels\MainViewModelTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\FAManagementStudio\FAManagementStudio.csproj">

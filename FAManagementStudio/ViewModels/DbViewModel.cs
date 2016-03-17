@@ -30,7 +30,6 @@ namespace FAManagementStudio.ViewModels
         {
             using (var con = GetConnection(path))
             {
-                con.Open();
                 _dbInfo.CreateDatabase(con);
             }
             LoadDatabase(path);
@@ -62,6 +61,8 @@ namespace FAManagementStudio.ViewModels
 
         public void ReloadDatabase()
         {
+            Tables.Clear();
+            Triggers.Clear();
             LoadDatabase(_dbInfo.Path);
         }
 
