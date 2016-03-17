@@ -200,19 +200,27 @@ namespace FAManagementStudio.ViewModels
 
         private string CreateSelectStatement(string tableName, string[] colums)
         {
-            return $"select {string.Join(", ", colums)} from {tableName}";
+            var escapedColumsStr = string.Join(", ", colums.Select(x => EscapeKeyWord(x)).ToArray());
+            return $"select {escapedColumsStr} from {tableName}";
         }
 
         private string CreateInsertStatement(string tableName, string[] colums)
         {
+            var escapedColumsStr = string.Join(", ", colums.Select(x => EscapeKeyWord(x)).ToArray());
             var valuesStr = string.Join(", ", colums.Select(x => $"@{x.ToLower()}").ToArray());
-            return $"insert into {tableName} ({string.Join(", ", colums)}) values ({valuesStr})";
+            return $"insert into {tableName} ({escapedColumsStr}) values ({valuesStr})";
         }
 
         private string CreateUpdateStatement(string tableName, string[] colums)
         {
-            var setStr = string.Join(", ", colums.Select(x => $"{x} = @{x.ToLower()}").ToArray());
+            var setStr = string.Join(", ", colums.Select(x => $"{EscapeKeyWord(x)} = @{x.ToLower()}").ToArray());
             return $"update {tableName} set {setStr}";
+        }
+
+        private readonly HashSet<string> _sqlKeyWord = new HashSet<string> { "index" };
+        private string EscapeKeyWord(string colum)
+        {
+            return _sqlKeyWord.Contains(colum.ToLower()) ? $"'{colum}'" : colum;
         }
     }
 }

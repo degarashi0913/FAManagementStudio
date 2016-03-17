@@ -14,7 +14,9 @@ namespace FAManagementStudio.ViewModels.Tests
                 new { Input = new { TableName = "TEST", Colums = new[] { "A" } },
                       Answer = "select A from TEST" },
                 new { Input = new { TableName = "TEST", Colums = new[] { "A", "B" } },
-                      Answer = "select A, B from TEST" }
+                      Answer = "select A, B from TEST" },
+                new { Input = new { TableName = "TEST", Colums = new[] { "A", "Index" } },
+                      Answer = "select A, 'Index' from TEST" }
             };
             foreach (var test in testCase)
             {
@@ -31,7 +33,9 @@ namespace FAManagementStudio.ViewModels.Tests
                 new { Input = new { TableName = "TEST", Colums = new[] { "A" } },
                       Answer = "insert into TEST (A) values (@a)" },
                 new { Input = new { TableName = "TEST", Colums = new[] { "A", "B" } },
-                      Answer = "insert into TEST (A, B) values (@a, @b)" }
+                      Answer = "insert into TEST (A, B) values (@a, @b)" },
+                new { Input = new { TableName = "TEST", Colums = new[] { "A", "Index" } },
+                      Answer = "insert into TEST (A, 'Index') values (@a, @index)" }
             };
             foreach (var test in testCase)
             {
@@ -48,7 +52,9 @@ namespace FAManagementStudio.ViewModels.Tests
                 new { Input = new { TableName = "TEST", Colums = new[] { "A" } },
                       Answer = "update TEST set A = @a" },
                 new { Input = new { TableName = "TEST", Colums = new[] { "A", "B" } },
-                      Answer = "update TEST set A = @a, B = @b" }
+                      Answer = "update TEST set A = @a, B = @b" },
+                new { Input = new { TableName = "TEST", Colums = new[] { "A", "Index" } },
+                      Answer = "update TEST set A = @a, 'Index' = @index" }
             };
             foreach (var test in testCase)
             {

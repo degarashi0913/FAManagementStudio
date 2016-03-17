@@ -61,6 +61,8 @@ namespace FAManagementStudio.ViewModels
 
         public void ReloadDatabase()
         {
+            Tables.Clear();
+            Triggers.Clear();
             LoadDatabase(_dbInfo.Path);
         }
 
