@@ -2,6 +2,7 @@
 using FAManagementStudio.Models;
 using FirebirdSql.Data.FirebirdClient;
 using System.Collections.Generic;
+using System.Windows.Data;
 
 namespace FAManagementStudio.ViewModels
 {
@@ -64,6 +65,7 @@ namespace FAManagementStudio.ViewModels
             Tables.Clear();
             Triggers.Clear();
             LoadDatabase(_dbInfo.Path);
+            CollectionViewSource.GetDefaultView(this.Tables).Refresh();
         }
 
         private FbConnection GetConnection(string path)
