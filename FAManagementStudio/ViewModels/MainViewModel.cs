@@ -74,6 +74,7 @@ namespace FAManagementStudio.ViewModels
 
         public ICommand LoadHistry { get; private set; }
         public ICommand SaveHistry { get; private set; }
+        public ICommand OpenGitPage { get; private set; }
 
         private PathHistoryRepository _history = new PathHistoryRepository();
         public ObservableCollection<string> DataInput { get { return _history.History; } }
@@ -162,6 +163,8 @@ namespace FAManagementStudio.ViewModels
             LoadHistry = new RelayCommand(() => _history.LoadData(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)));
 
             SaveHistry = new RelayCommand(() => _history.SaveData(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)));
+
+            OpenGitPage = new RelayCommand(() => System.Diagnostics.Process.Start("https://github.com/degarashi0913/FAManagementStudio"));
         }
 
         private string CreateSqlSentence(object treeitem, string sqlKind)

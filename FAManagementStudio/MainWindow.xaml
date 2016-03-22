@@ -39,32 +39,43 @@
             <RowDefinition Height="22"/>
             <RowDefinition Height="1*"/>
         </Grid.RowDefinitions>
-        <StackPanel Grid.Row="0"  Orientation="Horizontal">
-            <Button Command="{Binding CreateDatabase}">
-                <StackPanel Orientation="Horizontal">
-                    <Image Source="/Image/action_add_16xLG.png" />
-                    <TextBlock Text="新規" Margin="4,0"/>
-                </StackPanel>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="20"/>
+            </Grid.ColumnDefinitions>
+            <StackPanel Grid.Row="0"  Orientation="Horizontal">
+                <Button Command="{Binding CreateDatabase}">
+                    <StackPanel Orientation="Horizontal">
+                        <Image Source="/Image/action_add_16xLG.png" />
+                        <TextBlock Text="新規" Margin="4,0"/>
+                    </StackPanel>
+                </Button>
+                <ComboBox Height="auto" Width="300" IsEditable="True" IsTextSearchEnabled="True" IsReadOnly="False" ItemsSource="{Binding DataInput}" Text="{Binding InputPath, Mode=TwoWay}" AllowDrop="True">
+                    <i:Interaction.Behaviors>
+                        <b:FileDropBehavior DropedCommand="{Binding DropFile}"/>
+                    </i:Interaction.Behaviors>
+                </ComboBox>
+                <Button Command="{Binding LoadDatabase}">
+                    <StackPanel Orientation="Horizontal">
+                        <Image Source="/Image/hardware_16xLG.png" />
+                        <TextBlock Text="読込" Margin="4,0"/>
+                    </StackPanel>
+                </Button>
+                <Button Command="{Binding ExecuteQuery}" ToolTip="F5 実行">
+                    <StackPanel Orientation="Horizontal">
+                        <Image Source="/Image/base_exclamationmark_32.png" />
+                        <TextBlock Text="実行" Margin="4,0"/>
+                    </StackPanel>
+                </Button>
+                <TextBlock Text="{Binding CurrentDatabase.Path}" VerticalAlignment="Center" />
+            </StackPanel>
+            <Button Grid.Column="1" Command="{Binding OpenGitPage}">
+                <TextBlock>
+                    <Bold>？</Bold>
+                </TextBlock>
             </Button>
-            <ComboBox Height="auto" Width="300" IsEditable="True" IsTextSearchEnabled="True" IsReadOnly="False" ItemsSource="{Binding DataInput}" Text="{Binding InputPath, Mode=TwoWay}" AllowDrop="True">
-                <i:Interaction.Behaviors>
-                    <b:FileDropBehavior DropedCommand="{Binding DropFile}"/>
-                </i:Interaction.Behaviors>
-            </ComboBox>
-            <Button Command="{Binding LoadDatabase}">
-                <StackPanel Orientation="Horizontal">
-                    <Image Source="/Image/hardware_16xLG.png" />
-                    <TextBlock Text="読込" Margin="4,0"/>
-                </StackPanel>
-            </Button>
-            <Button Command="{Binding ExecuteQuery}" >
-                <StackPanel Orientation="Horizontal">
-                    <Image Source="/Image/base_exclamationmark_32.png" />
-                    <TextBlock Text="実行" Margin="4,0"/>
-                </StackPanel>
-            </Button>
-            <TextBlock Text="{Binding CurrentDatabase.Path}" VerticalAlignment="Center" />
-        </StackPanel>
+        </Grid>
         <Grid Grid.Row="1" HorizontalAlignment="Stretch">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="80" />
@@ -86,7 +97,7 @@
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <Canvas Height="70" Width="50" ToolTip="{Binding Path}">
-                            <Image Source="/Image/DbShape.bmp" Height="50" Width="50" Margin="0,3,0,0"/>
+                            <Image Source="/Image/DbShape.png" Height="50" Width="50" Margin="0,3,0,0"/>
                             <TextBlock Text="{Binding DisplayDbName}" Canvas.Top="50" TextAlignment="Center" Margin="-15,2,0,0" Width="80" />
                         </Canvas>
                     </DataTemplate>
@@ -133,7 +144,7 @@
                     </TreeView.ItemTemplate>
                 </TreeView>
                 <GridSplitter Grid.Row="1" Style="{StaticResource HorizontalSpliterStyle}" />
-                <ListBox Grid.Row="2"  Height="150" ItemsSource="{Binding Triggers}" >
+                <ListBox Grid.Row="2" ItemsSource="{Binding Triggers}" >
                     <ListBox.ItemTemplate>
                         <DataTemplate>
                             <StackPanel Orientation="Horizontal" ToolTip="{Binding Source}">
