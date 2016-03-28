@@ -106,7 +106,7 @@ namespace FAManagementStudio.ViewModels
 
             ExecuteQuery = new RelayCommand(async () =>
            {
-               if (!CurrentDatabase.CanExecute()) return;
+               if (CurrentDatabase == null || !CurrentDatabase.CanExecute()) return;
                Datasource.Clear();
                await TaskEx.Run(() =>
                {
