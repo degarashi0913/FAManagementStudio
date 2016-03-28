@@ -107,7 +107,6 @@
     <Compile Include="Views\Behaviors\DynamicTabControlBehavior.cs" />
     <Compile Include="Views\Behaviors\FileDropBehavior.cs" />
     <Compile Include="Views\Behaviors\ListBoxDropBehavior.cs" />
-    <Compile Include="Views\Behaviors\ListBoxWheelScrollBehavior.cs" />
     <Compile Include="Views\Behaviors\TreeViewSelectedItemBehavior.cs" />
     <Compile Include="Common\BindableBase.cs" />
     <Compile Include="Common\CommandReference.cs" />
@@ -117,6 +116,7 @@
     <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="Views\Behaviors\WindowBehavior.cs" />
     <Compile Include="Views\Converters\ConstraintsKeyToIconConverter.cs" />
+    <Compile Include="Views\Converters\GridSizeConverter.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
