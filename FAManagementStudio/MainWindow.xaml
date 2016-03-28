@@ -156,11 +156,11 @@
                 </ListBox>
             </Grid>
             <GridSplitter Grid.Column="3" Style="{StaticResource VirticalSpliterStyle}"  />
-            <Grid Grid.Column="4">
+            <Grid x:Name="ResultGrid" Grid.Column="4">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="160"/>
                     <RowDefinition Height="4"/>
-                    <RowDefinition Height="1*"/>
+                    <RowDefinition Name="ResultRow" Height="1*"/>
                 </Grid.RowDefinitions>
                 <TabControl x:Name="QueryTab" Grid.Row="0" ItemsSource="{Binding Queries}" SelectedIndex="{Binding TagSelectedIndex, Mode=TwoWay,UpdateSourceTrigger=PropertyChanged,IsAsync=False}" SelectedValue="{Binding TagSelectedValue, Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"  >
                     <i:Interaction.Behaviors>
@@ -185,7 +185,6 @@
                     <TabControl.ContentTemplate>
                         <DataTemplate>
                             <TextBox  Text="{Binding Query, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" AcceptsReturn="True" TextWrapping="Wrap" Margin="0,2" Grid.RowSpan="2" >
-
                                 <TextBox.InputBindings>
                                     <KeyBinding Key="F5" Command="{StaticResource Execute}" />
                                 </TextBox.InputBindings>
@@ -194,23 +193,30 @@
                     </TabControl.ContentTemplate>
                 </TabControl>
                 <GridSplitter Grid.Row="1" Style="{StaticResource HorizontalSpliterStyle}" />
-                <ScrollViewer Grid.Row="2" HorizontalScrollBarVisibility="Auto" >
-                    <ListBox ItemsSource="{Binding Datasource}" >
-                        <i:Interaction.Behaviors>
-                            <b:ListBoxWheelScrollBehavior/>
-                        </i:Interaction.Behaviors>
-                        <ListBox.ItemContainerStyle>
-                            <Style TargetType="{x:Type ListBoxItem}">
-                                <Setter Property="Focusable" Value="False"/>
-                            </Style>
-                        </ListBox.ItemContainerStyle>
-                        <ListBox.ItemTemplate>
-                            <DataTemplate>
-                                <toolkit:DataGrid ItemsSource="{Binding}" IsReadOnly="True" Margin="0,0,0,5" EnableColumnVirtualization="True" EnableRowVirtualization="True" VirtualizingStackPanel.IsVirtualizing="True" VirtualizingStackPanel.VirtualizationMode="Recycling" />
-                            </DataTemplate>
-                        </ListBox.ItemTemplate>
-                    </ListBox>
-                </ScrollViewer>
+                <ListBox ItemsSource="{Binding Datasource}" Grid.Row="2" ScrollViewer.VerticalScrollBarVisibility="Visible" ScrollViewer.CanContentScroll="False" >
+                    <ListBox.Resources>
+                        <c:GridHightSizeConverter x:Key="HeightConverter"/>
+                        <c:GridWidthSizeConverter x:Key="WidthConverter"/>
+                    </ListBox.Resources>
+                    <ListBox.ItemContainerStyle>
+                        <Style TargetType="{x:Type ListBoxItem}">
+                            <Setter Property="Focusable" Value="False"/>
+                        </Style>
+                    </ListBox.ItemContainerStyle>
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <toolkit:DataGrid Name="ResultView" HorizontalAlignment="Stretch"
+                                          ItemsSource="{Binding}" Margin="0,0,0,5" EnableColumnVirtualization="True" EnableRowVirtualization="True"
+                                          VirtualizingStackPanel.IsVirtualizing="True" VirtualizingStackPanel.VirtualizationMode="Recycling" 
+                                          CanUserAddRows="False" CanUserDeleteRows="False"
+                                          MaxWidth="{Binding Path=ActualWidth, ElementName=ResultGrid, Converter={StaticResource WidthConverter}}"
+                                          Width="{Binding MaxWidth, RelativeSource={RelativeSource Self}}"
+                                          MaxHeight="{Binding Path=ActualHeight, ElementName=ResultRow, Converter={StaticResource HeightConverter}}"
+                                          IsReadOnly="True">
+                            </toolkit:DataGrid>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
             </Grid>
         </Grid>
     </Grid>
