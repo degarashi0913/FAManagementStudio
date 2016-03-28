@@ -85,6 +85,18 @@
                 <ColumnDefinition Width="1*" />
             </Grid.ColumnDefinitions>
             <ListBox Grid.Column="0" HorizontalAlignment="Stretch" MinWidth="80" ItemsSource="{Binding Databases}" HorizontalContentAlignment="Center" SelectedItem="{Binding CurrentDatabase}" AllowDrop="True">
+                <ListBox.Resources>
+                    <SolidColorBrush x:Key="{x:Static SystemColors.ControlBrushKey}" Color="{DynamicResource {x:Static SystemColors.HighlightColorKey}}" />
+                </ListBox.Resources>
+                <ListBox.ItemContainerStyle>
+                    <Style>
+                        <Style.Triggers>
+                            <Trigger Property="Selector.IsSelected" Value="True">
+                                <Setter Property="TextElement.Foreground" Value="White"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </ListBox.ItemContainerStyle>
                 <i:Interaction.Behaviors>
                     <b:ListBoxDropBehavior DropedCommand="{Binding DbListDropFile}"/>
                 </i:Interaction.Behaviors>
