@@ -1,4 +1,4 @@
-﻿<Window x:Class="FAManagementStudio.MainWindow"
+﻿<Window x:Class="FAManagementStudio.Views.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -11,7 +11,7 @@
         xmlns:c="clr-namespace:FAManagementStudio.Views.Converters"
         xmlns:vm="clr-namespace:FAManagementStudio.ViewModels"
         mc:Ignorable="d"
-        Title="FAManagementStudio" Height="700" Width="1000" Icon="Image/systemicon.ico" Loaded="Window_Loaded">
+        Title="FAManagementStudio" Height="700" Width="1000" Icon="../Image/systemicon.ico" Loaded="Window_Loaded">
     <Window.DataContext>
         <vm:MainViewModel/>
     </Window.DataContext>
@@ -47,7 +47,7 @@
             <StackPanel Grid.Row="0"  Orientation="Horizontal">
                 <Button Command="{Binding CreateDatabase}">
                     <StackPanel Orientation="Horizontal">
-                        <Image Source="/Image/action_add_16xLG.png" />
+                        <Image Source="../Image/action_add_16xLG.png" />
                         <TextBlock Text="新規" Margin="4,0"/>
                     </StackPanel>
                 </Button>
@@ -58,13 +58,13 @@
                 </ComboBox>
                 <Button Command="{Binding LoadDatabase}">
                     <StackPanel Orientation="Horizontal">
-                        <Image Source="/Image/hardware_16xLG.png" />
+                        <Image Source="../Image/hardware_16xLG.png" />
                         <TextBlock Text="読込" Margin="4,0"/>
                     </StackPanel>
                 </Button>
                 <Button Command="{Binding ExecuteQuery}" ToolTip="F5 実行">
                     <StackPanel Orientation="Horizontal">
-                        <Image Source="/Image/base_exclamationmark_32.png" />
+                        <Image Source="../Image/base_exclamationmark_32.png" />
                         <TextBlock Text="実行" Margin="4,0"/>
                     </StackPanel>
                 </Button>
@@ -109,7 +109,7 @@
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <Canvas Height="70" Width="50" ToolTip="{Binding Path}">
-                            <Image Source="/Image/DbShape.png" Height="50" Width="50" Margin="0,3,0,0"/>
+                            <Image Source="../Image/DbShape.png" Height="50" Width="50" Margin="0,3,0,0"/>
                             <TextBlock Text="{Binding DisplayDbName}" Canvas.Top="50" TextAlignment="Center" Margin="-15,2,0,0" Width="80" />
                         </Canvas>
                     </DataTemplate>
