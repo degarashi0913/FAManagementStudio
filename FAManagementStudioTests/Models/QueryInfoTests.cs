@@ -124,13 +124,12 @@ namespace FAManagementStudio.Models.Tests
         {
             SetupTestDb();
             var inf = new QueryInfo();
-            inf.ExecuteQuery(GetConnectionString(), "select * from test");
-            inf.Result[0].Rows.Count.Is(0);
+            inf.ExecuteQuery(GetConnectionString(), "select * from test").ToList()[0].View.Rows.Count.Is(0);
 
-            inf.ExecuteQuery(GetConnectionString(), "insert into test(int_test, char_test) values (1, 'aaaaaaaaaa');update test set varchar_test = 'testtesttesttest' where int_test = 1;select * from test");
-            inf.Result[0].Rows[0].Is(x => ((string)x[0]).Contains("実行しました。"));
-            inf.Result[1].Rows[0].Is(x => ((string)x[0]).Contains("更新しました。"));
-            inf.Result[2].Rows.Count.Is(1);
+            var result = inf.ExecuteQuery(GetConnectionString(), "insert into test(int_test, char_test) values (1, 'aaaaaaaaaa');update test set varchar_test = 'testtesttesttest' where int_test = 1;select * from test").ToList();
+            result[0].View.Rows[0].Is(x => ((string)x[0]).Contains("実行しました。"));
+            result[1].View.Rows[0].Is(x => ((string)x[0]).Contains("更新しました。"));
+            result[2].View.Rows.Count.Is(1);
         }
     }
 }

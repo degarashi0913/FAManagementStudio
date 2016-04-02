@@ -56,7 +56,8 @@ namespace FAManagementStudio.ViewModels
 
         public ObservableCollection<DbViewModel> Databases { get; set; } = new ObservableCollection<DbViewModel>();
 
-        public ObservableCollection<DataTable> Datasource { get; set; } = new ObservableCollection<DataTable>();
+        public ObservableCollection<QueryResultViewModel> Datasource { get; } = new ObservableCollection<QueryResultViewModel> { new QueryResultViewModel("Result") };
+        public int SelectedResultIndex { get; set; } = 0;
 
         #region CommandBind
         public ICommand CreateDatabase { get; private set; }
@@ -75,6 +76,10 @@ namespace FAManagementStudio.ViewModels
         public ICommand LoadHistry { get; private set; }
         public ICommand SaveHistry { get; private set; }
         public ICommand OpenGitPage { get; private set; }
+
+        public ICommand PinCommand { get; private set; }
+
+        public ICommand PinedCommand { get; private set; }
 
         private PathHistoryRepository _history = new PathHistoryRepository();
         public ObservableCollection<string> DataInput { get { return _history.History; } }
@@ -107,17 +112,11 @@ namespace FAManagementStudio.ViewModels
             ExecuteQuery = new RelayCommand(async () =>
            {
                if (CurrentDatabase == null || !CurrentDatabase.CanExecute()) return;
-               Datasource.Clear();
+               var QueryResult = Datasource[0];
+               QueryResult.Result.Clear();
                await TaskEx.Run(() =>
                {
-                   _queryInf.ExecuteQuery(CurrentDatabase.ConnectionString, TagSelectedValue.Query);
-                   Application.Current.Dispatcher.Invoke(new Action(() =>
-                   {
-                       foreach (var table in _queryInf.Result)
-                       {
-                           Datasource.Add(table);
-                       }
-                   }));
+                   QueryResult.GetExecuteResult(_queryInf, CurrentDatabase.ConnectionString, TagSelectedValue.Query);
                });
 
            });
@@ -165,6 +164,18 @@ namespace FAManagementStudio.ViewModels
             SaveHistry = new RelayCommand(() => _history.SaveData(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)));
 
             OpenGitPage = new RelayCommand(() => System.Diagnostics.Process.Start("https://github.com/degarashi0913/FAManagementStudio"));
+
+            PinedCommand = new RelayCommand(() =>
+            {
+                Datasource[0].Header = $"Pin{Datasource.Count}";
+                Datasource.Insert(0, new QueryResultViewModel("Result"));
+                SelectedResultIndex = 0;
+                RaisePropertyChanged(nameof(SelectedResultIndex));
+            });
+            PinCommand = new RelayCommand<QueryResultViewModel>((data) =>
+            {
+                Datasource.Remove(data);
+            });
         }
 
         private string CreateSqlSentence(object treeitem, string sqlKind)
@@ -178,7 +189,8 @@ namespace FAManagementStudio.ViewModels
                 tableName = Tables.Where(x => 0 < x.ChildItems.Count(c => c == col)).First().TableName;
                 colums = new[] { col.ColumName };
             }
-            else {
+            else
+            {
                 colums = table.ChildItems.Select(x => x.ColumName).ToArray();
                 tableName = table.TableName;
             }
@@ -194,7 +206,8 @@ namespace FAManagementStudio.ViewModels
             {
                 return CreateUpdateStatement(tableName, colums);
             }
-            else {
+            else
+            {
                 return "";
             }
         }
