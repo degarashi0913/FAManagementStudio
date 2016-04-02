@@ -9,46 +9,43 @@ namespace FAManagementStudio.Models
 {
     public class QueryInfo : BindableBase
     {
-        public List<DataTable> Result = new List<DataTable>();
-        public void ExecuteQuery(string connectionString, string query)
+        public IEnumerable<QueryResult> ExecuteQuery(string connectionString, string query)
         {
-            if (string.IsNullOrEmpty(query?.Trim())) return;
-            try
+            if (string.IsNullOrEmpty(query?.Trim())) yield break;
+            using (var con = new FbConnection(connectionString))
             {
-                Result.Clear();
-                using (var con = new FbConnection(connectionString))
+                con.Open();
+                foreach (var item in AnalyzeQuery(query))
                 {
-                    con.Open();
-                    foreach (var item in AnalyzeQuery(query))
-                    {
-                        DataTable view = null;
-                        try
-                        {
-                            switch (item.Type)
-                            {
-                                case QueryType.Select:
-                                    view = ExecuteReader(con, item.Query);
-                                    break;
-                                case QueryType.Update:
-                                    view = ExecuteUpdate(con, item.Query);
-                                    break;
-                                case QueryType.Othres:
-                                    view = ExecuteNonQeuery(con, item.Query);
-                                    break;
-                            }
-                        }
-                        catch (FbException e)
-                        {
-                            view = GetScalaView("Exception", e.Message);
-                        }
-                        Result.Add(view);
-                    }
+                    yield return InnerExecuteQuery(con, item);
                 }
             }
-            catch (Exception e)
+        }
+
+        private QueryResult InnerExecuteQuery(FbConnection con, AnalyzedQuery item)
+        {
+
+            QueryResult result = null;
+            try
             {
-                Result.Add(GetScalaView("Exception", e.Message));
+                switch (item.Type)
+                {
+                    case QueryType.Select:
+                        result = ExecuteReader(con, item.Query);
+                        break;
+                    case QueryType.Update:
+                        result = ExecuteUpdate(con, item.Query);
+                        break;
+                    case QueryType.Othres:
+                        result = ExecuteNonQeuery(con, item.Query);
+                        break;
+                }
             }
+            catch (FbException e)
+            {
+                result = new QueryResult(GetScalaView("Exception", e.Message), new TimeSpan(), item.Query);
+            }
+            return result;
         }
 
         private DataTable GetScalaView(string colName, string messege)
@@ -67,7 +64,7 @@ namespace FAManagementStudio.Models
             return table;
         }
 
-        private DataTable ExecuteReader(FbConnection con, string query)
+        private QueryResult ExecuteReader(FbConnection con, string query)
         {
             using (var command = con.CreateCommand())
             {
@@ -84,7 +81,7 @@ namespace FAManagementStudio.Models
                     col.DataType = Type.GetType(schema.Rows[i]["DataType"].ToString());
                     table.Columns.Add(col);
                 }
-
+                var startTime = DateTime.Now;
                 while (reader.Read())
                 {
                     var row = table.NewRow();
@@ -94,31 +91,39 @@ namespace FAManagementStudio.Models
                     }
                     table.Rows.Add(row);
                 }
-                return table;
+                var executeTime = DateTime.Now - startTime;
+
+                return new QueryResult(table, executeTime, query, table.Rows.Count);
             }
         }
 
-        private DataTable ExecuteUpdate(FbConnection con, string query)
+        private QueryResult ExecuteUpdate(FbConnection con, string query)
         {
             using (var command = con.CreateCommand())
             {
                 command.CommandText = query;
+                var startTime = DateTime.Now;
                 var res = command.BeginExecuteNonQuery(null, null);
                 var num = command.EndExecuteNonQuery(res);
 
-                return GetScalaView("Message", $"{num}行更新しました。");
+                var executeTime = DateTime.Now - startTime;
+
+                return new QueryResult(GetScalaView("Message", $"{num}行更新しました。"), executeTime, query);
             }
         }
 
-        private DataTable ExecuteNonQeuery(FbConnection con, string query)
+        private QueryResult ExecuteNonQeuery(FbConnection con, string query)
         {
             using (var command = con.CreateCommand())
             {
                 command.CommandText = query;
+                var startTime = DateTime.Now;
                 var res = command.BeginExecuteNonQuery(null, null);
                 var num = command.EndExecuteNonQuery(res);
 
-                return GetScalaView("Message", $"実行しました。");
+                var executeTime = DateTime.Now - startTime;
+
+                return new QueryResult(GetScalaView("Message", $"実行しました。"), executeTime, query);
             }
         }
 
@@ -241,7 +246,8 @@ namespace FAManagementStudio.Models
                             stIdx = edIdx + 1;
                             flg = false;
                         }
-                        else {
+                        else
+                        {
                             stIdx = edIdx + 1;
                         }
                         break;
@@ -253,7 +259,8 @@ namespace FAManagementStudio.Models
                             stIdx = edIdx + 1;
                             flg = false;
                         }
-                        else {
+                        else
+                        {
                             stIdx = edIdx + 1;
                         }
                         break;

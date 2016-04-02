@@ -10,6 +10,7 @@
         xmlns:b="clr-namespace:FAManagementStudio.Views.Behaviors"
         xmlns:c="clr-namespace:FAManagementStudio.Views.Converters"
         xmlns:vm="clr-namespace:FAManagementStudio.ViewModels"
+        xmlns:controls="clr-namespace:FAManagementStudio.Controls;assembly=FAManagementStudio.Controls"
         mc:Ignorable="d"
         Title="FAManagementStudio" Height="700" Width="1000" Icon="../Image/systemicon.ico" Loaded="Window_Loaded">
     <Window.DataContext>
@@ -205,30 +206,47 @@
                     </TabControl.ContentTemplate>
                 </TabControl>
                 <GridSplitter Grid.Row="1" Style="{StaticResource HorizontalSpliterStyle}" />
-                <ListBox ItemsSource="{Binding Datasource}" Grid.Row="2" ScrollViewer.VerticalScrollBarVisibility="Visible" ScrollViewer.CanContentScroll="False" >
-                    <ListBox.Resources>
-                        <c:GridHightSizeConverter x:Key="HeightConverter"/>
-                        <c:GridWidthSizeConverter x:Key="WidthConverter"/>
-                    </ListBox.Resources>
-                    <ListBox.ItemContainerStyle>
-                        <Style TargetType="{x:Type ListBoxItem}">
-                            <Setter Property="Focusable" Value="False"/>
-                        </Style>
-                    </ListBox.ItemContainerStyle>
-                    <ListBox.ItemTemplate>
+                <TabControl Grid.Row="2" ItemsSource="{Binding Datasource}"  SelectedIndex="{Binding SelectedResultIndex}" >
+                    <TabControl.ItemTemplate>
                         <DataTemplate>
-                            <toolkit:DataGrid Name="ResultView" HorizontalAlignment="Stretch"
-                                          ItemsSource="{Binding}" Margin="0,0,0,5" EnableColumnVirtualization="True" EnableRowVirtualization="True"
-                                          VirtualizingStackPanel.IsVirtualizing="True" VirtualizingStackPanel.VirtualizationMode="Recycling" 
-                                          CanUserAddRows="False" CanUserDeleteRows="False"
-                                          MaxWidth="{Binding Path=ActualWidth, ElementName=ResultGrid, Converter={StaticResource WidthConverter}}"
-                                          Width="{Binding MaxWidth, RelativeSource={RelativeSource Self}}"
-                                          MaxHeight="{Binding Path=ActualHeight, ElementName=ResultRow, Converter={StaticResource HeightConverter}}"
-                                          IsReadOnly="True">
-                            </toolkit:DataGrid>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="{Binding Header}" />
+                                <controls:PinButton Margin="3,0,0,0" PinCommand="{Binding DataContext.PinCommand, RelativeSource={RelativeSource AncestorType=Window}}" PinedCommand="{Binding DataContext.PinedCommand, RelativeSource={RelativeSource AncestorType=Window}}"/>
+                            </StackPanel>
                         </DataTemplate>
-                    </ListBox.ItemTemplate>
-                </ListBox>
+                    </TabControl.ItemTemplate>
+                    <TabControl.ContentTemplate>
+                        <DataTemplate>
+                            <ListBox ItemsSource="{Binding Result}" ScrollViewer.VerticalScrollBarVisibility="Visible" ScrollViewer.CanContentScroll="False" >
+                                <ListBox.Resources>
+                                    <c:GridHightSizeConverter x:Key="HeightConverter"/>
+                                    <c:GridWidthSizeConverter x:Key="WidthConverter"/>
+                                </ListBox.Resources>
+                                <ListBox.ItemContainerStyle>
+                                    <Style TargetType="{x:Type ListBoxItem}">
+                                        <Setter Property="Focusable" Value="False"/>
+                                    </Style>
+                                </ListBox.ItemContainerStyle>
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Vertical" Margin="0,0,0,5">
+                                            <toolkit:DataGrid Name="ResultView" HorizontalAlignment="Stretch"
+                                                ItemsSource="{Binding View}" Margin="0,0,0,0" EnableColumnVirtualization="True" EnableRowVirtualization="True"
+                                                VirtualizingStackPanel.IsVirtualizing="True" VirtualizingStackPanel.VirtualizationMode="Recycling" 
+                                                CanUserAddRows="False" CanUserDeleteRows="False"
+                                                MaxWidth="{Binding Path=ActualWidth, ElementName=ResultGrid, Converter={StaticResource WidthConverter}}"
+                                                Width="{Binding MaxWidth, RelativeSource={RelativeSource Self}}"
+                                                MaxHeight="{Binding Path=ActualHeight, ElementName=ResultRow, Converter={StaticResource HeightConverter}}"
+                                                IsReadOnly="True">
+                                            </toolkit:DataGrid>
+                                            <TextBlock Text="{Binding AdditionalInfo}" TextDecorations="Underline" TextWrapping="Wrap" MaxWidth="{Binding MaxWidth, ElementName=ResultView}"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                        </DataTemplate>
+                    </TabControl.ContentTemplate>
+                </TabControl>
             </Grid>
         </Grid>
     </Grid>
