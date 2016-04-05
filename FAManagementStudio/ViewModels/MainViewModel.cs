@@ -98,13 +98,15 @@ namespace FAManagementStudio.ViewModels
                 _history.DataAdd(this.InputPath);
             });
 
-            LoadDatabase = new RelayCommand(() =>
+            LoadDatabase = new RelayCommand(async () =>
             {
                 if (string.IsNullOrEmpty(this.InputPath)) return;
                 if (!File.Exists(this.InputPath)) return;
-
                 var db = new DbViewModel();
-                db.LoadDatabase(this.InputPath);
+                await TaskEx.Run(() =>
+                {
+                    db.LoadDatabase(this.InputPath);
+                });
                 Databases.Add(db);
                 _history.DataAdd(this.InputPath);
             });
