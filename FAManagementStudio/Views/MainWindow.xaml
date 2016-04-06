@@ -11,6 +11,7 @@
         xmlns:c="clr-namespace:FAManagementStudio.Views.Converters"
         xmlns:vm="clr-namespace:FAManagementStudio.ViewModels"
         xmlns:controls="clr-namespace:FAManagementStudio.Controls;assembly=FAManagementStudio.Controls"
+        xmlns:core="clr-namespace:System;assembly=mscorlib"
         mc:Ignorable="d"
         Title="FAManagementStudio" Height="700" Width="1000" Icon="../Image/systemicon.ico" Loaded="Window_Loaded">
     <Window.DataContext>
@@ -171,7 +172,7 @@
             <GridSplitter Grid.Column="3" Style="{StaticResource VirticalSpliterStyle}"  />
             <Grid x:Name="ResultGrid" Grid.Column="4">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="160"/>
+                    <RowDefinition Height="150"/>
                     <RowDefinition Height="4"/>
                     <RowDefinition Name="ResultRow" Height="1*"/>
                 </Grid.RowDefinitions>
@@ -238,8 +239,22 @@
                                                 Width="{Binding MaxWidth, RelativeSource={RelativeSource Self}}"
                                                 MaxHeight="{Binding Path=ActualHeight, ElementName=ResultRow, Converter={StaticResource HeightConverter}}"
                                                 IsReadOnly="True">
+                                                <toolkit:DataGrid.ContextMenu>
+                                                    <ContextMenu>
+                                                        <MenuItem Header="CSV(ヘッダ含)" Command="{Binding OutputCsv}" >
+                                                            <MenuItem.CommandParameter>
+                                                                <core:Boolean>True</core:Boolean>
+                                                            </MenuItem.CommandParameter>
+                                                        </MenuItem>
+                                                        <MenuItem Header="CSV(ヘッダ無)" Command="{Binding OutputCsv}" >
+                                                            <MenuItem.CommandParameter>
+                                                                <core:Boolean>False</core:Boolean>
+                                                            </MenuItem.CommandParameter>
+                                                        </MenuItem>
+                                                    </ContextMenu>
+                                                </toolkit:DataGrid.ContextMenu>
                                             </toolkit:DataGrid>
-                                            <TextBlock Text="{Binding AdditionalInfo}" TextDecorations="Underline" TextWrapping="Wrap" MaxWidth="{Binding MaxWidth, ElementName=ResultView}" Foreground="Gray"/>
+                                            <TextBlock Text="{Binding AdditionalInfo}" TextDecorations="Underline" TextWrapping="Wrap" MaxWidth="{Binding MaxWidth, ElementName=ResultView}" Foreground="Gray" Margin="5,0,0,0"/>
                                         </StackPanel>
                                     </DataTemplate>
                                 </ListBox.ItemTemplate>
