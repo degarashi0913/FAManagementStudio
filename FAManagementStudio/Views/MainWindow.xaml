@@ -136,6 +136,10 @@
                             <MenuItem Header="SELECT *" Command="{Binding SetSqlTemplate}" CommandParameter="select" />
                             <MenuItem Header="INSERT *" Command="{Binding SetSqlTemplate}" CommandParameter="insert" />
                             <MenuItem Header="UPDATE *" Command="{Binding SetSqlTemplate}" CommandParameter="update" />
+                            <MenuItem Header="データから作成">
+                                <MenuItem Header="CREATE TABLE(仮)" Command="{Binding SetsqlDataTemplate}" CommandParameter="table"/>
+                                <MenuItem Header="INSERT(仮)" Command="{Binding SetsqlDataTemplate}" CommandParameter="insert"/>
+                            </MenuItem>
                         </ContextMenu>
                     </TreeView.ContextMenu>
                     <TreeView.ItemContainerStyle>

@@ -2,7 +2,9 @@
 using FAManagementStudio.Models;
 using FirebirdSql.Data.FirebirdClient;
 using System.Collections.Generic;
+using System.Text;
 using System.Windows.Data;
+using System.Linq;
 
 namespace FAManagementStudio.ViewModels
 {
@@ -94,6 +96,24 @@ public class TableViewModel : BindableBase
     public string TableName { get { return _inf.TableName; } }
     public string DisplayName { get { return _inf.TableName; } }
     public List<ColumViewMoodel> ChildItems { get; } = new List<ColumViewMoodel>();
+
+    public string GetDdl()
+    {
+        var colums = ChildItems.Select(x =>
+        {
+            var sql = $"{x.ColumName} {x.ColumType}";
+            if (x.KeyKind == ConstraintsKind.Primary)
+            {
+                sql += " primary key";
+            }
+            else if (x.KeyKind == ConstraintsKind.NotNull)
+            {
+                sql += " not null";
+            }
+            return sql.ToUpper();
+        });
+        return $"CREATE TABLE {TableName.ToUpper()} ({ string.Join(", ", colums.ToArray())})";
+    }
 }
 
 public class ColumViewMoodel : BindableBase
@@ -105,7 +125,8 @@ public class ColumViewMoodel : BindableBase
     }
     public string ColumName { get { return _inf.ColumName; } }
     public string DisplayName { get { return $"{_inf.ColumName} ({_inf.ColumType})"; } }
-    public ConstraintsKeyKind KeyKind { get { return _inf.KeyKind; } }
+    public string ColumType { get { return _inf.ColumType; } }
+    public ConstraintsKind KeyKind { get { return _inf.KeyKind; } }
 }
 
 public class TriggerViewModel : BindableBase

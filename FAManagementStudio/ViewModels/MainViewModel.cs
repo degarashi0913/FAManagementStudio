@@ -68,6 +68,7 @@ namespace FAManagementStudio.ViewModels
         public ICommand DbListDropFile { get; private set; }
 
         public ICommand SetSqlTemplate { get; private set; }
+        public ICommand SetSqlDataTemplate { get; private set; }
         public ICommand ReloadDatabase { get; private set; }
         public ICommand ShutdownDatabase { get; private set; }
         public ICommand AddTab { get; private set; }
@@ -174,9 +175,22 @@ namespace FAManagementStudio.ViewModels
                 SelectedResultIndex = 0;
                 RaisePropertyChanged(nameof(SelectedResultIndex));
             });
+
             PinCommand = new RelayCommand<QueryResultViewModel>((data) =>
             {
                 Datasource.Remove(data);
+            });
+
+            SetSqlDataTemplate = new RelayCommand<string>((s) =>
+            {
+                if (s == "table")
+                {
+
+                }
+                else
+                {
+
+                }
             });
         }
 
