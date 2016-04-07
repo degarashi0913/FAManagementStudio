@@ -241,12 +241,12 @@
                                                 IsReadOnly="True">
                                                 <toolkit:DataGrid.ContextMenu>
                                                     <ContextMenu>
-                                                        <MenuItem Header="CSV(ヘッダ含)" Command="{Binding OutputCsv}" >
+                                                        <MenuItem Header="結果を保存 CSV(ヘッダ含)" Command="{Binding OutputCsv}" >
                                                             <MenuItem.CommandParameter>
                                                                 <core:Boolean>True</core:Boolean>
                                                             </MenuItem.CommandParameter>
                                                         </MenuItem>
-                                                        <MenuItem Header="CSV(ヘッダ無)" Command="{Binding OutputCsv}" >
+                                                        <MenuItem Header="結果を保存 CSV(ヘッダ無)" Command="{Binding OutputCsv}" >
                                                             <MenuItem.CommandParameter>
                                                                 <core:Boolean>False</core:Boolean>
                                                             </MenuItem.CommandParameter>

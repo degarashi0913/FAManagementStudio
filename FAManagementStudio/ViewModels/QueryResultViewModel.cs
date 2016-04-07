@@ -65,6 +65,8 @@ namespace FAManagementStudio.ViewModels
                 using (var dialog = new SaveFileDialog())
                 {
                     dialog.FileName = "output.csv";
+                    dialog.DefaultExt = "csv";
+                    dialog.Filter = "csv files (*.csv)|*.csv|すべてのファイル(*.*)|*.*";
                     if (dialog.ShowDialog() != DialogResult.OK) return;
                     path = dialog.FileName;
                 }
@@ -80,8 +82,15 @@ namespace FAManagementStudio.ViewModels
                 {
                     sb.AppendLine(row);
                 }
-
-                File.WriteAllText(path, sb.ToString(), Encoding.UTF8);
+                try
+                {
+                    File.WriteAllText(path, sb.ToString(), Encoding.UTF8);
+                }
+                catch (Exception ex)
+                {
+                    //throwしても拾う先が無いので握りつぶす
+                    MessageBox.Show(ex.Message, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             });
         }
 
