@@ -136,9 +136,9 @@
                             <MenuItem Header="SELECT *" Command="{Binding SetSqlTemplate}" CommandParameter="select" />
                             <MenuItem Header="INSERT *" Command="{Binding SetSqlTemplate}" CommandParameter="insert" />
                             <MenuItem Header="UPDATE *" Command="{Binding SetSqlTemplate}" CommandParameter="update" />
-                            <MenuItem Header="データから作成">
-                                <MenuItem Header="CREATE TABLE(仮)" Command="{Binding SetsqlDataTemplate}" CommandParameter="table"/>
-                                <MenuItem Header="INSERT(仮)" Command="{Binding SetsqlDataTemplate}" CommandParameter="insert"/>
+                            <MenuItem Header="Reverse DB(開発中)">
+                                <MenuItem Header="CREATE TABLE(仮)" Command="{Binding SetSqlDataTemplate}" CommandParameter="table"/>
+                                <MenuItem Header="INSERT(仮)" Command="{Binding SetSqlDataTemplate}" CommandParameter="insert"/>
                             </MenuItem>
                         </ContextMenu>
                     </TreeView.ContextMenu>
@@ -202,7 +202,7 @@
                     </TabControl.ItemTemplate>
                     <TabControl.ContentTemplate>
                         <DataTemplate>
-                            <TextBox  Text="{Binding Query, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" AcceptsReturn="True" TextWrapping="Wrap" Margin="0,2" Grid.RowSpan="2" >
+                            <TextBox  Text="{Binding Query, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" AcceptsReturn="True" TextWrapping="Wrap" Margin="0,2" Grid.RowSpan="2" VerticalScrollBarVisibility="Auto">
                                 <TextBox.InputBindings>
                                     <KeyBinding Key="F5" Command="{StaticResource Execute}" />
                                 </TextBox.InputBindings>
