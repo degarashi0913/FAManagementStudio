@@ -30,19 +30,6 @@ namespace FAManagementStudio.Models
                 }
             }
         }
-
-        public IEnumerable<TriggerInfo> GetTrigger(FbConnection con)
-        {
-            using (var command = con.CreateCommand())
-            {
-                command.CommandText = @"select rdb$trigger_name Name, rdb$relation_name TableName, rdb$trigger_source Source from rdb$triggers where rdb$system_flag = 0";
-                var reader = command.ExecuteReader();
-                while (reader.Read())
-                {
-                    yield return new TriggerInfo((string)reader["Name"], (string)reader["TableName"], (string)reader["Source"]);
-                }
-            }
-        }
     }
 
     public class TriggerInfo
@@ -56,6 +43,14 @@ namespace FAManagementStudio.Models
         public string Name { get; set; }
         public string Source { get; set; }
         public string TableName { get; set; }
+    }
+
+    public class IndexInfo
+    {
+        public IndexInfo() { }
+        public string Name { get; set; }
+        public List<string> FieldNames { get; set; }
+
     }
 
     public class TableInfo
@@ -94,7 +89,7 @@ namespace FAManagementStudio.Models
             }
         }
 
-        public ConstraintsKind GetConstraint(string name)
+        private ConstraintsKind GetConstraint(string name)
         {
             if (string.IsNullOrEmpty(name)) return ConstraintsKind.None;
             if (name == "PRIMARY KEY")
@@ -119,6 +114,48 @@ namespace FAManagementStudio.Models
             }
             return ConstraintsKind.None;
         }
+
+        public IEnumerable<TriggerInfo> GetTrigger(FbConnection con)
+        {
+            using (var command = con.CreateCommand())
+            {
+                command.CommandText = $"select rdb$trigger_name Name, rdb$relation_name TableName, rdb$trigger_source Source from rdb$triggers where rdb$relation_name = '{this.TableName}' and rdb$system_flag = 0";
+                var reader = command.ExecuteReader();
+                while (reader.Read())
+                {
+                    yield return new TriggerInfo((string)reader["Name"], (string)reader["TableName"], (string)reader["Source"]);
+                }
+            }
+        }
+
+        public IEnumerable<IndexInfo> GetIndex(FbConnection con)
+        {
+            using (var command = con.CreateCommand())
+            {
+                command.CommandText = @"select idx.rdb$index_name Name, seg.rdb$field_name FiledName from rdb$indices idx left outer join rdb$index_segments seg on idx.rdb$index_name = seg.rdb$index_name where rdb$relation_name = '{this.TableName}' and idx.rdb$system_flag = 0 order by seg.rdb$field_position";
+                var reader = command.ExecuteReader();
+                var tmpName = "";
+                IndexInfo tmpInf = null;
+                while (reader.Read())
+                {
+                    if (tmpName == (string)reader["Name"])
+                    {
+                        tmpInf.FieldNames.Add((string)reader["FiledName"]);
+                    }
+                    else
+                    {
+                        if (tmpInf != null)
+                        {
+                            yield return tmpInf;
+                        }
+                        tmpInf = new IndexInfo();
+                        tmpInf.Name = (string)reader["Name"];
+                        tmpInf.FieldNames.Add((string)reader["FiledName"]);
+                    }
+                }
+                yield return tmpInf;
+            }
+        }
     }
 
 
@@ -136,6 +173,7 @@ namespace FAManagementStudio.Models
             ColumType = GetTypeFromFirebirdType(type) + (size.HasValue ? $"({size.ToString()})" : "");
             KeyKind = keyKind;
         }
+
         public string GetTypeFromFirebirdType(int i)
         {
             switch (i)

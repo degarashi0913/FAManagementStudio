@@ -100,17 +100,17 @@ namespace FAManagementStudio.ViewModels
                 _history.DataAdd(this.InputPath);
             });
 
-            LoadDatabase = new RelayCommand(async () =>
+            LoadDatabase = new RelayCommand<string>(async (path) =>
             {
-                if (string.IsNullOrEmpty(this.InputPath)) return;
-                if (!File.Exists(this.InputPath)) return;
+                if (string.IsNullOrEmpty(path)) return;
+                if (!File.Exists(path)) return;
                 var db = new DbViewModel();
                 await TaskEx.Run(() =>
                 {
-                    db.LoadDatabase(this.InputPath);
+                    db.LoadDatabase(path);
                 });
                 Databases.Add(db);
-                _history.DataAdd(this.InputPath);
+                _history.DataAdd(path);
             });
 
             ExecuteQuery = new RelayCommand(async () =>
@@ -133,8 +133,7 @@ namespace FAManagementStudio.ViewModels
 
             DbListDropFile = new RelayCommand<string>((string path) =>
             {
-                InputPath = path;
-                LoadDatabase.Execute(null);
+                LoadDatabase.Execute(path);
             });
 
             SetSqlTemplate = new RelayCommand<string>((string sqlKind) =>
@@ -192,7 +191,7 @@ namespace FAManagementStudio.ViewModels
                 }
                 else if (s == "insert")
                 {
-                    var colums = table.ChildItems.Select(x => x.ColumName).ToArray();
+                    var colums = table.Colums.Select(x => x.ColumName).ToArray();
                     var escapedColumsStr = string.Join(", ", colums.Select(x => EscapeKeyWord(x)).ToArray());
 
                     var insertTemplate = $"insert into {table.TableName} ({escapedColumsStr})";
@@ -223,7 +222,7 @@ namespace FAManagementStudio.ViewModels
 
             if (table == null)
             {
-                return Tables.Where(x => 0 < x.ChildItems.Count(c => c == (ColumViewMoodel)treeitem)).First();
+                return Tables.Where(x => 0 < x.Colums.Count(c => c == (ColumViewMoodel)treeitem)).First();
             }
             return table;
         }
@@ -236,7 +235,7 @@ namespace FAManagementStudio.ViewModels
 
             if (col == null)
             {
-                colums = table.ChildItems.Select(x => x.ColumName).ToArray();
+                colums = table.Colums.Select(x => x.ColumName).ToArray();
             }
             else
             {
