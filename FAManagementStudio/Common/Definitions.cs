@@ -5,5 +5,5 @@ using System.Text;
 
 namespace FAManagementStudio.Common
 {
-    public enum ConstraintsKeyKind { None, Primary, Foreign };
+    public enum ConstraintsKind { None, Primary, Foreign, Unique, Check, NotNull };
 }

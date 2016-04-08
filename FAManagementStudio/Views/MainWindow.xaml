@@ -11,12 +11,11 @@
         xmlns:c="clr-namespace:FAManagementStudio.Views.Converters"
         xmlns:vm="clr-namespace:FAManagementStudio.ViewModels"
         xmlns:controls="clr-namespace:FAManagementStudio.Controls;assembly=FAManagementStudio.Controls"
+        xmlns:core="clr-namespace:System;assembly=mscorlib"
         mc:Ignorable="d"
         Title="FAManagementStudio" Height="700" Width="1000" Icon="../Image/systemicon.ico" Loaded="Window_Loaded">
-    <Window.DataContext>
-        <vm:MainViewModel/>
-    </Window.DataContext>
     <Window.Resources>
+        <vm:MainViewModel x:Key="viewModel"/>
         <Style x:Key="VirticalSpliterStyle" TargetType="GridSplitter">
             <Setter Property="Width" Value="2"/>
             <Setter Property="HorizontalAlignment" Value="Center"/>
@@ -30,7 +29,9 @@
             <Setter Property="ResizeDirection" Value="Rows"/>
         </Style>
     </Window.Resources>
-
+    <Window.DataContext>
+        <StaticResourceExtension ResourceKey="viewModel" />
+    </Window.DataContext>
     <i:Interaction.Behaviors>
         <b:WindowBehavior LoadedCommand="{Binding LoadHistry}" ClosedCommand="{Binding SaveHistry}"/>
     </i:Interaction.Behaviors>
@@ -52,12 +53,12 @@
                         <TextBlock Text="新規" Margin="4,0"/>
                     </StackPanel>
                 </Button>
-                <ComboBox Height="auto" Width="300" IsEditable="True" IsTextSearchEnabled="True" IsReadOnly="False" ItemsSource="{Binding DataInput}" Text="{Binding InputPath, Mode=TwoWay}" AllowDrop="True">
+                <ComboBox Name="DbPathComb" Height="auto" Width="300" IsEditable="True" IsTextSearchEnabled="True" IsReadOnly="False" ItemsSource="{Binding DataInput}" Text="{Binding InputPath, Mode=TwoWay}" AllowDrop="True">
                     <i:Interaction.Behaviors>
                         <b:FileDropBehavior DropedCommand="{Binding DropFile}"/>
                     </i:Interaction.Behaviors>
                 </ComboBox>
-                <Button Command="{Binding LoadDatabase}">
+                <Button Command="{Binding LoadDatabase}" CommandParameter="{Binding ElementName=DbPathComb, Path=Text }">
                     <StackPanel Orientation="Horizontal">
                         <Image Source="../Image/hardware_16xLG.png" />
                         <TextBlock Text="読込" Margin="4,0"/>
@@ -85,7 +86,7 @@
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="1*" />
             </Grid.ColumnDefinitions>
-            <ListBox Grid.Column="0" HorizontalAlignment="Stretch" MinWidth="80" ItemsSource="{Binding Databases}" HorizontalContentAlignment="Center" SelectedItem="{Binding CurrentDatabase}" AllowDrop="True">
+            <ListBox Grid.Column="0" HorizontalAlignment="Stretch" MinWidth="80" ItemsSource="{Binding Databases}" HorizontalContentAlignment="Center" SelectedItem="{Binding CurrentDatabase}" AllowDrop="True" ToolTip="データベースファイルをドロップ" >
                 <ListBox.Resources>
                     <SolidColorBrush x:Key="{x:Static SystemColors.ControlBrushKey}" Color="{DynamicResource {x:Static SystemColors.HighlightColorKey}}" />
                 </ListBox.Resources>
@@ -101,15 +102,15 @@
                 <i:Interaction.Behaviors>
                     <b:ListBoxDropBehavior DropedCommand="{Binding DbListDropFile}"/>
                 </i:Interaction.Behaviors>
-                <ListBox.ContextMenu>
-                    <ContextMenu>
-                        <MenuItem Header="再読み込み" Command="{Binding ReloadDatabase}"/>
-                        <MenuItem Header="切断" Command="{Binding ShutdownDatabase}"/>
-                    </ContextMenu>
-                </ListBox.ContextMenu>
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <Canvas Height="70" Width="50" ToolTip="{Binding Path}">
+                            <Canvas.ContextMenu>
+                                <ContextMenu>
+                                    <MenuItem Header="再読み込み" Command="{Binding ReloadDatabase, Source={StaticResource viewModel}}"/>
+                                    <MenuItem Header="切断" Command="{Binding ShutdownDatabase, Source={StaticResource viewModel}}"/>
+                                </ContextMenu>
+                            </Canvas.ContextMenu>
                             <Image Source="../Image/DbShape.png" Height="50" Width="50" Margin="0,3,0,0"/>
                             <TextBlock Text="{Binding DisplayDbName}" Canvas.Top="50" TextAlignment="Center" Margin="-15,2,0,0" Width="80" />
                         </Canvas>
@@ -129,25 +130,27 @@
                     </i:Interaction.Behaviors>
                     <TreeView.Resources>
                         <c:ConstraintsKeyToIconConverter x:Key="KeyConverter"/>
-                    </TreeView.Resources>
-                    <TreeView.ContextMenu>
-                        <ContextMenu>
-                            <MenuItem Header="SELECT *" Command="{Binding SetSqlTemplate}" CommandParameter="select" />
-                            <MenuItem Header="INSERT *" Command="{Binding SetSqlTemplate}" CommandParameter="insert" />
-                            <MenuItem Header="UPDATE *" Command="{Binding SetSqlTemplate}" CommandParameter="update" />
+                        <ContextMenu x:Key="contextMenu">
+                            <MenuItem Header="SELECT *" Command="{Binding SetSqlTemplate, Source={StaticResource viewModel}}" CommandParameter="select" />
+                            <MenuItem Header="INSERT *" Command="{Binding SetSqlTemplate, Source={StaticResource viewModel}}" CommandParameter="insert" />
+                            <MenuItem Header="UPDATE *" Command="{Binding SetSqlTemplate, Source={StaticResource viewModel}}" CommandParameter="update" />
+                            <MenuItem Header="Reverse DB(開発中)">
+                                <MenuItem Header="CREATE TABLE(仮)" Command="{Binding SetSqlDataTemplate, Source={StaticResource viewModel}}" CommandParameter="table"/>
+                                <MenuItem Header="INSERT(仮)" Command="{Binding SetSqlDataTemplate, Source={StaticResource viewModel}}" CommandParameter="insert"/>
+                            </MenuItem>
                         </ContextMenu>
-                    </TreeView.ContextMenu>
+                    </TreeView.Resources>
                     <TreeView.ItemContainerStyle>
                         <Style TargetType="{x:Type TreeViewItem}">
                             <EventSetter Event="TreeViewItem.MouseRightButtonDown" Handler="TreeViewItem_MouseRightButtonDown"/>
                         </Style>
                     </TreeView.ItemContainerStyle>
-                    <TreeView.ItemTemplate>
-                        <HierarchicalDataTemplate ItemsSource="{Binding ChildItems}">
-                            <TextBlock Text="{Binding Path=DisplayName}" />
+                    <TreeView.ItemTemplate >
+                        <HierarchicalDataTemplate ItemsSource="{Binding Colums}">
+                            <TextBlock Text="{Binding Path=DisplayName}" ContextMenu="{StaticResource contextMenu}"/>
                             <HierarchicalDataTemplate.ItemTemplate>
                                 <HierarchicalDataTemplate >
-                                    <StackPanel Orientation="Horizontal" Margin="-11,0,0,0">
+                                    <StackPanel Orientation="Horizontal" Margin="-11,0,0,0" ContextMenu="{StaticResource contextMenu}">
                                         <Image Source="{Binding KeyKind, Converter={StaticResource KeyConverter}}" Width="11" Stretch="Uniform"/>
                                         <TextBlock Text="{Binding Path=DisplayName}" />
                                     </StackPanel>
@@ -171,7 +174,7 @@
             <GridSplitter Grid.Column="3" Style="{StaticResource VirticalSpliterStyle}"  />
             <Grid x:Name="ResultGrid" Grid.Column="4">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="160"/>
+                    <RowDefinition Height="150"/>
                     <RowDefinition Height="4"/>
                     <RowDefinition Name="ResultRow" Height="1*"/>
                 </Grid.RowDefinitions>
@@ -197,7 +200,7 @@
                     </TabControl.ItemTemplate>
                     <TabControl.ContentTemplate>
                         <DataTemplate>
-                            <TextBox  Text="{Binding Query, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" AcceptsReturn="True" TextWrapping="Wrap" Margin="0,2" Grid.RowSpan="2" >
+                            <TextBox  Text="{Binding Query, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" AcceptsReturn="True" TextWrapping="Wrap" Margin="0,2" Grid.RowSpan="2" VerticalScrollBarVisibility="Auto">
                                 <TextBox.InputBindings>
                                     <KeyBinding Key="F5" Command="{StaticResource Execute}" />
                                 </TextBox.InputBindings>
@@ -217,7 +220,7 @@
                     </TabControl.ItemTemplate>
                     <TabControl.ContentTemplate>
                         <DataTemplate>
-                            <ListBox ItemsSource="{Binding Result}" ScrollViewer.VerticalScrollBarVisibility="Visible" ScrollViewer.CanContentScroll="False" >
+                            <ListBox ItemsSource="{Binding Result}" ScrollViewer.VerticalScrollBarVisibility="Visible" ScrollViewer.CanContentScroll="False">
                                 <ListBox.Resources>
                                     <c:GridHightSizeConverter x:Key="HeightConverter"/>
                                     <c:GridWidthSizeConverter x:Key="WidthConverter"/>
@@ -229,7 +232,7 @@
                                 </ListBox.ItemContainerStyle>
                                 <ListBox.ItemTemplate>
                                     <DataTemplate>
-                                        <StackPanel Orientation="Vertical" Margin="0,0,0,5">
+                                        <StackPanel Orientation="Vertical" Margin="0,0,0,10">
                                             <toolkit:DataGrid Name="ResultView" HorizontalAlignment="Stretch"
                                                 ItemsSource="{Binding View}" Margin="0,0,0,0" EnableColumnVirtualization="True" EnableRowVirtualization="True"
                                                 VirtualizingStackPanel.IsVirtualizing="True" VirtualizingStackPanel.VirtualizationMode="Recycling" 
@@ -238,8 +241,22 @@
                                                 Width="{Binding MaxWidth, RelativeSource={RelativeSource Self}}"
                                                 MaxHeight="{Binding Path=ActualHeight, ElementName=ResultRow, Converter={StaticResource HeightConverter}}"
                                                 IsReadOnly="True">
+                                                <toolkit:DataGrid.ContextMenu>
+                                                    <ContextMenu>
+                                                        <MenuItem Header="結果を保存 CSV(ヘッダ含)" Command="{Binding OutputCsv}" >
+                                                            <MenuItem.CommandParameter>
+                                                                <core:Boolean>True</core:Boolean>
+                                                            </MenuItem.CommandParameter>
+                                                        </MenuItem>
+                                                        <MenuItem Header="結果を保存 CSV(ヘッダ無)" Command="{Binding OutputCsv}" >
+                                                            <MenuItem.CommandParameter>
+                                                                <core:Boolean>False</core:Boolean>
+                                                            </MenuItem.CommandParameter>
+                                                        </MenuItem>
+                                                    </ContextMenu>
+                                                </toolkit:DataGrid.ContextMenu>
                                             </toolkit:DataGrid>
-                                            <TextBlock Text="{Binding AdditionalInfo}" TextDecorations="Underline" TextWrapping="Wrap" MaxWidth="{Binding MaxWidth, ElementName=ResultView}"/>
+                                            <TextBlock Text="{Binding AdditionalInfo}" TextDecorations="Underline" TextWrapping="Wrap" MaxWidth="{Binding MaxWidth, ElementName=ResultView}" Foreground="Gray" Margin="5,0,0,0"/>
                                         </StackPanel>
                                     </DataTemplate>
                                 </ListBox.ItemTemplate>

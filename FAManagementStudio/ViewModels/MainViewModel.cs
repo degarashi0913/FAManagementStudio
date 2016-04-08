@@ -7,6 +7,7 @@ using System.Data;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
@@ -68,6 +69,7 @@ namespace FAManagementStudio.ViewModels
         public ICommand DbListDropFile { get; private set; }
 
         public ICommand SetSqlTemplate { get; private set; }
+        public ICommand SetSqlDataTemplate { get; private set; }
         public ICommand ReloadDatabase { get; private set; }
         public ICommand ShutdownDatabase { get; private set; }
         public ICommand AddTab { get; private set; }
@@ -98,15 +100,17 @@ namespace FAManagementStudio.ViewModels
                 _history.DataAdd(this.InputPath);
             });
 
-            LoadDatabase = new RelayCommand(() =>
+            LoadDatabase = new RelayCommand<string>(async (path) =>
             {
-                if (string.IsNullOrEmpty(this.InputPath)) return;
-                if (!File.Exists(this.InputPath)) return;
-
+                if (string.IsNullOrEmpty(path)) return;
+                if (!File.Exists(path)) return;
                 var db = new DbViewModel();
-                db.LoadDatabase(this.InputPath);
+                await TaskEx.Run(() =>
+                {
+                    db.LoadDatabase(path);
+                });
                 Databases.Add(db);
-                _history.DataAdd(this.InputPath);
+                _history.DataAdd(path);
             });
 
             ExecuteQuery = new RelayCommand(async () =>
@@ -129,8 +133,7 @@ namespace FAManagementStudio.ViewModels
 
             DbListDropFile = new RelayCommand<string>((string path) =>
             {
-                InputPath = path;
-                LoadDatabase.Execute(null);
+                LoadDatabase.Execute(path);
             });
 
             SetSqlTemplate = new RelayCommand<string>((string sqlKind) =>
@@ -172,39 +175,84 @@ namespace FAManagementStudio.ViewModels
                 SelectedResultIndex = 0;
                 RaisePropertyChanged(nameof(SelectedResultIndex));
             });
+
             PinCommand = new RelayCommand<QueryResultViewModel>((data) =>
             {
                 Datasource.Remove(data);
             });
+
+            SetSqlDataTemplate = new RelayCommand<string>((s) =>
+            {
+                var table = GetTreeViewTableName(SelectedTableItem);
+                var result = "";
+                if (s == "table")
+                {
+                    result = table.GetDdl();
+                }
+                else if (s == "insert")
+                {
+                    var colums = table.Colums.Select(x => x.ColumName).ToArray();
+                    var escapedColumsStr = string.Join(", ", colums.Select(x => EscapeKeyWord(x)).ToArray());
+
+                    var insertTemplate = $"insert into {table.TableName} ({escapedColumsStr})";
+
+                    var qry = new QueryInfo();
+                    var res = qry.ExecuteQuery(CurrentDatabase.ConnectionString, CreateSelectStatement(table.TableName, colums)).First();
+
+                    var sb = new StringBuilder();
+
+                    foreach (DataRow row in res.View.Rows)
+                    {
+                        sb.Append(insertTemplate + " values(");
+                        sb.Append(string.Join(", ", row.ItemArray.Select(x => x.GetType() == typeof(string) ? $"\'{x}\'" : $"{x}").ToArray()));
+                        sb.AppendLine(");");
+                    }
+                    result = sb.ToString();
+                }
+
+                var idx = Queries.IndexOf(TagSelectedValue);
+                Queries[idx].Query = result;
+                RaisePropertyChanged(nameof(Queries));
+            });
+        }
+
+        private TableViewModel GetTreeViewTableName(object treeitem)
+        {
+            var table = treeitem as TableViewModel;
+
+            if (table == null)
+            {
+                return Tables.Where(x => 0 < x.Colums.Count(c => c == (ColumViewMoodel)treeitem)).First();
+            }
+            return table;
         }
 
         private string CreateSqlSentence(object treeitem, string sqlKind)
         {
-            var table = treeitem as TableViewModel;
             string[] colums;
-            string tableName;
-            if (table == null)
+            var col = treeitem as ColumViewMoodel;
+            var table = GetTreeViewTableName(treeitem);
+
+            if (col == null)
             {
-                var col = treeitem as ColumViewMoodel;
-                tableName = Tables.Where(x => 0 < x.ChildItems.Count(c => c == col)).First().TableName;
-                colums = new[] { col.ColumName };
+                colums = table.Colums.Select(x => x.ColumName).ToArray();
             }
             else
             {
-                colums = table.ChildItems.Select(x => x.ColumName).ToArray();
-                tableName = table.TableName;
+                colums = new[] { col.ColumName };
             }
+
             if (sqlKind == "select")
             {
-                return CreateSelectStatement(tableName, colums);
+                return CreateSelectStatement(table.TableName, colums);
             }
             else if (sqlKind == "insert")
             {
-                return CreateInsertStatement(tableName, colums);
+                return CreateInsertStatement(table.TableName, colums);
             }
             else if (sqlKind == "update")
             {
-                return CreateUpdateStatement(tableName, colums);
+                return CreateUpdateStatement(table.TableName, colums);
             }
             else
             {

@@ -1,12 +1,13 @@
 ﻿using FAManagementStudio.Common;
 using FAManagementStudio.Models;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data;
+using System.IO;
 using System.Linq;
 using System.Text;
-using System.Windows;
+using System.Windows.Forms;
+using System.Windows.Input;
 
 namespace FAManagementStudio.ViewModels
 {
@@ -36,7 +37,7 @@ namespace FAManagementStudio.ViewModels
 
         public void GetExecuteResult(QueryInfo inf, string connectionString, string query)
         {
-            Application.Current.Dispatcher.Invoke(new Action(() =>
+            System.Windows.Application.Current.Dispatcher.Invoke(new Action(() =>
             {
                 foreach (var queryResult in inf.ExecuteQuery(connectionString, query))
                 {
@@ -53,6 +54,45 @@ namespace FAManagementStudio.ViewModels
     {
         public DataTable View { get; set; }
         public string AdditionalInfo { get; set; }
+
+        public ICommand OutputCsv { get; private set; }
+
+        public ResultDetailViewModel()
+        {
+            OutputCsv = new RelayCommand<bool>((needHeader) =>
+            {
+                var path = "";
+                using (var dialog = new SaveFileDialog())
+                {
+                    dialog.FileName = "output.csv";
+                    dialog.DefaultExt = "csv";
+                    dialog.Filter = "csv files (*.csv)|*.csv|すべてのファイル(*.*)|*.*";
+                    if (dialog.ShowDialog() != DialogResult.OK) return;
+                    path = dialog.FileName;
+                }
+
+                var sb = new StringBuilder();
+                if (needHeader)
+                {
+                    var header = View.Columns.Cast<DataColumn>().Select(x => $"\"{x.ColumnName}\"").ToArray();
+                    sb.AppendLine(string.Join(",", header));
+                }
+                var rows = View.Rows.Cast<DataRow>().Select(x => string.Join(",", x.ItemArray.Select(y => $"\"{y}\"").ToArray()));
+                foreach (var row in rows)
+                {
+                    sb.AppendLine(row);
+                }
+                try
+                {
+                    File.WriteAllText(path, sb.ToString(), Encoding.UTF8);
+                }
+                catch (Exception ex)
+                {
+                    //throwしても拾う先が無いので握りつぶす
+                    MessageBox.Show(ex.Message, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            });
+        }
 
         public void SetAdditionalInfo(int count, TimeSpan time, string query)
         {
