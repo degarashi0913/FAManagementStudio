@@ -2,7 +2,9 @@
 using FAManagementStudio.Models;
 using FirebirdSql.Data.FirebirdClient;
 using System.Collections.Generic;
+using System.Text;
 using System.Windows.Data;
+using System.Linq;
 
 namespace FAManagementStudio.ViewModels
 {
@@ -47,15 +49,20 @@ namespace FAManagementStudio.ViewModels
                     var vm = new TableViewModel(item);
                     foreach (var colums in item.GetColums(con))
                     {
-                        vm.ChildItems.Add(new ColumViewMoodel(colums));
+                        vm.Colums.Add(new ColumViewMoodel(colums));
+                    }
+                    foreach (var trigger in item.GetTrigger(con))
+                    {
+                        vm.Triggers.Add(new TriggerViewModel(trigger));
+                    }
+                    foreach (var idx in item.GetIndex(con))
+                    {
+                        vm.Indexs.Add(new IndexViewModel(idx));
                     }
                     Tables.Add(vm);
                 }
+                Triggers.AddRange(Tables.SelectMany(x => x.Triggers));
                 RaisePropertyChanged(nameof(Tables));
-                foreach (var item in _dbInfo.GetTrigger(con))
-                {
-                    Triggers.Add(new TriggerViewModel(item));
-                }
                 RaisePropertyChanged(nameof(Triggers));
             }
         }
@@ -93,7 +100,41 @@ public class TableViewModel : BindableBase
     }
     public string TableName { get { return _inf.TableName; } }
     public string DisplayName { get { return _inf.TableName; } }
-    public List<ColumViewMoodel> ChildItems { get; } = new List<ColumViewMoodel>();
+    public List<ColumViewMoodel> Colums { get; } = new List<ColumViewMoodel>();
+    public List<TriggerViewModel> Triggers { get; } = new List<TriggerViewModel>();
+    public List<IndexViewModel> Indexs { get; } = new List<IndexViewModel>();
+
+    public string GetDdl()
+    {
+        var colums = Colums.Select(x =>
+        {
+            var sql = $"{x.ColumName} {x.ColumType}";
+            if (x.KeyKind == ConstraintsKind.Primary && Indexs.Count(idx => idx.FieldNames.Contains(x.ColumName)) < 1)
+            {
+                sql += " primary key";
+            }
+            else if (x.KeyKind == ConstraintsKind.NotNull)
+            {
+                sql += " not null";
+            }
+            return sql.ToUpper();
+        });
+
+        var index = Indexs.GroupBy(x => x.IndexName)
+                .Where(x => 0 < x.Count())
+                .Select(x =>
+                {
+                    var sql = "PRIMARY KEY (";
+                    foreach (var col in x)
+                    {
+                        sql += col.FieldNames;
+                    }
+                    sql += ")";
+                    return sql;
+                });
+
+        return $"CREATE TABLE {TableName.ToUpper()} ({ string.Join(", ", colums.Union(index).ToArray())})";
+    }
 }
 
 public class ColumViewMoodel : BindableBase
@@ -105,7 +146,8 @@ public class ColumViewMoodel : BindableBase
     }
     public string ColumName { get { return _inf.ColumName; } }
     public string DisplayName { get { return $"{_inf.ColumName} ({_inf.ColumType})"; } }
-    public ConstraintsKeyKind KeyKind { get { return _inf.KeyKind; } }
+    public string ColumType { get { return _inf.ColumType; } }
+    public ConstraintsKind KeyKind { get { return _inf.KeyKind; } }
 }
 
 public class TriggerViewModel : BindableBase
@@ -118,6 +160,19 @@ public class TriggerViewModel : BindableBase
     public string Source { get { return _inf.Source; } }
     public string TableName { get { return _inf.TableName; } }
     public string Name { get { return _inf.Name; } }
+}
+
+public class IndexViewModel
+{
+    private IndexInfo _index;
+    public IndexViewModel(IndexInfo inf)
+    {
+        _index = inf;
+    }
+
+    public string IndexName { get { return _index.Name; } }
+
+    public List<string> FieldNames { get { return _index.FieldNames; } }
 }
 
 

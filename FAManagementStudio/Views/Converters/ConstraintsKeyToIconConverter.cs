@@ -9,17 +9,17 @@ using System.Globalization;
 
 namespace FAManagementStudio.Views.Converters
 {
-    [ValueConversion(typeof(ConstraintsKeyKind), typeof(string))]
+    [ValueConversion(typeof(ConstraintsKind), typeof(string))]
     public class ConstraintsKeyToIconConverter : IValueConverter
     {
 
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            switch ((ConstraintsKeyKind)value)
+            switch ((ConstraintsKind)value)
             {
-                case ConstraintsKeyKind.Primary:
+                case ConstraintsKind.Primary:
                     return @"../Image/PrimaryKey.png";
-                case ConstraintsKeyKind.Foreign:
+                case ConstraintsKind.Foreign:
                     return @"../Image/ForeigenKey.png";
                 default:
                     return "";

@@ -30,19 +30,6 @@ namespace FAManagementStudio.Models
                 }
             }
         }
-
-        public IEnumerable<TriggerInfo> GetTrigger(FbConnection con)
-        {
-            using (var command = con.CreateCommand())
-            {
-                command.CommandText = @"select rdb$trigger_name Name, rdb$relation_name TableName, rdb$trigger_source Source from rdb$triggers where rdb$system_flag = 0";
-                var reader = command.ExecuteReader();
-                while (reader.Read())
-                {
-                    yield return new TriggerInfo((string)reader["Name"], (string)reader["TableName"], (string)reader["Source"]);
-                }
-            }
-        }
     }
 
     public class TriggerInfo
@@ -58,6 +45,14 @@ namespace FAManagementStudio.Models
         public string TableName { get; set; }
     }
 
+    public class IndexInfo
+    {
+        public IndexInfo() { }
+        public string Name { get; set; }
+        public List<string> FieldNames { get; set; }
+
+    }
+
     public class TableInfo
     {
         public TableInfo(string name)
@@ -71,7 +66,7 @@ namespace FAManagementStudio.Models
             using (var command = con.CreateCommand())
             {
                 command.CommandText =
-                    $"select rf.rdb$field_name Name, f.rdb$field_type Type, f.rdb$character_length CharSize, ky.rdb$constraint_type Key " +
+                    $"select rf.rdb$field_name Name, f.rdb$field_type Type, f.rdb$character_length CharSize, ky.rdb$constraint_type ConstraintType " +
                         "from rdb$relation_fields rf " +
                         "join rdb$relations r on rf.rdb$relation_name = r.rdb$relation_name " +
                                             "and r.rdb$view_blr is null " +
@@ -80,34 +75,86 @@ namespace FAManagementStudio.Models
                         "left outer join (select rel.rdb$relation_name, seg.rdb$field_name, rel.rdb$constraint_type " +
                                             "from rdb$relation_constraints rel " +
                                             "left outer join  rdb$indices  idx on rel.rdb$index_name = idx.rdb$index_name " +
-                                            "left outer join rdb$index_segments seg on idx.rdb$index_name = seg.rdb$index_name " +
-                                            "where rel.rdb$constraint_type = 'PRIMARY KEY' or rel.rdb$constraint_type = 'FOREIGN KEY') ky " +
+                                            "left outer join rdb$index_segments seg on idx.rdb$index_name = seg.rdb$index_name) ky " +
                          "on ky.rdb$relation_name = rf.rdb$relation_name and  ky.rdb$field_name = rf.rdb$field_name " +
                      $"where rf.rdb$relation_name = '{this.TableName}' " +
                       "order by rf.rdb$field_position; ";
                 var reader = command.ExecuteReader();
                 while (reader.Read())
                 {
-                    var key = (reader["Key"] == DBNull.Value) ? "" : (string)reader["Key"];
+                    var key = (reader["ConstraintType"] == DBNull.Value) ? "" : (string)reader["ConstraintType"];
                     var size = (reader["CharSize"] == DBNull.Value) ? null : (short?)reader["CharSize"];
-                    yield return new ColumInfo(((string)reader["Name"]).TrimEnd(), (short)reader["Type"], size, GetKey(key));
+                    yield return new ColumInfo(((string)reader["Name"]).TrimEnd(), (short)reader["Type"], size, GetConstraint(key));
                 }
             }
         }
 
-        public ConstraintsKeyKind GetKey(string keyName)
+        private ConstraintsKind GetConstraint(string name)
         {
-            if (string.IsNullOrEmpty(keyName)) return ConstraintsKeyKind.None;
-            if (keyName == "PRIMARY KEY")
+            if (string.IsNullOrEmpty(name)) return ConstraintsKind.None;
+            if (name == "PRIMARY KEY")
             {
-                return ConstraintsKeyKind.Primary;
+                return ConstraintsKind.Primary;
             }
-            else if (keyName == "FOREIGN KEY")
+            else if (name == "FOREIGN KEY")
             {
-                return ConstraintsKeyKind.Foreign;
+                return ConstraintsKind.Foreign;
             }
-            //not define UNIQUE, CHECK , NOT NULL
-            return ConstraintsKeyKind.None;
+            else if (name == "UNIQUE")
+            {
+                return ConstraintsKind.Unique;
+            }
+            else if (name == "CHECK")
+            {
+                return ConstraintsKind.Check;
+            }
+            else if (name == "NOT NULL")
+            {
+                return ConstraintsKind.NotNull;
+            }
+            return ConstraintsKind.None;
+        }
+
+        public IEnumerable<TriggerInfo> GetTrigger(FbConnection con)
+        {
+            using (var command = con.CreateCommand())
+            {
+                command.CommandText = $"select rdb$trigger_name Name, rdb$relation_name TableName, rdb$trigger_source Source from rdb$triggers where rdb$relation_name = '{this.TableName}' and rdb$system_flag = 0";
+                var reader = command.ExecuteReader();
+                while (reader.Read())
+                {
+                    yield return new TriggerInfo((string)reader["Name"], (string)reader["TableName"], (string)reader["Source"]);
+                }
+            }
+        }
+
+        public IEnumerable<IndexInfo> GetIndex(FbConnection con)
+        {
+            using (var command = con.CreateCommand())
+            {
+                command.CommandText = @"select idx.rdb$index_name Name, seg.rdb$field_name FiledName from rdb$indices idx left outer join rdb$index_segments seg on idx.rdb$index_name = seg.rdb$index_name where rdb$relation_name = '{this.TableName}' and idx.rdb$system_flag = 0 order by seg.rdb$field_position";
+                var reader = command.ExecuteReader();
+                var tmpName = "";
+                IndexInfo tmpInf = null;
+                while (reader.Read())
+                {
+                    if (tmpName == (string)reader["Name"])
+                    {
+                        tmpInf.FieldNames.Add((string)reader["FiledName"]);
+                    }
+                    else
+                    {
+                        if (tmpInf != null)
+                        {
+                            yield return tmpInf;
+                        }
+                        tmpInf = new IndexInfo();
+                        tmpInf.Name = (string)reader["Name"];
+                        tmpInf.FieldNames.Add((string)reader["FiledName"]);
+                    }
+                }
+                yield return tmpInf;
+            }
         }
     }
 
@@ -118,14 +165,15 @@ namespace FAManagementStudio.Models
         public string ColumName { get; set; }
         public string ColumType { get; set; }
 
-        public ConstraintsKeyKind KeyKind { get; set; }
+        public ConstraintsKind KeyKind { get; set; }
 
-        public ColumInfo(string name, int type, short? size, ConstraintsKeyKind keyKind)
+        public ColumInfo(string name, int type, short? size, ConstraintsKind keyKind)
         {
             ColumName = name;
             ColumType = GetTypeFromFirebirdType(type) + (size.HasValue ? $"({size.ToString()})" : "");
             KeyKind = keyKind;
         }
+
         public string GetTypeFromFirebirdType(int i)
         {
             switch (i)
