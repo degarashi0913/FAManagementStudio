@@ -153,7 +153,10 @@ namespace FAManagementStudio.Models
                         tmpInf.FieldNames.Add((string)reader["FiledName"]);
                     }
                 }
-                yield return tmpInf;
+                if (tmpInf != null)
+                {
+                    yield return tmpInf;
+                }
             }
         }
     }
