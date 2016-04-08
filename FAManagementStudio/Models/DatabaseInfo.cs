@@ -49,7 +49,10 @@ namespace FAManagementStudio.Models
     {
         public IndexInfo() { }
         public string Name { get; set; }
-        public List<string> FieldNames { get; set; }
+        public ConstraintsKind Kind { get; set; }
+        public string ForigenKeyName { get; set; }
+        public List<string> FieldNames { get; } = new List<string>();
+        public string TableName { get; set; }
 
     }
 
@@ -66,7 +69,7 @@ namespace FAManagementStudio.Models
             using (var command = con.CreateCommand())
             {
                 command.CommandText =
-                    $"select rf.rdb$field_name Name, f.rdb$field_type Type, f.rdb$character_length CharSize, ky.rdb$constraint_type ConstraintType " +
+                    $"select rf.rdb$field_name Name, f.rdb$field_type Type, f.rdb$field_sub_type SubType , f.rdb$character_length CharSize, ky.rdb$constraint_type ConstraintType " +
                         "from rdb$relation_fields rf " +
                         "join rdb$relations r on rf.rdb$relation_name = r.rdb$relation_name " +
                                             "and r.rdb$view_blr is null " +
@@ -84,13 +87,14 @@ namespace FAManagementStudio.Models
                 {
                     var key = (reader["ConstraintType"] == DBNull.Value) ? "" : (string)reader["ConstraintType"];
                     var size = (reader["CharSize"] == DBNull.Value) ? null : (short?)reader["CharSize"];
-                    yield return new ColumInfo(((string)reader["Name"]).TrimEnd(), (short)reader["Type"], size, GetConstraint(key));
+                    yield return new ColumInfo(((string)reader["Name"]).TrimEnd(), (short)reader["Type"], (short?)reader["SubType"], size, GetConstraint(key));
                 }
             }
         }
 
-        private ConstraintsKind GetConstraint(string name)
+        private ConstraintsKind GetConstraint(string input)
         {
+            var name = input.Trim();
             if (string.IsNullOrEmpty(name)) return ConstraintsKind.None;
             if (name == "PRIMARY KEY")
             {
@@ -132,25 +136,34 @@ namespace FAManagementStudio.Models
         {
             using (var command = con.CreateCommand())
             {
-                command.CommandText = @"select idx.rdb$index_name Name, seg.rdb$field_name FiledName from rdb$indices idx left outer join rdb$index_segments seg on idx.rdb$index_name = seg.rdb$index_name where rdb$relation_name = '{this.TableName}' and idx.rdb$system_flag = 0 order by seg.rdb$field_position";
+                command.CommandText =
+                    $"select idx.rdb$index_name Name, seg.rdb$field_name FiledName, constrain.rdb$constraint_type ConstraintType, rdb$foreign_key ForeignKey from rdb$indices idx " +
+                    $"left outer join rdb$index_segments seg on idx.rdb$index_name = seg.rdb$index_name " +
+                    $"left outer join rdb$relation_constraints constrain on idx.rdb$index_name = constrain.rdb$index_name " +
+                    $"where idx.rdb$relation_name = '{this.TableName}' and idx.rdb$system_flag = 0 order by seg.rdb$field_position";
                 var reader = command.ExecuteReader();
                 var tmpName = "";
                 IndexInfo tmpInf = null;
                 while (reader.Read())
                 {
-                    if (tmpName == (string)reader["Name"])
+                    if (tmpName == ((string)reader["Name"]).Trim())
                     {
-                        tmpInf.FieldNames.Add((string)reader["FiledName"]);
+                        tmpInf.FieldNames.Add(((string)reader["FiledName"]).Trim());
                     }
                     else
                     {
                         if (tmpInf != null)
                         {
+                            tmpName = "";
                             yield return tmpInf;
                         }
                         tmpInf = new IndexInfo();
-                        tmpInf.Name = (string)reader["Name"];
-                        tmpInf.FieldNames.Add((string)reader["FiledName"]);
+                        tmpName = ((string)reader["Name"]).Trim();
+                        tmpInf.Name = tmpName;
+                        tmpInf.Kind = GetConstraint((string)reader["ConstraintType"]);
+                        tmpInf.ForigenKeyName = tmpInf.Kind == ConstraintsKind.Foreign ? (string)reader["ForeignKey"] : "";
+                        tmpInf.TableName = this.TableName;
+                        tmpInf.FieldNames.Add(((string)reader["FiledName"]).Trim());
                     }
                 }
                 if (tmpInf != null)
@@ -170,16 +183,16 @@ namespace FAManagementStudio.Models
 
         public ConstraintsKind KeyKind { get; set; }
 
-        public ColumInfo(string name, int type, short? size, ConstraintsKind keyKind)
+        public ColumInfo(string name, short type, short? subSype, short? size, ConstraintsKind keyKind)
         {
             ColumName = name;
-            ColumType = GetTypeFromFirebirdType(type) + (size.HasValue ? $"({size.ToString()})" : "");
+            ColumType = GetTypeFromFirebirdType(type, subSype) + (size.HasValue ? $"({size.ToString()})" : "");
             KeyKind = keyKind;
         }
 
-        public string GetTypeFromFirebirdType(int i)
+        public string GetTypeFromFirebirdType(short type, short? subType)
         {
-            switch (i)
+            switch (type)
             {
                 case 7:
                     return "SMALLINT";
@@ -198,11 +211,11 @@ namespace FAManagementStudio.Models
                 case 14:
                     return "CHAR";
                 case 16:
-                    return "INT64";
+                    return "BIGINT";
                 case 17:
                     return "BOOLEAN";
                 case 27:
-                    return "DOUBLE";
+                    return "DOUBLE PRECISION";
                 case 35:
                     return "TIMESTAMP";
                 case 37:

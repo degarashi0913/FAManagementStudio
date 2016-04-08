@@ -187,7 +187,7 @@ namespace FAManagementStudio.ViewModels
                 var result = "";
                 if (s == "table")
                 {
-                    result = table.GetDdl();
+                    result = table.GetDdl(CurrentDatabase);
                 }
                 else if (s == "insert")
                 {
