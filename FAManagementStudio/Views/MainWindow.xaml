@@ -89,6 +89,7 @@
             <ListBox Grid.Column="0" HorizontalAlignment="Stretch" MinWidth="80" ItemsSource="{Binding Databases}" HorizontalContentAlignment="Center" SelectedItem="{Binding CurrentDatabase}" AllowDrop="True" ToolTip="データベースファイルをドロップ" >
                 <ListBox.Resources>
                     <SolidColorBrush x:Key="{x:Static SystemColors.ControlBrushKey}" Color="{DynamicResource {x:Static SystemColors.HighlightColorKey}}" />
+                    <Common:CommandReference x:Key="Shutdown" Command="{Binding ShutdownDatabase, Source={StaticResource viewModel}}"/>
                 </ListBox.Resources>
                 <ListBox.ItemContainerStyle>
                     <Style>
@@ -99,6 +100,9 @@
                         </Style.Triggers>
                     </Style>
                 </ListBox.ItemContainerStyle>
+                <ListBox.InputBindings>
+                    <KeyBinding Command="{StaticResource Shutdown}" Key="Delete"/>
+                </ListBox.InputBindings>
                 <i:Interaction.Behaviors>
                     <b:ListBoxDropBehavior DropedCommand="{Binding DbListDropFile}"/>
                 </i:Interaction.Behaviors>
