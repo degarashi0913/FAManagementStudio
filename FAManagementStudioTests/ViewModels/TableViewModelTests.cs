@@ -13,7 +13,7 @@ namespace Tests
     public class TableViewModelTests
     {
         [TestMethod()]
-        public void GetDdlTest()
+        public void GetDdlTest1()
         {
             var dbVm = new DbViewModel();
             var table = new TableViewModel(new TableInfo("TEST"));
@@ -38,7 +38,50 @@ namespace Tests
             dbVm.Indexes.Add(idxVm);
             table.Indexs.Add(idxVm);
 
-            table.GetDdl(dbVm).Is("CREATE TABLE TEST (\r\n  COL1 INTEGER,\r\n  COL2 VARCHAR(100) NOT NULL,\r\n  COL3 TIMESTAMP NOT NULL,\r\n  COL4 BLOB,\r\n  PRIMARY KEY (COL1)\r\n)");
+            table.GetDdl(dbVm).Is(
+@"CREATE TABLE TEST (
+  COL1 INTEGER,
+  COL2 VARCHAR(100) NOT NULL,
+  COL3 TIMESTAMP NOT NULL,
+  COL4 BLOB,
+  PRIMARY KEY (COL1)
+)");
+        }
+        [TestMethod()]
+        public void GetDdlTest2()
+        {
+            var dbVm = new DbViewModel();
+            var table = new TableViewModel(new TableInfo("TEST"));
+            dbVm.Tables.Add(table);
+
+            var col1 = new ColumInfo("COL1", 8, null, null, FAManagementStudio.Common.ConstraintsKind.Primary);
+            table.Colums.Add(new ColumViewMoodel(col1));
+            var col2 = new ColumInfo("COL2", 37, null, 100, FAManagementStudio.Common.ConstraintsKind.Primary);
+            table.Colums.Add(new ColumViewMoodel(col2));
+            var col3 = new ColumInfo("COL3", 35, null, null, FAManagementStudio.Common.ConstraintsKind.NotNull);
+            table.Colums.Add(new ColumViewMoodel(col3));
+            var col4 = new ColumInfo("COL4", 261, null, null, FAManagementStudio.Common.ConstraintsKind.None);
+            table.Colums.Add(new ColumViewMoodel(col4));
+
+            var idx = new IndexInfo();
+            idx.Name = "COMPLEXKEY";
+            idx.TableName = table.TableName;
+            idx.Kind = FAManagementStudio.Common.ConstraintsKind.Primary;
+            idx.FieldNames.Add(col1.ColumName);
+            idx.FieldNames.Add(col2.ColumName);
+            var idxVm = new IndexViewModel(idx);
+
+            dbVm.Indexes.Add(idxVm);
+            table.Indexs.Add(idxVm);
+
+            table.GetDdl(dbVm).Is(
+@"CREATE TABLE TEST (
+  COL1 INTEGER,
+  COL2 VARCHAR(100),
+  COL3 TIMESTAMP NOT NULL,
+  COL4 BLOB,
+  CONSTRAINT COMPLEXKEY PRIMARY KEY (COL1, COL2)
+)");
         }
     }
 }
