@@ -19,13 +19,13 @@ namespace Tests
             var table = new TableViewModel(new TableInfo("TEST"));
             dbVm.Tables.Add(table);
 
-            var col1 = new ColumInfo("COL1", 8, null, null, FAManagementStudio.Common.ConstraintsKind.Primary);
+            var col1 = new ColumInfo("COL1", 8, null, null, FAManagementStudio.Common.ConstraintsKind.Primary, "RDB$1", false);
             table.Colums.Add(new ColumViewMoodel(col1));
-            var col2 = new ColumInfo("COL2", 37, null, 100, FAManagementStudio.Common.ConstraintsKind.NotNull);
+            var col2 = new ColumInfo("COL2", 37, null, 100, FAManagementStudio.Common.ConstraintsKind.None, "RDB$2", false);
             table.Colums.Add(new ColumViewMoodel(col2));
-            var col3 = new ColumInfo("COL3", 35, null, null, FAManagementStudio.Common.ConstraintsKind.NotNull);
+            var col3 = new ColumInfo("COL3", 35, null, null, FAManagementStudio.Common.ConstraintsKind.None, "RDB$3", false);
             table.Colums.Add(new ColumViewMoodel(col3));
-            var col4 = new ColumInfo("COL4", 261, null, null, FAManagementStudio.Common.ConstraintsKind.None);
+            var col4 = new ColumInfo("COL4", 261, null, null, FAManagementStudio.Common.ConstraintsKind.None, "RDB$4", true);
             table.Colums.Add(new ColumViewMoodel(col4));
 
             var idx = new IndexInfo();
@@ -40,7 +40,7 @@ namespace Tests
 
             table.GetDdl(dbVm).Is(
 @"CREATE TABLE TEST (
-  COL1 INTEGER,
+  COL1 INTEGER NOT NULL,
   COL2 VARCHAR(100) NOT NULL,
   COL3 TIMESTAMP NOT NULL,
   COL4 BLOB,
@@ -54,13 +54,13 @@ namespace Tests
             var table = new TableViewModel(new TableInfo("TEST"));
             dbVm.Tables.Add(table);
 
-            var col1 = new ColumInfo("COL1", 8, null, null, FAManagementStudio.Common.ConstraintsKind.Primary);
+            var col1 = new ColumInfo("COL1", 8, null, null, FAManagementStudio.Common.ConstraintsKind.Primary, "RDB$1", false);
             table.Colums.Add(new ColumViewMoodel(col1));
-            var col2 = new ColumInfo("COL2", 37, null, 100, FAManagementStudio.Common.ConstraintsKind.Primary);
+            var col2 = new ColumInfo("COL2", 37, null, 100, FAManagementStudio.Common.ConstraintsKind.Primary, "RDB$2", false);
             table.Colums.Add(new ColumViewMoodel(col2));
-            var col3 = new ColumInfo("COL3", 35, null, null, FAManagementStudio.Common.ConstraintsKind.NotNull);
+            var col3 = new ColumInfo("COL3", 35, null, null, FAManagementStudio.Common.ConstraintsKind.None, "RDB$3", false);
             table.Colums.Add(new ColumViewMoodel(col3));
-            var col4 = new ColumInfo("COL4", 261, null, null, FAManagementStudio.Common.ConstraintsKind.None);
+            var col4 = new ColumInfo("COL4", 261, null, null, FAManagementStudio.Common.ConstraintsKind.None, "RDB$4", true);
             table.Colums.Add(new ColumViewMoodel(col4));
 
             var idx = new IndexInfo();
@@ -76,8 +76,46 @@ namespace Tests
 
             table.GetDdl(dbVm).Is(
 @"CREATE TABLE TEST (
-  COL1 INTEGER,
-  COL2 VARCHAR(100),
+  COL1 INTEGER NOT NULL,
+  COL2 VARCHAR(100) NOT NULL,
+  COL3 TIMESTAMP NOT NULL,
+  COL4 BLOB,
+  CONSTRAINT COMPLEXKEY PRIMARY KEY (COL1, COL2)
+)");
+        }
+        [TestMethod()]
+        public void GetDdlTest3()
+        {
+            var dbVm = new DbViewModel();
+            var table = new TableViewModel(new TableInfo("TEST"));
+            dbVm.Tables.Add(table);
+
+            var col1 = new ColumInfo("COL1", 8, null, null, FAManagementStudio.Common.ConstraintsKind.Primary, "SARARY", false);
+            table.Colums.Add(new ColumViewMoodel(col1));
+            var col2 = new ColumInfo("COL2", 37, null, 100, FAManagementStudio.Common.ConstraintsKind.Primary, "NAME", false);
+            table.Colums.Add(new ColumViewMoodel(col2));
+            var col3 = new ColumInfo("COL3", 35, null, null, FAManagementStudio.Common.ConstraintsKind.None, "RDB$3", false);
+            table.Colums.Add(new ColumViewMoodel(col3));
+            var col4 = new ColumInfo("COL4", 261, null, null, FAManagementStudio.Common.ConstraintsKind.None, "RDB$4", true);
+            table.Colums.Add(new ColumViewMoodel(col4));
+
+            var idx = new IndexInfo();
+            idx.Name = "COMPLEXKEY";
+            idx.TableName = table.TableName;
+            idx.Kind = FAManagementStudio.Common.ConstraintsKind.Primary;
+            idx.FieldNames.Add(col1.ColumName);
+            idx.FieldNames.Add(col2.ColumName);
+            var idxVm = new IndexViewModel(idx);
+
+            dbVm.Indexes.Add(idxVm);
+            table.Indexs.Add(idxVm);
+
+            table.GetDdl(dbVm).Is(
+@"CREATE DOMAIN SARARY AS INTEGER;
+CREATE DOMAIN NAME AS VARCHAR(100);
+CREATE TABLE TEST (
+  COL1 SARARY NOT NULL,
+  COL2 NAME NOT NULL,
   COL3 TIMESTAMP NOT NULL,
   COL4 BLOB,
   CONSTRAINT COMPLEXKEY PRIMARY KEY (COL1, COL2)

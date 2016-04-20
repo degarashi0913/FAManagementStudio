@@ -69,7 +69,7 @@ namespace FAManagementStudio.Models
             using (var command = con.CreateCommand())
             {
                 command.CommandText =
-                    $"select rf.rdb$field_name Name, f.rdb$field_type Type, f.rdb$field_sub_type SubType , f.rdb$character_length CharSize, ky.rdb$constraint_type ConstraintType " +
+                    $"select rf.rdb$field_name Name, f.rdb$field_type Type, f.rdb$field_sub_type SubType , f.rdb$character_length CharSize, ky.rdb$constraint_type ConstraintType, rf.rdb$field_source FieldSource, rf.rdb$null_flag NullFlag " +
                         "from rdb$relation_fields rf " +
                         "join rdb$relations r on rf.rdb$relation_name = r.rdb$relation_name " +
                                             "and r.rdb$view_blr is null " +
@@ -87,7 +87,9 @@ namespace FAManagementStudio.Models
                 {
                     var key = (reader["ConstraintType"] == DBNull.Value) ? "" : (string)reader["ConstraintType"];
                     var size = (reader["CharSize"] == DBNull.Value) ? null : (short?)reader["CharSize"];
-                    yield return new ColumInfo(((string)reader["Name"]).TrimEnd(), (short)reader["Type"], (short?)reader["SubType"], size, GetConstraint(key));
+                    var subType = (reader["SubType"] == DBNull.Value) ? null : (short?)reader["SubType"];
+                    var nullFlag = reader["NullFlag"] == DBNull.Value;
+                    yield return new ColumInfo(((string)reader["Name"]).TrimEnd(), (short)reader["Type"], subType, size, GetConstraint(key), ((string)reader["FieldSource"]).TrimEnd(), nullFlag);
                 }
             }
         }
@@ -180,14 +182,18 @@ namespace FAManagementStudio.Models
     {
         public string ColumName { get; set; }
         public string ColumType { get; set; }
+        public string DomainName { get; set; }
+        public bool NullFlag { get; set; }
 
         public ConstraintsKind KeyKind { get; set; }
 
-        public ColumInfo(string name, short type, short? subSype, short? size, ConstraintsKind keyKind)
+        public ColumInfo(string name, short type, short? subSype, short? size, ConstraintsKind keyKind, string domainName, bool nullFlag)
         {
             ColumName = name;
             ColumType = GetTypeFromFirebirdType(type, subSype) + (size.HasValue ? $"({size.ToString()})" : "");
             KeyKind = keyKind;
+            DomainName = domainName;
+            NullFlag = nullFlag;
         }
 
         public string GetTypeFromFirebirdType(short type, short? subType)

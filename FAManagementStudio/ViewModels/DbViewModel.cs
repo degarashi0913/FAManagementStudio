@@ -112,7 +112,7 @@ public class TableViewModel : BindableBase
         var colums = Colums.Select(x =>
         {
             var sql = $"{x.ColumName} {x.ColumType}";
-            if (x.KeyKind == ConstraintsKind.NotNull)
+            if (!x.NullFlag)
             {
                 sql += " not null";
             }
@@ -141,7 +141,12 @@ public class TableViewModel : BindableBase
                     return sql;
                 });
 
-        return $"CREATE TABLE {TableName} (\r\n  { string.Join(",\r\n  ", colums.Union(index).ToArray())}\r\n)";
+        var domain = Colums.Where(x => x.IsDomainType)
+                            .Select(x => new { x.ColumType, x.ColumDataType })
+                            .Distinct()
+                            .Select(x => $"CREATE DOMAIN {x.ColumType} AS {x.ColumDataType};\r\n");
+        var domainStr = string.Join("", domain.ToArray());
+        return domainStr + $"CREATE TABLE {TableName} (\r\n  { string.Join(",\r\n  ", colums.Union(index).ToArray())}\r\n)";
     }
 }
 
@@ -153,9 +158,47 @@ public class ColumViewMoodel : BindableBase
         _inf = inf;
     }
     public string ColumName { get { return _inf.ColumName; } }
-    public string DisplayName { get { return $"{_inf.ColumName} ({_inf.ColumType})"; } }
-    public string ColumType { get { return _inf.ColumType; } }
+    public string DisplayName
+    {
+        get
+        {
+            if (_inf.DomainName.StartsWith("RDB$"))
+            {
+                return $"{_inf.ColumName} ({_inf.ColumType})";
+            }
+            else
+            {
+                return $"{_inf.ColumName} ({_inf.DomainName})";
+            }
+        }
+    }
+    public string ColumType
+    {
+        get
+        {
+            if (_inf.DomainName.StartsWith("RDB$"))
+            {
+                return _inf.ColumType;
+            }
+            else
+            {
+                return _inf.DomainName;
+            }
+        }
+    }
+
+    public string ColumDataType
+    {
+        get { return _inf.ColumType; }
+    }
+
+    public bool IsDomainType
+    {
+        get { return !_inf.DomainName.StartsWith("RDB$"); }
+    }
+
     public ConstraintsKind KeyKind { get { return _inf.KeyKind; } }
+    public bool NullFlag { get { return _inf.NullFlag; } }
 }
 
 public class TriggerViewModel : BindableBase
