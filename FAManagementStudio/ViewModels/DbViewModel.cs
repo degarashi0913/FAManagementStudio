@@ -164,7 +164,7 @@ public class ColumViewMoodel : BindableBase
         {
             if (_inf.DomainName.StartsWith("RDB$"))
             {
-                return $"{_inf.ColumName} ({_inf.ColumType})";
+                return $"{_inf.ColumName} ({_inf.ColumType.ToString()})";
             }
             else
             {
@@ -178,7 +178,7 @@ public class ColumViewMoodel : BindableBase
         {
             if (_inf.DomainName.StartsWith("RDB$"))
             {
-                return _inf.ColumType;
+                return _inf.ColumType.ToString();
             }
             else
             {
@@ -189,7 +189,7 @@ public class ColumViewMoodel : BindableBase
 
     public string ColumDataType
     {
-        get { return _inf.ColumType; }
+        get { return _inf.ColumType.ToString(); }
     }
 
     public bool IsDomainType

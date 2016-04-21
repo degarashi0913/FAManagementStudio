@@ -69,7 +69,7 @@ namespace FAManagementStudio.Models
             using (var command = con.CreateCommand())
             {
                 command.CommandText =
-                    $"select rf.rdb$field_name Name, f.rdb$field_type Type, f.rdb$field_sub_type SubType , f.rdb$character_length CharSize, ky.rdb$constraint_type ConstraintType, rf.rdb$field_source FieldSource, rf.rdb$null_flag NullFlag " +
+                    $"select rf.rdb$field_name Name, f.rdb$field_type Type, f.rdb$field_sub_type SubType , f.rdb$character_length CharSize, ky.rdb$constraint_type ConstraintType, rf.rdb$field_source FieldSource, rf.rdb$null_flag NullFlag, f.rdb$field_precision FieldPrecision, f.rdb$field_scale FieldScale " +
                         "from rdb$relation_fields rf " +
                         "join rdb$relations r on rf.rdb$relation_name = r.rdb$relation_name " +
                                             "and r.rdb$view_blr is null " +
@@ -89,7 +89,11 @@ namespace FAManagementStudio.Models
                     var size = (reader["CharSize"] == DBNull.Value) ? null : (short?)reader["CharSize"];
                     var subType = (reader["SubType"] == DBNull.Value) ? null : (short?)reader["SubType"];
                     var nullFlag = reader["NullFlag"] == DBNull.Value;
-                    yield return new ColumInfo(((string)reader["Name"]).TrimEnd(), (short)reader["Type"], subType, size, GetConstraint(key), ((string)reader["FieldSource"]).TrimEnd(), nullFlag);
+                    var precision = (reader["FieldPrecision"] == DBNull.Value) ? null : (short?)reader["FieldPrecision"];
+                    var scale = (reader["FieldScale"] == DBNull.Value) ? null : (short?)reader["FieldScale"];
+                    var type = new FieldType((short)reader["Type"], subType, size, precision, scale);
+
+                    yield return new ColumInfo(((string)reader["Name"]).TrimEnd(), type, GetConstraint(key), ((string)reader["FieldSource"]).TrimEnd(), nullFlag);
                 }
             }
         }
@@ -176,34 +180,53 @@ namespace FAManagementStudio.Models
         }
     }
 
-
-
-    public class ColumInfo
+    public class FieldType
     {
-        public string ColumName { get; set; }
-        public string ColumType { get; set; }
-        public string DomainName { get; set; }
-        public bool NullFlag { get; set; }
+        public short Type { get; set; }
+        public short? FieldSubType { get; set; }
+        public short? CharactorLength { get; set; }
+        public short? FieldPrecision { get; set; }
+        public short? FieldScale { get; set; }
 
-        public ConstraintsKind KeyKind { get; set; }
-
-        public ColumInfo(string name, short type, short? subSype, short? size, ConstraintsKind keyKind, string domainName, bool nullFlag)
+        public FieldType(short type, short? subType, short? cLength, short? precision, short? scale)
         {
-            ColumName = name;
-            ColumType = GetTypeFromFirebirdType(type, subSype) + (size.HasValue ? $"({size.ToString()})" : "");
-            KeyKind = keyKind;
-            DomainName = domainName;
-            NullFlag = nullFlag;
+            Type = type;
+            FieldSubType = subType;
+            CharactorLength = cLength;
+            FieldPrecision = precision;
+            FieldScale = scale;
         }
 
-        public string GetTypeFromFirebirdType(short type, short? subType)
+        public override string ToString()
+        {
+            return GetTypeFromFirebirdType(Type, FieldSubType, CharactorLength, FieldPrecision, FieldScale);
+        }
+
+        private string GetFixedPointDataType(string typeName, short? subType, short? precision, short? scale)
+        {
+            if (subType.HasValue && subType != 0)
+            {
+                var fixedPoint = $"({precision}";
+                if (scale.HasValue && scale != 0)
+                {
+                    fixedPoint += $",{-scale}";
+                }
+                fixedPoint += ")";
+
+                if (subType == 1) return $"NUMERIC{fixedPoint}";
+                if (subType == 2) return $"DECIMAL{fixedPoint}";
+            }
+            return typeName;
+        }
+
+        private string GetTypeFromFirebirdType(short type, short? subType, short? cLength, short? precision, short? scale)
         {
             switch (type)
             {
                 case 7:
-                    return "SMALLINT";
+                    return GetFixedPointDataType("SMALLINT", subType, precision, scale);
                 case 8:
-                    return "INTEGER";
+                    return GetFixedPointDataType("INTEGER", subType, precision, scale);
                 case 9:
                     return "QUAD";
                 case 10:
@@ -215,9 +238,9 @@ namespace FAManagementStudio.Models
                 case 13:
                     return "TIME";
                 case 14:
-                    return "CHAR";
+                    return $"CHAR({cLength})";
                 case 16:
-                    return "BIGINT";
+                    return GetFixedPointDataType("BIGINT", subType, precision, scale);
                 case 17:
                     return "BOOLEAN";
                 case 27:
@@ -225,7 +248,7 @@ namespace FAManagementStudio.Models
                 case 35:
                     return "TIMESTAMP";
                 case 37:
-                    return "VARCHAR";
+                    return $"VARCHAR({cLength})";
                 case 40:
                     return "CSTRING";
                 case 45:
@@ -235,6 +258,25 @@ namespace FAManagementStudio.Models
                 default:
                     return "";
             }
+        }
+    }
+
+    public class ColumInfo
+    {
+        public string ColumName { get; set; }
+        public FieldType ColumType { get; set; }
+        public string DomainName { get; set; }
+        public bool NullFlag { get; set; }
+
+        public ConstraintsKind KeyKind { get; set; }
+
+        public ColumInfo(string name, FieldType type, ConstraintsKind keyKind, string domainName, bool nullFlag)
+        {
+            ColumName = name;
+            ColumType = type;
+            KeyKind = keyKind;
+            DomainName = domainName;
+            NullFlag = nullFlag;
         }
     }
 }
