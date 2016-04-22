@@ -282,17 +282,11 @@ namespace FAManagementStudio.Models
             for (var i = 0; i < array.Length; i++)
             {
                 var query = array[i].Trim();
+                //Escape Comment State
+                query = Regex.Replace(query, "--.*(\r\n)?", "");
+
+                query = query.Trim(' ', '\r', '\n');
                 if (string.IsNullOrEmpty(query)) continue;
-                var chIdx = 0;
-                while ((query[chIdx] == '\r') || (query[chIdx] == '\n'))
-                {
-                    chIdx++;
-                }
-                if (chIdx == query.Length) continue;
-                if (0 < chIdx)
-                {
-                    query = query.Substring(chIdx);
-                }
 
                 yield return query;
             }
