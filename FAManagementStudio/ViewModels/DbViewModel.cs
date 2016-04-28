@@ -6,6 +6,7 @@ using System.Text;
 using System.Windows.Data;
 using System.Linq;
 using FAManagementStudio.ViewModels;
+using System;
 
 namespace FAManagementStudio.ViewModels
 {
@@ -146,7 +147,7 @@ public class TableViewModel : BindableBase
                             .Distinct()
                             .Select(x => $"CREATE DOMAIN {x.ColumType} AS {x.ColumDataType};\r\n");
         var domainStr = string.Join("", domain.ToArray());
-        return domainStr + $"CREATE TABLE {TableName} (\r\n  { string.Join(",\r\n  ", colums.Union(index).ToArray())}\r\n)";
+        return domainStr + $"CREATE TABLE {TableName} ({Environment.NewLine}  { string.Join($",{Environment.NewLine}  ", colums.Union(index).ToArray()) + Environment.NewLine})";
     }
 }
 
