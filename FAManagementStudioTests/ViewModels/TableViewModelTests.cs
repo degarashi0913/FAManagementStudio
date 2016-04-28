@@ -39,13 +39,13 @@ namespace Tests
             table.Indexs.Add(idxVm);
 
             table.GetDdl(dbVm).Is(
-@"CREATE TABLE TEST (
-  COL1 INTEGER NOT NULL,
-  COL2 VARCHAR(100) NOT NULL,
-  COL3 TIMESTAMP NOT NULL,
-  COL4 BLOB,
-  PRIMARY KEY (COL1)
-)");
+"CREATE TABLE TEST (" + Environment.NewLine +
+"  COL1 INTEGER NOT NULL," + Environment.NewLine +
+"  COL2 VARCHAR(100) NOT NULL," + Environment.NewLine +
+"  COL3 TIMESTAMP NOT NULL," + Environment.NewLine +
+"  COL4 BLOB," + Environment.NewLine +
+"  PRIMARY KEY (COL1)" + Environment.NewLine +
+")");
         }
         [TestMethod()]
         public void GetDdlTest2()
@@ -81,16 +81,16 @@ namespace Tests
             table.Indexs.Add(idxVm);
 
             table.GetDdl(dbVm).Is(
-@"CREATE TABLE TEST (
-  COL1 INTEGER NOT NULL,
-  COL2 VARCHAR(100) NOT NULL,
-  COL3 TIMESTAMP NOT NULL,
-  COL4 BLOB,
-  COL5 NUMERIC(4),
-  COL6 DECIMAL(4,2),
-  COL7 DECIMAL(10,4),
-  CONSTRAINT COMPLEXKEY PRIMARY KEY (COL1, COL2)
-)");
+"CREATE TABLE TEST (" + Environment.NewLine +
+"  COL1 INTEGER NOT NULL," + Environment.NewLine +
+"  COL2 VARCHAR(100) NOT NULL," + Environment.NewLine +
+"  COL3 TIMESTAMP NOT NULL," + Environment.NewLine +
+"  COL4 BLOB," + Environment.NewLine +
+"  COL5 NUMERIC(4)," + Environment.NewLine +
+"  COL6 DECIMAL(4,2)," + Environment.NewLine +
+"  COL7 DECIMAL(10,4)," + Environment.NewLine +
+"  CONSTRAINT COMPLEXKEY PRIMARY KEY (COL1, COL2)" + Environment.NewLine +
+")");
         }
         [TestMethod()]
         public void GetDdlTest3()
@@ -120,15 +120,15 @@ namespace Tests
             table.Indexs.Add(idxVm);
 
             table.GetDdl(dbVm).Is(
-@"CREATE DOMAIN SARARY AS INTEGER;
-CREATE DOMAIN NAME AS VARCHAR(100);
-CREATE TABLE TEST (
-  COL1 SARARY NOT NULL,
-  COL2 NAME NOT NULL,
-  COL3 TIMESTAMP NOT NULL,
-  COL4 BLOB,
-  CONSTRAINT COMPLEXKEY PRIMARY KEY (COL1, COL2)
-)");
+"CREATE DOMAIN SARARY AS INTEGER;" + Environment.NewLine +
+"CREATE DOMAIN NAME AS VARCHAR(100);" + Environment.NewLine +
+"CREATE TABLE TEST (" + Environment.NewLine +
+"  COL1 SARARY NOT NULL," + Environment.NewLine +
+"  COL2 NAME NOT NULL," + Environment.NewLine +
+"  COL3 TIMESTAMP NOT NULL," + Environment.NewLine +
+"  COL4 BLOB," + Environment.NewLine +
+"  CONSTRAINT COMPLEXKEY PRIMARY KEY (COL1, COL2)" + Environment.NewLine +
+")");
         }
     }
 }
