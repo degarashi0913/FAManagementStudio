@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Windows.Data;
 using System.Linq;
+using FAManagementStudio.ViewModels;
 
 namespace FAManagementStudio.ViewModels
 {
@@ -20,6 +21,7 @@ namespace FAManagementStudio.ViewModels
 
         public List<TableViewModel> Tables { get; } = new List<TableViewModel>();
         public List<TriggerViewModel> Triggers { get; } = new List<TriggerViewModel>();
+        public List<IndexViewModel> Indexes { get; } = new List<IndexViewModel>();
 
         public string ConnectionString { get { return _dbInfo.ConnectionString; } }
         public string Path { get { return _dbInfo.Path; } }
@@ -62,6 +64,7 @@ namespace FAManagementStudio.ViewModels
                     Tables.Add(vm);
                 }
                 Triggers.AddRange(Tables.SelectMany(x => x.Triggers));
+                Indexes.AddRange(Tables.SelectMany(x => x.Indexs));
                 RaisePropertyChanged(nameof(Tables));
                 RaisePropertyChanged(nameof(Triggers));
             }
@@ -104,36 +107,46 @@ public class TableViewModel : BindableBase
     public List<TriggerViewModel> Triggers { get; } = new List<TriggerViewModel>();
     public List<IndexViewModel> Indexs { get; } = new List<IndexViewModel>();
 
-    public string GetDdl()
+    public string GetDdl(DbViewModel dbVm)
     {
         var colums = Colums.Select(x =>
         {
             var sql = $"{x.ColumName} {x.ColumType}";
-            if (x.KeyKind == ConstraintsKind.Primary && Indexs.Count(idx => idx.FieldNames.Contains(x.ColumName)) < 1)
-            {
-                sql += " primary key";
-            }
-            else if (x.KeyKind == ConstraintsKind.NotNull)
+            if (!x.NullFlag)
             {
                 sql += " not null";
             }
             return sql.ToUpper();
         });
 
-        var index = Indexs.GroupBy(x => x.IndexName)
-                .Where(x => 0 < x.Count())
+        var index = Indexs
                 .Select(x =>
                 {
-                    var sql = "PRIMARY KEY (";
-                    foreach (var col in x)
+                    var sql = x.IndexName.StartsWith("rdb", System.StringComparison.OrdinalIgnoreCase) ? "" : $"CONSTRAINT {x.IndexName} ";
+                    switch (x.Kind)
                     {
-                        sql += col.FieldNames;
+                        case ConstraintsKind.Primary:
+                            sql += $"PRIMARY KEY ({string.Join(", ", x.FieldNames.ToArray())})";
+                            break;
+                        case ConstraintsKind.Foreign:
+                            var idx = dbVm.Indexes.Where(dbIdx => dbIdx.IndexName == x.IndexName).First();
+                            sql += $"FOREIGN KEY({string.Join(", ", x.FieldNames.ToArray())}) REFERENCES {idx.TableName} ({string.Join(", ", idx.FieldNames.ToArray())})";
+                            break;
+                        case ConstraintsKind.Unique:
+                            sql += $"UNIQUE ({string.Join(", ", x.FieldNames.ToArray())})";
+                            break;
+                        default:
+                            return "";
                     }
-                    sql += ")";
                     return sql;
                 });
 
-        return $"CREATE TABLE {TableName.ToUpper()} ({ string.Join(", ", colums.Union(index).ToArray())})";
+        var domain = Colums.Where(x => x.IsDomainType)
+                            .Select(x => new { x.ColumType, x.ColumDataType })
+                            .Distinct()
+                            .Select(x => $"CREATE DOMAIN {x.ColumType} AS {x.ColumDataType};\r\n");
+        var domainStr = string.Join("", domain.ToArray());
+        return domainStr + $"CREATE TABLE {TableName} (\r\n  { string.Join(",\r\n  ", colums.Union(index).ToArray())}\r\n)";
     }
 }
 
@@ -145,9 +158,47 @@ public class ColumViewMoodel : BindableBase
         _inf = inf;
     }
     public string ColumName { get { return _inf.ColumName; } }
-    public string DisplayName { get { return $"{_inf.ColumName} ({_inf.ColumType})"; } }
-    public string ColumType { get { return _inf.ColumType; } }
+    public string DisplayName
+    {
+        get
+        {
+            if (_inf.DomainName.StartsWith("RDB$"))
+            {
+                return $"{_inf.ColumName} ({_inf.ColumType.ToString()})";
+            }
+            else
+            {
+                return $"{_inf.ColumName} ({_inf.DomainName})";
+            }
+        }
+    }
+    public string ColumType
+    {
+        get
+        {
+            if (_inf.DomainName.StartsWith("RDB$"))
+            {
+                return _inf.ColumType.ToString();
+            }
+            else
+            {
+                return _inf.DomainName;
+            }
+        }
+    }
+
+    public string ColumDataType
+    {
+        get { return _inf.ColumType.ToString(); }
+    }
+
+    public bool IsDomainType
+    {
+        get { return !_inf.DomainName.StartsWith("RDB$"); }
+    }
+
     public ConstraintsKind KeyKind { get { return _inf.KeyKind; } }
+    public bool NullFlag { get { return _inf.NullFlag; } }
 }
 
 public class TriggerViewModel : BindableBase
@@ -171,6 +222,12 @@ public class IndexViewModel
     }
 
     public string IndexName { get { return _index.Name; } }
+
+    public ConstraintsKind Kind { get { return _index.Kind; } }
+
+    public string ForignKeyName { get { return _index.ForigenKeyName; } }
+
+    public string TableName { get { return _index.TableName; } }
 
     public List<string> FieldNames { get { return _index.FieldNames; } }
 }

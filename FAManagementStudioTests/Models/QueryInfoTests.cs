@@ -70,6 +70,64 @@ namespace FAManagementStudio.Models.Tests
                 "select* from A", "create table V(a integer, b nvarchar(5))" });
         }
 
+        [TestMethod()]
+        public void GetStatementTest2()
+        {
+            var inf = new QueryInfo();
+            var input1 =
+@"--comment1
+create trigger set_foo_primary for foo
+before insert
+as begin
+new.a = gen_id(gen_foo, 1);
+end;
+
+--comment2  
+select *
+from test
+where a = 1;
+
+--comment3
+create trigger set_foo_primary for foo2
+before insert
+as begin
+new.a = gen_id(gen_foo, 1);
+end;
+
+select * from fuga where hoho = 'eeee'
+--comment4";
+
+            (inf.AsDynamic().GetStatement(input1) as string[]).IsStructuralEqual(new[] {
+@"create trigger set_foo_primary for foo
+before insert
+as begin
+new.a = gen_id(gen_foo, 1);
+end",
+@"select *
+from test
+where a = 1",
+@"create trigger set_foo_primary for foo2
+before insert
+as begin
+new.a = gen_id(gen_foo, 1);
+end",
+@"select * from fuga where hoho = 'eeee'"});
+        }
+
+        [TestMethod()]
+        public void GetStatementTest3()
+        {
+            var inf = new QueryInfo();
+            var input1 =
+@"--comment1
+select * from fuga where hoho = 'eeee' --comment2
+--comment3";
+
+            (inf.AsDynamic().GetStatement(input1) as string[]).IsStructuralEqual(new[] {
+@"select * from fuga where hoho = 'eeee'"});
+        }
+
+
         private void SetupTestDb()
         {
             FbConnection.CreateDatabase(GetConnectionString(), 4096, true, true);
