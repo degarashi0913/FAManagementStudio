@@ -108,7 +108,6 @@
     <Compile Include="ViewModels\QueryTabViewModel.cs" />
     <Compile Include="Views\Behaviors\DynamicTabControlBehavior.cs" />
     <Compile Include="Views\Behaviors\FileDropBehavior.cs" />
-    <Compile Include="Views\Behaviors\ListBoxDropBehavior.cs" />
     <Compile Include="Views\Behaviors\TreeViewSelectedItemBehavior.cs" />
     <Compile Include="Common\BindableBase.cs" />
     <Compile Include="Common\CommandReference.cs" />

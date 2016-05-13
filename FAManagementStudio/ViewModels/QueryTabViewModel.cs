@@ -36,6 +36,11 @@ namespace FAManagementStudio.ViewModels
             LoadQuery = new RelayCommand(() => LoadQueryMethod());
             GivingNameSave = new RelayCommand(() => GivingNameSaveMethod());
             OverwriteSave = new RelayCommand(() => OverwriteSaveMethod());
+            DropFile = new RelayCommand<string>(path =>
+            {
+                _loadPath = path;
+                Query = FileLoad(_loadPath, _fileEncoding);
+            });
         }
 
         public static QueryTabViewModel GetNewInstance()
@@ -46,6 +51,10 @@ namespace FAManagementStudio.ViewModels
         public ICommand LoadQuery { get; private set; }
         public ICommand GivingNameSave { get; private set; }
         public ICommand OverwriteSave { get; private set; }
+
+        public ICommand DropFile { get; private set; }
+
+        private Encoding _fileEncoding = Encoding.UTF8;
 
         private string _loadPath = "";
 
@@ -58,9 +67,14 @@ namespace FAManagementStudio.ViewModels
                 if (dialog.ShowDialog() != DialogResult.OK) return;
                 _loadPath = dialog.FileName;
             }
-            using (var stream = new StreamReader(_loadPath, Encoding.UTF8))
+            Query = FileLoad(_loadPath, _fileEncoding);
+        }
+
+        private string FileLoad(string path, Encoding enc)
+        {
+            using (var stream = new StreamReader(path, enc))
             {
-                Query = stream.ReadToEnd();
+                return stream.ReadToEnd();
             }
         }
 
@@ -74,7 +88,7 @@ namespace FAManagementStudio.ViewModels
                 if (dialog.ShowDialog() != DialogResult.OK) return;
                 _loadPath = dialog.FileName;
             }
-            SaveQuery(_loadPath);
+            SaveQuery(_loadPath, _fileEncoding);
         }
 
         private void OverwriteSaveMethod()
@@ -84,12 +98,12 @@ namespace FAManagementStudio.ViewModels
                 GivingNameSaveMethod();
                 return;
             }
-            SaveQuery(_loadPath);
+            SaveQuery(_loadPath, _fileEncoding);
         }
 
-        private void SaveQuery(string path)
+        private void SaveQuery(string path, Encoding enc)
         {
-            using (var stream = new StreamWriter(path, false, Encoding.UTF8))
+            using (var stream = new StreamWriter(path, false, enc))
             {
                 stream.Write(Query);
             }
