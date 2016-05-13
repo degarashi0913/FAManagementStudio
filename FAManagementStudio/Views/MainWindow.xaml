@@ -186,11 +186,6 @@
                     <i:Interaction.Behaviors>
                         <b:DynamicTabControlBehavior AddTabCommand="{Binding AddTab}"/>
                     </i:Interaction.Behaviors>
-                    <TabControl.ContextMenu>
-                        <ContextMenu >
-                            <MenuItem Header="削除" Command="{Binding DeleteTabItem}"/>
-                        </ContextMenu>
-                    </TabControl.ContextMenu>
                     <TabControl.Resources>
                         <Style TargetType="{x:Type TabItem}">
                             <EventSetter Event="TabItem.MouseRightButtonDown" Handler="TabItem_MouseRightButtonDown"/>
@@ -199,14 +194,29 @@
                     </TabControl.Resources>
                     <TabControl.ItemTemplate>
                         <DataTemplate>
-                            <TextBlock Text="{Binding Header}" />
+                            <StackPanel>
+                                <StackPanel.ContextMenu>
+                                    <ContextMenu>
+                                        <MenuItem Header="閉じる" Command="{Binding DeleteTabItem, Source={ StaticResource viewModel}}"/>
+                                        <Separator />
+                                        <MenuItem Header="読み込み" Command="{Binding LoadQuery}"/>
+                                        <MenuItem Header="名前を付けて保存" Command="{Binding GivingNameSave}"/>
+                                        <MenuItem Header="上書き保存" Command="{Binding OverwriteSave}"/>
+                                    </ContextMenu>
+                                </StackPanel.ContextMenu>
+                                <TextBlock Text="{Binding Header}" />
+                            </StackPanel>
                         </DataTemplate>
                     </TabControl.ItemTemplate>
                     <TabControl.ContentTemplate>
                         <DataTemplate>
                             <TextBox  Text="{Binding Query, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" AcceptsReturn="True" TextWrapping="Wrap" Margin="0,2" Grid.RowSpan="2" VerticalScrollBarVisibility="Auto">
+                                <TextBox.Resources>
+                                    <Common:CommandReference x:Key="OverwriteSave" Command="{Binding OverwriteSave}"/>
+                                </TextBox.Resources>
                                 <TextBox.InputBindings>
                                     <KeyBinding Key="F5" Command="{StaticResource Execute}" />
+                                    <KeyBinding Modifiers="Ctrl" Key="S" Command="{StaticResource OverwriteSave}" />
                                 </TextBox.InputBindings>
                             </TextBox>
                         </DataTemplate>
