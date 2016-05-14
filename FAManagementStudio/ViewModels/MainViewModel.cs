@@ -105,12 +105,15 @@ namespace FAManagementStudio.ViewModels
                 if (string.IsNullOrEmpty(path)) return;
                 if (!File.Exists(path)) return;
                 var db = new DbViewModel();
-                await TaskEx.Run(() =>
+                var isLoad = await TaskEx.Run(() =>
                 {
-                    db.LoadDatabase(path);
+                    return db.LoadDatabase(path);
                 });
-                Databases.Add(db);
-                _history.DataAdd(path);
+                if (isLoad)
+                {
+                    Databases.Add(db);
+                    _history.DataAdd(path);
+                }
             });
 
             ExecuteQuery = new RelayCommand(async () =>

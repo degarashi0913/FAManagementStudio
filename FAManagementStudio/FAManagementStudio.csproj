@@ -102,6 +102,9 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Common\Definitions.cs" />
+    <Compile Include="Models\FirebirdInfo.cs" />
+    <Compile Include="Models\Firebird\HeaderPage.cs" />
+    <Compile Include="Models\Firebird\FbUtility.cs" />
     <Compile Include="Models\QueryResult.cs" />
     <Compile Include="ViewModels\DbViewModel.cs" />
     <Compile Include="ViewModels\QueryResultViewModel.cs" />

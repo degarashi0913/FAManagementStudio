@@ -41,8 +41,15 @@ namespace FAManagementStudio.ViewModels
             LoadDatabase(path);
         }
 
-        public void LoadDatabase(string path)
+        private bool CanLoadDatabase(string path)
         {
+            var info = new FirebirdInfo();
+            return info.IsTargetOdsDb(path);
+        }
+
+        public bool LoadDatabase(string path)
+        {
+            if (!CanLoadDatabase(path)) return false;
             _dbInfo.Path = path;
             using (var con = GetConnection(path))
             {
@@ -69,6 +76,7 @@ namespace FAManagementStudio.ViewModels
                 RaisePropertyChanged(nameof(Tables));
                 RaisePropertyChanged(nameof(Triggers));
             }
+            return true;
         }
 
         public void ReloadDatabase()

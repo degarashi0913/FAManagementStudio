@@ -25,7 +25,6 @@ namespace FAManagementStudio.Views.Behaviors
 
         private void OnDrop(object sender, DragEventArgs e)
         {
-            //先頭だけ
             var paths = (string[])e.Data.GetData(DataFormats.FileDrop);
             var count = FetchMode == FilePathFetchMode.Once ? 1 : paths.Length;
             for (var i = 0; i < count; i++)
