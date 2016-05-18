@@ -41,12 +41,14 @@
             <RowDefinition Height="22"/>
             <RowDefinition Height="1*"/>
         </Grid.RowDefinitions>
-        <Grid>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="1*"/>
-                <ColumnDefinition Width="20"/>
-            </Grid.ColumnDefinitions>
-            <StackPanel Grid.Row="0"  Orientation="Horizontal">
+        <DockPanel>
+            <Button Command="{Binding OpenGitPage}" DockPanel.Dock="Right" Width="20">
+                <TextBlock>
+                    <Bold>？</Bold>
+                </TextBlock>
+            </Button>
+            <Image Width="18" Height="18" Source="../Image/UpdateImage.png" Visibility="{Binding ExistNewVersion}" DockPanel.Dock="Right" ToolTip="最新版出てます" Margin="0,0,2,0"/>
+            <StackPanel Orientation="Horizontal">
                 <Button Command="{Binding CreateDatabase}">
                     <StackPanel Orientation="Horizontal">
                         <Image Source="../Image/action_add_16xLG.png" />
@@ -72,12 +74,8 @@
                 </Button>
                 <TextBlock Text="{Binding CurrentDatabase.Path}" VerticalAlignment="Center" />
             </StackPanel>
-            <Button Grid.Column="1" Command="{Binding OpenGitPage}">
-                <TextBlock>
-                    <Bold>？</Bold>
-                </TextBlock>
-            </Button>
-        </Grid>
+
+        </DockPanel>
         <Grid Grid.Row="1" HorizontalAlignment="Stretch">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="80" />

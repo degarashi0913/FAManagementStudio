@@ -1,13 +1,16 @@
 ﻿using FAManagementStudio.Common;
 using FAManagementStudio.Models;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Reflection;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
@@ -19,6 +22,7 @@ namespace FAManagementStudio.ViewModels
         public MainViewModel()
         {
             SetCommand();
+            SetNewVersionStatus();
         }
         private DbViewModel _db = new DbViewModel();
         private QueryInfo _queryInf = new QueryInfo();
@@ -50,6 +54,20 @@ namespace FAManagementStudio.ViewModels
                 RaisePropertyChanged(nameof(Tables));
                 RaisePropertyChanged(nameof(CurrentDatabase));
                 RaisePropertyChanged(nameof(Triggers));
+            }
+        }
+
+        private Visibility _existNewVersion = Visibility.Collapsed;
+        public Visibility ExistNewVersion
+        {
+            get
+            {
+                return _existNewVersion;
+            }
+            set
+            {
+                _existNewVersion = value;
+                RaisePropertyChanged(nameof(ExistNewVersion));
             }
         }
 
@@ -288,6 +306,41 @@ namespace FAManagementStudio.ViewModels
         private string EscapeKeyWord(string colum)
         {
             return _sqlKeyWord.Contains(colum.ToLower()) ? $"'{colum}'" : colum;
+        }
+
+        private async void SetNewVersionStatus()
+        {
+            try
+            {
+                if ((AppSettingsManager.StartTime - AppSettingsManager.PreviousActivation).Days < 1) return;
+
+                var latestVersion = await GetNewVirsion();
+                var version = Assembly.GetExecutingAssembly().GetName().Version;
+                if (latestVersion != $"{version.Major}.{version.Minor}.{version.Build}")
+                {
+                    ExistNewVersion = Visibility.Visible;
+                };
+            }
+            catch { }
+        }
+
+        private Task<string> GetNewVirsion()
+        {
+            return TaskEx.Run<string>(() =>
+            {
+                var reqest = (HttpWebRequest)WebRequest.Create(@"https://github.com/degarashi0913/FAManagementStudio/releases/latest");
+                reqest.UserAgent = "FAManagementStudio";
+                reqest.Method = "GET";
+                using (var stream = reqest.GetResponse().GetResponseStream())
+                using (var readStream = new StreamReader(stream, Encoding.UTF8))
+                {
+                    var html = readStream.ReadToEnd();
+                    var reg = Regex.Matches(html, @"\<title\>(?<title>.*)\<\/title\>");
+                    var title = reg[0].Groups["title"].Value;
+                    var verReg = Regex.Match(title, @"FAManagementStudio-v(?<version>\d*\.\d*\.\d*)");
+                    return verReg.Groups["version"].Value;
+                }
+            });
         }
     }
 }

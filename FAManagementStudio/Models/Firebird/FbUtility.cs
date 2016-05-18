@@ -7,7 +7,7 @@ namespace FAManagementStudio.Models.Firebird
     {
         private const ushort FirebirdFlag = 0x8000;
 
-        public static T RawDataToObject<T>(byte[] rawData) where T : struct
+        private T ConvertFromBinary<T>(byte[] rawData) where T : struct
         {
             var pinnedData = GCHandle.Alloc(rawData, GCHandleType.Pinned);
             try
@@ -26,7 +26,7 @@ namespace FAManagementStudio.Models.Firebird
             {
                 var buf = new byte[1024];
                 stream.Read(buf, 0, buf.Length);
-                var header = RawDataToObject<HeaderPage>(buf);
+                var header = ConvertFromBinary<HeaderPage>(buf);
                 return header.hdr_ods_version & ~FirebirdFlag;
             }
         }
