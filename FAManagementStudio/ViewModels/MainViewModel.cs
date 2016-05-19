@@ -22,7 +22,9 @@ namespace FAManagementStudio.ViewModels
         public MainViewModel()
         {
             SetCommand();
+#if !DEBUG
             SetNewVersionStatus();
+#endif
         }
         private DbViewModel _db = new DbViewModel();
         private QueryInfo _queryInf = new QueryInfo();
@@ -259,7 +261,7 @@ namespace FAManagementStudio.ViewModels
 
             if (table == null)
             {
-                
+
                 return Tables.Where(x => 0 < x.Colums.Count(c => c == (ColumViewMoodel)treeitem)).First();
             }
             return table;
@@ -330,11 +332,20 @@ namespace FAManagementStudio.ViewModels
         {
             try
             {
-                if ((AppSettingsManager.StartTime - AppSettingsManager.PreviousActivation).Days < 1) return;
-
-                var latestVersion = await GetNewVirsion();
+                var latestVersion = "";
                 var version = Assembly.GetExecutingAssembly().GetName().Version;
-                if (latestVersion != $"{version.Major}.{version.Minor}.{version.Build}")
+                var versionStr = $"{version.Major}.{version.Minor}.{version.Build}";
+                if ((AppSettingsManager.StartTime - AppSettingsManager.PreviousActivation).Days < 1)
+                {
+                    latestVersion = string.IsNullOrEmpty(AppSettingsManager.Version) ? versionStr : AppSettingsManager.Version;
+                }
+                else
+                {
+                    latestVersion = await GetNewVirsion();
+                    AppSettingsManager.Version = latestVersion;
+                }
+
+                if (latestVersion != versionStr)
                 {
                     ExistNewVersion = Visibility.Visible;
                 };
