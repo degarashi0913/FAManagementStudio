@@ -72,7 +72,7 @@
                         <TextBlock Text="実行" Margin="4,0"/>
                     </StackPanel>
                 </Button>
-                <TextBlock Text="{Binding CurrentDatabase.Path}" VerticalAlignment="Center" />
+                <TextBlock Margin="2,0,0,0" Text="{Binding CurrentDatabase.Path}" VerticalAlignment="Center" />
             </StackPanel>
 
         </DockPanel>
@@ -136,11 +136,13 @@
                         <ContextMenu x:Key="contextMenu">
                             <MenuItem Header="EXEC SELECT *" Command="{Binding ExecSqlTemplate, Source={StaticResource viewModel}}" CommandParameter="{x:Static Common:SqlKind.Select}" />
                             <MenuItem Header="EXEC SELECT FIRST(1000) *" Command="{Binding ExecLimitedSql, Source={StaticResource viewModel}}" CommandParameter="1000" />
+                            <Separator />
                             <MenuItem Header="SELECT *" Command="{Binding SetSqlTemplate, Source={StaticResource viewModel}}" CommandParameter="{x:Static Common:SqlKind.Select}" />
                             <MenuItem Header="INSERT *" Command="{Binding SetSqlTemplate, Source={StaticResource viewModel}}" CommandParameter="{x:Static Common:SqlKind.Insert}" />
                             <MenuItem Header="UPDATE *" Command="{Binding SetSqlTemplate, Source={StaticResource viewModel}}" CommandParameter="{x:Static Common:SqlKind.Update}" />
+                            <Separator />
                             <MenuItem Header="Reverse DB(開発中)">
-                                <MenuItem Header="CREATE TABLE(仮)" Command="{Binding SetSqlDataTemplate, Source={StaticResource viewModel}}" CommandParameter="table"/>
+                                <MenuItem Header="CREATE(仮)" Command="{Binding SetSqlDataTemplate, Source={StaticResource viewModel}}" CommandParameter="table"/>
                                 <MenuItem Header="INSERT(仮)" Command="{Binding SetSqlDataTemplate, Source={StaticResource viewModel}}" CommandParameter="insert"/>
                             </MenuItem>
                         </ContextMenu>
@@ -154,7 +156,7 @@
                         <HierarchicalDataTemplate ItemsSource="{Binding Colums}">
                             <StackPanel Orientation="Horizontal" Margin="-2,0,0,0" ContextMenu="{StaticResource contextMenu}">
                                 <Image Source="{Binding Kind, Converter={StaticResource TableIconConverter}}" Width="11" Stretch="Uniform"/>
-                                <TextBlock Text="{Binding Path=DisplayName}"/>
+                                <TextBlock Text="{Binding Path=TableName}"/>
                             </StackPanel>
                             <HierarchicalDataTemplate.ItemTemplate>
                                 <HierarchicalDataTemplate >

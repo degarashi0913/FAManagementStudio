@@ -32,7 +32,7 @@ namespace FAManagementStudio.ViewModels
         public int TagSelectedIndex { get; set; } = 0;
         public QueryTabViewModel TagSelectedValue { get; set; }
 
-        public List<TableViewModel> Tables
+        public List<ITableViewModel> Tables
         {
             get
             {
@@ -227,6 +227,7 @@ namespace FAManagementStudio.ViewModels
                 }
                 else if (s == "insert")
                 {
+                    if (table is ViewViewModel) return;
                     var colums = table.Colums.Select(x => x.ColumName).ToArray();
                     var escapedColumsStr = string.Join(", ", colums.Select(x => EscapeKeyWord(x)).ToArray());
 
@@ -252,12 +253,13 @@ namespace FAManagementStudio.ViewModels
             });
         }
 
-        private TableViewModel GetTreeViewTableName(object treeitem)
+        private ITableViewModel GetTreeViewTableName(object treeitem)
         {
-            var table = treeitem as TableViewModel;
+            var table = treeitem as ITableViewModel;
 
             if (table == null)
             {
+                
                 return Tables.Where(x => 0 < x.Colums.Count(c => c == (ColumViewMoodel)treeitem)).First();
             }
             return table;
@@ -351,10 +353,8 @@ namespace FAManagementStudio.ViewModels
                 using (var readStream = new StreamReader(stream, Encoding.UTF8))
                 {
                     var html = readStream.ReadToEnd();
-                    var reg = Regex.Matches(html, @"\<title\>(?<title>.*)\<\/title\>");
-                    var title = reg[0].Groups["title"].Value;
-                    var verReg = Regex.Match(title, @"FAManagementStudio-v(?<version>\d*\.\d*\.\d*)");
-                    return verReg.Groups["version"].Value;
+                    var title = Regex.Match(html, @"\<title\>(?<title>.*)\<\/title\>").Groups["title"].Value;
+                    return Regex.Match(title, @"FAManagementStudio-v(?<version>\d*\.\d*\.\d*)").Groups["version"].Value;
                 }
             });
         }
