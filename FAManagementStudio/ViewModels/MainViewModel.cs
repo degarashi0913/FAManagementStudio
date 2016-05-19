@@ -73,6 +73,7 @@ namespace FAManagementStudio.ViewModels
 
         public object SelectedTableItem { get; set; }
 
+
         public ObservableCollection<DbViewModel> Databases { get; set; } = new ObservableCollection<DbViewModel>();
 
         public ObservableCollection<QueryResultViewModel> Datasource { get; } = new ObservableCollection<QueryResultViewModel> { new QueryResultViewModel("Result") };

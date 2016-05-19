@@ -132,6 +132,7 @@
                     </i:Interaction.Behaviors>
                     <TreeView.Resources>
                         <c:ConstraintsKeyToIconConverter x:Key="KeyConverter"/>
+                        <c:TableIconConverter x:Key="TableIconConverter" />
                         <ContextMenu x:Key="contextMenu">
                             <MenuItem Header="EXEC SELECT *" Command="{Binding ExecSqlTemplate, Source={StaticResource viewModel}}" CommandParameter="{x:Static Common:SqlKind.Select}" />
                             <MenuItem Header="EXEC SELECT FIRST(1000) *" Command="{Binding ExecLimitedSql, Source={StaticResource viewModel}}" CommandParameter="1000" />
@@ -151,7 +152,10 @@
                     </TreeView.ItemContainerStyle>
                     <TreeView.ItemTemplate >
                         <HierarchicalDataTemplate ItemsSource="{Binding Colums}">
-                            <TextBlock Text="{Binding Path=DisplayName}" ContextMenu="{StaticResource contextMenu}"/>
+                            <StackPanel Orientation="Horizontal" Margin="-2,0,0,0" ContextMenu="{StaticResource contextMenu}">
+                                <Image Source="{Binding Kind, Converter={StaticResource TableIconConverter}}" Width="11" Stretch="Uniform"/>
+                                <TextBlock Text="{Binding Path=DisplayName}"/>
+                            </StackPanel>
                             <HierarchicalDataTemplate.ItemTemplate>
                                 <HierarchicalDataTemplate >
                                     <StackPanel Orientation="Horizontal" Margin="-11,0,0,0" ContextMenu="{StaticResource contextMenu}">

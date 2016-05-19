@@ -1,4 +1,5 @@
-﻿using FAManagementStudio.Models;
+﻿using FAManagementStudio.Common;
+using FAManagementStudio.Models;
 using FAManagementStudio.ViewModels;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
@@ -16,7 +17,7 @@ namespace Tests
         public void GetDdlTest1()
         {
             var dbVm = new DbViewModel();
-            var table = new TableViewModel(new TableInfo("TEST"));
+            var table = new TableViewModel("TEST", TableKind.Table);
             dbVm.Tables.Add(table);
 
             var col1 = new ColumInfo("COL1", new FieldType(8, null, null, null, null), FAManagementStudio.Common.ConstraintsKind.Primary, "RDB$1", false);
@@ -51,7 +52,7 @@ namespace Tests
         public void GetDdlTest2()
         {
             var dbVm = new DbViewModel();
-            var table = new TableViewModel(new TableInfo("TEST"));
+            var table = new TableViewModel("TEST", TableKind.Table);
             dbVm.Tables.Add(table);
 
             var col1 = new ColumInfo("COL1", new FieldType(8, null, null, null, null), FAManagementStudio.Common.ConstraintsKind.Primary, "RDB$1", false);
@@ -96,7 +97,7 @@ namespace Tests
         public void GetDdlTest3()
         {
             var dbVm = new DbViewModel();
-            var table = new TableViewModel(new TableInfo("TEST"));
+            var table = new TableViewModel("TEST", TableKind.Table);
             dbVm.Tables.Add(table);
 
             var col1 = new ColumInfo("COL1", new FieldType(8, null, null, null, null), FAManagementStudio.Common.ConstraintsKind.Primary, "SARARY", false);

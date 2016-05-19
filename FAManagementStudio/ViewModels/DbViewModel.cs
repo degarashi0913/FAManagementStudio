@@ -56,7 +56,7 @@ namespace FAManagementStudio.ViewModels
                 con.Open();
                 foreach (var item in _dbInfo.GetTables(con))
                 {
-                    var vm = new TableViewModel(item);
+                    var vm = new TableViewModel(item.TableName, TableKind.Table);
                     foreach (var colums in item.GetColums(con))
                     {
                         vm.Colums.Add(new ColumViewMoodel(colums));
@@ -73,6 +73,15 @@ namespace FAManagementStudio.ViewModels
                 }
                 Triggers.AddRange(Tables.SelectMany(x => x.Triggers));
                 Indexes.AddRange(Tables.SelectMany(x => x.Indexs));
+                foreach (var item in _dbInfo.GetViews(con))
+                {
+                    var vm = new TableViewModel(item.ViewName, TableKind.View);
+                    foreach (var colums in item.GetColums(con))
+                    {
+                        vm.Colums.Add(new ColumViewMoodel(colums));
+                    }
+                    Tables.Add(vm);
+                }
                 RaisePropertyChanged(nameof(Tables));
                 RaisePropertyChanged(nameof(Triggers));
             }
@@ -105,13 +114,18 @@ namespace FAManagementStudio.ViewModels
 
 public class TableViewModel : BindableBase
 {
-    private TableInfo _inf;
-    public TableViewModel(TableInfo inf)
+    private string _name;
+    public TableViewModel(string name, TableKind kind)
     {
-        _inf = inf;
+        _name = name;
+        Kind = kind;
     }
-    public string TableName { get { return _inf.TableName; } }
-    public string DisplayName { get { return _inf.TableName; } }
+    public string TableName { get { return _name; } }
+    public string DisplayName { get { return _name; } }
+
+    public TableKind Kind { get; private set; }
+
+
     public List<ColumViewMoodel> Colums { get; } = new List<ColumViewMoodel>();
     public List<TriggerViewModel> Triggers { get; } = new List<TriggerViewModel>();
     public List<IndexViewModel> Indexs { get; } = new List<IndexViewModel>();

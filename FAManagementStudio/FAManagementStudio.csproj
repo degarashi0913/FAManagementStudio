@@ -124,6 +124,7 @@
     <Compile Include="Models\QueryInfo.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="Views\Behaviors\WindowBehavior.cs" />
+    <Compile Include="Views\Converters\TableIconConverter.cs" />
     <Compile Include="Views\Converters\ConstraintsKeyToIconConverter.cs" />
     <Compile Include="Views\Converters\GridSizeConverter.cs" />
     <Page Include="Views\MainWindow.xaml">
@@ -195,6 +196,10 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Image\UpdateImage.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Image\Table.png" />
+    <Resource Include="Image\View.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
