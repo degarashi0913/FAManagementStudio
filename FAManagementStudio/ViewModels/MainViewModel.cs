@@ -89,6 +89,7 @@ namespace FAManagementStudio.ViewModels
         public ICommand SetSqlTemplate { get; private set; }
         public ICommand ExecSqlTemplate { get; private set; }
         public ICommand SetSqlDataTemplate { get; private set; }
+        public ICommand ExecLimitedSql { get; private set; }
         public ICommand ReloadDatabase { get; private set; }
         public ICommand ShutdownDatabase { get; private set; }
         public ICommand AddTab { get; private set; }
@@ -144,7 +145,6 @@ namespace FAManagementStudio.ViewModels
                {
                    QueryResult.GetExecuteResult(_queryInf, CurrentDatabase.ConnectionString, TagSelectedValue.Query);
                });
-
            });
 
             DropFile = new RelayCommand<string>((string path) =>
@@ -158,13 +158,20 @@ namespace FAManagementStudio.ViewModels
                 LoadDatabase.Execute(path);
             });
 
-            SetSqlTemplate = new RelayCommand<string>((string sqlKind) =>
+            SetSqlTemplate = new RelayCommand<SqlKind>((SqlKind sqlKind) =>
             {
                 TagSelectedValue.Query = CreateSqlSentence(SelectedTableItem, sqlKind);
                 RaisePropertyChanged(nameof(Queries));
             });
 
-            ExecSqlTemplate = new RelayCommand<string>((string sqlKind) =>
+            ExecLimitedSql = new RelayCommand<string>((count) =>
+            {
+                TagSelectedValue.Query = CreateSqlSentence(SelectedTableItem, SqlKind.Select, int.Parse(count));
+                RaisePropertyChanged(nameof(Queries));
+                ExecuteQuery.Execute(null);
+            });
+
+            ExecSqlTemplate = new RelayCommand<SqlKind>((SqlKind sqlKind) =>
             {
                 SetSqlTemplate.Execute(sqlKind);
                 ExecuteQuery.Execute(null);
@@ -225,7 +232,7 @@ namespace FAManagementStudio.ViewModels
                     var insertTemplate = $"insert into {table.TableName} ({escapedColumsStr})";
 
                     var qry = new QueryInfo();
-                    var res = qry.ExecuteQuery(CurrentDatabase.ConnectionString, CreateSelectStatement(table.TableName, colums)).First();
+                    var res = qry.ExecuteQuery(CurrentDatabase.ConnectionString, CreateSelectStatement(table.TableName, colums, 0)).First();
 
                     var sb = new StringBuilder();
 
@@ -255,7 +262,7 @@ namespace FAManagementStudio.ViewModels
             return table;
         }
 
-        private string CreateSqlSentence(object treeitem, string sqlKind)
+        private string CreateSqlSentence(object treeitem, SqlKind sqlKind, int limitCount = 0)
         {
             string[] colums;
             var col = treeitem as ColumViewMoodel;
@@ -270,15 +277,15 @@ namespace FAManagementStudio.ViewModels
                 colums = new[] { col.ColumName };
             }
 
-            if (sqlKind == "select")
+            if (sqlKind == SqlKind.Select)
             {
-                return CreateSelectStatement(table.TableName, colums);
+                return CreateSelectStatement(table.TableName, colums, limitCount);
             }
-            else if (sqlKind == "insert")
+            else if (sqlKind == SqlKind.Insert)
             {
                 return CreateInsertStatement(table.TableName, colums);
             }
-            else if (sqlKind == "update")
+            else if (sqlKind == SqlKind.Update)
             {
                 return CreateUpdateStatement(table.TableName, colums);
             }
@@ -290,10 +297,11 @@ namespace FAManagementStudio.ViewModels
 
         #endregion
 
-        private string CreateSelectStatement(string tableName, string[] colums)
+        private string CreateSelectStatement(string tableName, string[] colums, int topCount)
         {
             var escapedColumsStr = string.Join(", ", colums.Select(x => EscapeKeyWord(x)).ToArray());
-            return $"select {escapedColumsStr} from {tableName}";
+            var topSentence = 0 < topCount ? $" first({topCount})" : "";
+            return $"select{topSentence} {escapedColumsStr} from {tableName}";
         }
 
         private string CreateInsertStatement(string tableName, string[] colums)
