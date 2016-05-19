@@ -47,7 +47,7 @@
                     <Bold>？</Bold>
                 </TextBlock>
             </Button>
-            <Image Width="18" Height="18" Source="../Image/UpdateImage.png" Visibility="{Binding ExistNewVersion}" DockPanel.Dock="Right" ToolTip="最新版出てます" Margin="0,0,2,0"/>
+            <Image Width="18" Height="18" Source="../Image/UpdateImage.png" Visibility="{Binding ExistNewVersion}" DockPanel.Dock="Right" ToolTip="新しいバージョンが利用できます" Margin="0,0,2,0"/>
             <StackPanel Orientation="Horizontal">
                 <Button Command="{Binding CreateDatabase}">
                     <StackPanel Orientation="Horizontal">
@@ -133,6 +133,7 @@
                     <TreeView.Resources>
                         <c:ConstraintsKeyToIconConverter x:Key="KeyConverter"/>
                         <ContextMenu x:Key="contextMenu">
+                            <MenuItem Header="EXEC SELECT *" Command="{Binding ExecSqlTemplate, Source={StaticResource viewModel}}" CommandParameter="select" />
                             <MenuItem Header="SELECT *" Command="{Binding SetSqlTemplate, Source={StaticResource viewModel}}" CommandParameter="select" />
                             <MenuItem Header="INSERT *" Command="{Binding SetSqlTemplate, Source={StaticResource viewModel}}" CommandParameter="insert" />
                             <MenuItem Header="UPDATE *" Command="{Binding SetSqlTemplate, Source={StaticResource viewModel}}" CommandParameter="update" />

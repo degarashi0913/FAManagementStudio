@@ -87,6 +87,7 @@ namespace FAManagementStudio.ViewModels
         public ICommand DbListDropFile { get; private set; }
 
         public ICommand SetSqlTemplate { get; private set; }
+        public ICommand ExecSqlTemplate { get; private set; }
         public ICommand SetSqlDataTemplate { get; private set; }
         public ICommand ReloadDatabase { get; private set; }
         public ICommand ShutdownDatabase { get; private set; }
@@ -161,6 +162,12 @@ namespace FAManagementStudio.ViewModels
             {
                 TagSelectedValue.Query = CreateSqlSentence(SelectedTableItem, sqlKind);
                 RaisePropertyChanged(nameof(Queries));
+            });
+
+            ExecSqlTemplate = new RelayCommand<string>((string sqlKind) =>
+            {
+                SetSqlTemplate.Execute(sqlKind);
+                ExecuteQuery.Execute(null);
             });
 
             ReloadDatabase = new RelayCommand(() => { CurrentDatabase.ReloadDatabase(); });
