@@ -1,4 +1,5 @@
-﻿using FAManagementStudio.Models;
+﻿using FAManagementStudio.Common;
+using FAManagementStudio.Models;
 using FAManagementStudio.ViewModels;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
@@ -16,7 +17,7 @@ namespace Tests
         public void GetDdlTest1()
         {
             var dbVm = new DbViewModel();
-            var table = new TableViewModel(new TableInfo("TEST"));
+            var table = new TableViewModel("TEST");
             dbVm.Tables.Add(table);
 
             var col1 = new ColumInfo("COL1", new FieldType(8, null, null, null, null), FAManagementStudio.Common.ConstraintsKind.Primary, "RDB$1", false);
@@ -51,7 +52,7 @@ namespace Tests
         public void GetDdlTest2()
         {
             var dbVm = new DbViewModel();
-            var table = new TableViewModel(new TableInfo("TEST"));
+            var table = new TableViewModel("TEST");
             dbVm.Tables.Add(table);
 
             var col1 = new ColumInfo("COL1", new FieldType(8, null, null, null, null), FAManagementStudio.Common.ConstraintsKind.Primary, "RDB$1", false);
@@ -96,7 +97,7 @@ namespace Tests
         public void GetDdlTest3()
         {
             var dbVm = new DbViewModel();
-            var table = new TableViewModel(new TableInfo("TEST"));
+            var table = new TableViewModel("TEST");
             dbVm.Tables.Add(table);
 
             var col1 = new ColumInfo("COL1", new FieldType(8, null, null, null, null), FAManagementStudio.Common.ConstraintsKind.Primary, "SARARY", false);
@@ -130,5 +131,24 @@ namespace Tests
 "  CONSTRAINT COMPLEXKEY PRIMARY KEY (COL1, COL2)" + Environment.NewLine +
 ")");
         }
+        [TestMethod()]
+        public void GetDdlTest4()
+        {
+            var dbVm = new DbViewModel();
+            var table = new ViewViewModel("SNOW_LINE", "SELECT CITY, STATE, ALTITUDE FROM CITIES WHERE ALTITUDE > 5000");
+            dbVm.Tables.Add(table);
+
+            var col1 = new ColumInfo("CITY", new FieldType(8, null, null, null, null), FAManagementStudio.Common.ConstraintsKind.Primary, "SARARY", false);
+            table.Colums.Add(new ColumViewMoodel(col1));
+            var col2 = new ColumInfo("STATE", new FieldType(37, null, 100, null, null), FAManagementStudio.Common.ConstraintsKind.Primary, "NAME", false);
+            table.Colums.Add(new ColumViewMoodel(col2));
+            var col3 = new ColumInfo("SNOW_ALTITUDE", new FieldType(35, null, null, null, null), FAManagementStudio.Common.ConstraintsKind.None, "RDB$3", false);
+            table.Colums.Add(new ColumViewMoodel(col3));
+
+            table.GetDdl(dbVm).Is(
+"CREATE VIEW SNOW_LINE (CITY, STATE, SNOW_ALTITUDE) AS" + Environment.NewLine +
+"SELECT CITY, STATE, ALTITUDE FROM CITIES WHERE ALTITUDE > 5000");
+        }
+
     }
 }

@@ -41,12 +41,14 @@
             <RowDefinition Height="22"/>
             <RowDefinition Height="1*"/>
         </Grid.RowDefinitions>
-        <Grid>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="1*"/>
-                <ColumnDefinition Width="20"/>
-            </Grid.ColumnDefinitions>
-            <StackPanel Grid.Row="0"  Orientation="Horizontal">
+        <DockPanel>
+            <Button Command="{Binding OpenGitPage}" DockPanel.Dock="Right" Width="20">
+                <TextBlock>
+                    <Bold>？</Bold>
+                </TextBlock>
+            </Button>
+            <Image Width="18" Height="18" Source="../Image/UpdateImage.png" Visibility="{Binding ExistNewVersion}" DockPanel.Dock="Right" ToolTip="新しいバージョンが利用できます" Margin="0,0,2,0"/>
+            <StackPanel Orientation="Horizontal">
                 <Button Command="{Binding CreateDatabase}">
                     <StackPanel Orientation="Horizontal">
                         <Image Source="../Image/action_add_16xLG.png" />
@@ -55,7 +57,7 @@
                 </Button>
                 <ComboBox Name="DbPathComb" Height="auto" Width="300" IsEditable="True" IsTextSearchEnabled="True" IsReadOnly="False" ItemsSource="{Binding DataInput}" Text="{Binding InputPath, Mode=TwoWay}" AllowDrop="True">
                     <i:Interaction.Behaviors>
-                        <b:FileDropBehavior DropedCommand="{Binding DropFile}"/>
+                        <b:FileDropBehavior DropedCommand="{Binding DropFile}" FetchMode="Once"/>
                     </i:Interaction.Behaviors>
                 </ComboBox>
                 <Button Command="{Binding LoadDatabase}" CommandParameter="{Binding ElementName=DbPathComb, Path=Text }">
@@ -70,14 +72,10 @@
                         <TextBlock Text="実行" Margin="4,0"/>
                     </StackPanel>
                 </Button>
-                <TextBlock Text="{Binding CurrentDatabase.Path}" VerticalAlignment="Center" />
+                <TextBlock Margin="2,0,0,0" Text="{Binding CurrentDatabase.Path}" VerticalAlignment="Center" />
             </StackPanel>
-            <Button Grid.Column="1" Command="{Binding OpenGitPage}">
-                <TextBlock>
-                    <Bold>？</Bold>
-                </TextBlock>
-            </Button>
-        </Grid>
+
+        </DockPanel>
         <Grid Grid.Row="1" HorizontalAlignment="Stretch">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="80" />
@@ -104,7 +102,7 @@
                     <KeyBinding Command="{StaticResource Shutdown}" Key="Delete"/>
                 </ListBox.InputBindings>
                 <i:Interaction.Behaviors>
-                    <b:ListBoxDropBehavior DropedCommand="{Binding DbListDropFile}"/>
+                    <b:FileDropBehavior DropedCommand="{Binding DbListDropFile}"/>
                 </i:Interaction.Behaviors>
                 <ListBox.ItemTemplate>
                     <DataTemplate>
@@ -134,12 +132,17 @@
                     </i:Interaction.Behaviors>
                     <TreeView.Resources>
                         <c:ConstraintsKeyToIconConverter x:Key="KeyConverter"/>
+                        <c:TableIconConverter x:Key="TableIconConverter" />
                         <ContextMenu x:Key="contextMenu">
-                            <MenuItem Header="SELECT *" Command="{Binding SetSqlTemplate, Source={StaticResource viewModel}}" CommandParameter="select" />
-                            <MenuItem Header="INSERT *" Command="{Binding SetSqlTemplate, Source={StaticResource viewModel}}" CommandParameter="insert" />
-                            <MenuItem Header="UPDATE *" Command="{Binding SetSqlTemplate, Source={StaticResource viewModel}}" CommandParameter="update" />
+                            <MenuItem Header="EXEC SELECT *" Command="{Binding ExecSqlTemplate, Source={StaticResource viewModel}}" CommandParameter="{x:Static Common:SqlKind.Select}" />
+                            <MenuItem Header="EXEC SELECT FIRST(1000) *" Command="{Binding ExecLimitedSql, Source={StaticResource viewModel}}" CommandParameter="1000" />
+                            <Separator Margin="0,-4"/>
+                            <MenuItem Header="SELECT *" Command="{Binding SetSqlTemplate, Source={StaticResource viewModel}}" CommandParameter="{x:Static Common:SqlKind.Select}" />
+                            <MenuItem Header="INSERT *" Command="{Binding SetSqlTemplate, Source={StaticResource viewModel}}" CommandParameter="{x:Static Common:SqlKind.Insert}" />
+                            <MenuItem Header="UPDATE *" Command="{Binding SetSqlTemplate, Source={StaticResource viewModel}}" CommandParameter="{x:Static Common:SqlKind.Update}" />
+                            <Separator Margin="0,-4"/>
                             <MenuItem Header="Reverse DB(開発中)">
-                                <MenuItem Header="CREATE TABLE(仮)" Command="{Binding SetSqlDataTemplate, Source={StaticResource viewModel}}" CommandParameter="table"/>
+                                <MenuItem Header="CREATE(仮)" Command="{Binding SetSqlDataTemplate, Source={StaticResource viewModel}}" CommandParameter="table"/>
                                 <MenuItem Header="INSERT(仮)" Command="{Binding SetSqlDataTemplate, Source={StaticResource viewModel}}" CommandParameter="insert"/>
                             </MenuItem>
                         </ContextMenu>
@@ -151,7 +154,10 @@
                     </TreeView.ItemContainerStyle>
                     <TreeView.ItemTemplate >
                         <HierarchicalDataTemplate ItemsSource="{Binding Colums}">
-                            <TextBlock Text="{Binding Path=DisplayName}" ContextMenu="{StaticResource contextMenu}"/>
+                            <StackPanel Orientation="Horizontal" Margin="-2,0,0,0" ContextMenu="{StaticResource contextMenu}">
+                                <Image Source="{Binding Kind, Converter={StaticResource TableIconConverter}}" Width="11" Stretch="Uniform"/>
+                                <TextBlock Text="{Binding Path=TableName}"/>
+                            </StackPanel>
                             <HierarchicalDataTemplate.ItemTemplate>
                                 <HierarchicalDataTemplate >
                                     <StackPanel Orientation="Horizontal" Margin="-11,0,0,0" ContextMenu="{StaticResource contextMenu}">
@@ -182,15 +188,10 @@
                     <RowDefinition Height="4"/>
                     <RowDefinition Name="ResultRow" Height="1*"/>
                 </Grid.RowDefinitions>
-                <TabControl x:Name="QueryTab" Grid.Row="0" ItemsSource="{Binding Queries}" SelectedIndex="{Binding TagSelectedIndex, Mode=TwoWay,UpdateSourceTrigger=PropertyChanged,IsAsync=False}" SelectedValue="{Binding TagSelectedValue, Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"  >
+                <TabControl x:Name="QueryTab" Grid.Row="0" ItemsSource="{Binding Queries}" SelectedIndex="{Binding TagSelectedIndex, Mode=TwoWay,UpdateSourceTrigger=PropertyChanged,IsAsync=False}" SelectedValue="{Binding TagSelectedValue, Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}">
                     <i:Interaction.Behaviors>
                         <b:DynamicTabControlBehavior AddTabCommand="{Binding AddTab}"/>
                     </i:Interaction.Behaviors>
-                    <TabControl.ContextMenu>
-                        <ContextMenu >
-                            <MenuItem Header="削除" Command="{Binding DeleteTabItem}"/>
-                        </ContextMenu>
-                    </TabControl.ContextMenu>
                     <TabControl.Resources>
                         <Style TargetType="{x:Type TabItem}">
                             <EventSetter Event="TabItem.MouseRightButtonDown" Handler="TabItem_MouseRightButtonDown"/>
@@ -199,15 +200,35 @@
                     </TabControl.Resources>
                     <TabControl.ItemTemplate>
                         <DataTemplate>
-                            <TextBlock Text="{Binding Header}" />
+                            <StackPanel>
+                                <StackPanel.ContextMenu>
+                                    <ContextMenu>
+                                        <MenuItem Header="閉じる" Command="{Binding DeleteTabItem, Source={ StaticResource viewModel}}"/>
+                                        <Separator />
+                                        <MenuItem Header="読み込み" Command="{Binding LoadQuery}"/>
+                                        <MenuItem Header="名前を付けて保存" Command="{Binding GivingNameSave}"/>
+                                        <MenuItem Header="上書き保存" Command="{Binding OverwriteSave}"/>
+                                    </ContextMenu>
+                                </StackPanel.ContextMenu>
+                                <TextBlock Text="{Binding Header}" />
+                            </StackPanel>
                         </DataTemplate>
                     </TabControl.ItemTemplate>
                     <TabControl.ContentTemplate>
                         <DataTemplate>
-                            <TextBox  Text="{Binding Query, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" AcceptsReturn="True" TextWrapping="Wrap" Margin="0,2" Grid.RowSpan="2" VerticalScrollBarVisibility="Auto">
+                            <TextBox AllowDrop="True" Text="{Binding Query, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" AcceptsReturn="True" TextWrapping="Wrap" Margin="0,2" Grid.RowSpan="2" VerticalScrollBarVisibility="Auto"  PreviewDragEnter="TextBox_PreviewDragEnter"
+            PreviewDragOver="TextBox_PreviewDragEnter">
+                                <TextBox.Resources>
+                                    <Common:CommandReference x:Key="OverwriteSave" Command="{Binding OverwriteSave}"/>
+                                    <Common:CommandReference x:Key="DropFile" Command="{Binding DropFile}"/>
+                                </TextBox.Resources>
                                 <TextBox.InputBindings>
                                     <KeyBinding Key="F5" Command="{StaticResource Execute}" />
+                                    <KeyBinding Modifiers="Ctrl" Key="S" Command="{StaticResource OverwriteSave}" />
                                 </TextBox.InputBindings>
+                                <i:Interaction.Behaviors>
+                                    <b:FileDropBehavior DropedCommand="{Binding DropFile}" FetchMode="Once"/>
+                                </i:Interaction.Behaviors>
                             </TextBox>
                         </DataTemplate>
                     </TabControl.ContentTemplate>

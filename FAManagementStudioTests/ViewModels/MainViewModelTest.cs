@@ -11,16 +11,20 @@ namespace FAManagementStudio.ViewModels.Tests
         {
             var vm = new MainViewModel();
             var testCase = new[] {
-                new { Input = new { TableName = "TEST", Colums = new[] { "A" } },
-                      Answer = "select A from TEST" },
-                new { Input = new { TableName = "TEST", Colums = new[] { "A", "B" } },
-                      Answer = "select A, B from TEST" },
-                new { Input = new { TableName = "TEST", Colums = new[] { "A", "Index" } },
-                      Answer = "select A, 'Index' from TEST" }
+                new { Input = new { TableName = "TEST", Colums = new[] { "A" }, Limit = 0 },
+                      Answer = "select A from TEST"},
+                new { Input = new { TableName = "TEST", Colums = new[] { "A", "B" } , Limit = 0},
+                      Answer = "select A, B from TEST"},
+                new { Input = new { TableName = "TEST", Colums = new[] { "A", "Index" }  , Limit = 0},
+                      Answer = "select A, 'Index' from TEST"},
+                new { Input = new { TableName = "TEST", Colums = new[] { "A", "B" } , Limit = 10},
+                      Answer = "select first(10) A, B from TEST" },
+                new { Input = new { TableName = "TEST", Colums = new[] { "A", "B" } , Limit = 1000},
+                      Answer = "select first(1000) A, B from TEST" }
             };
             foreach (var test in testCase)
             {
-                var result = (string)vm.AsDynamic().CreateSelectStatement(test.Input.TableName, test.Input.Colums);
+                var result = (string)vm.AsDynamic().CreateSelectStatement(test.Input.TableName, test.Input.Colums, test.Input.Limit);
                 result.Is(test.Answer);
             }
         }

@@ -1,4 +1,8 @@
 ﻿using FAManagementStudio.Common;
+using System.IO;
+using System.Text;
+using System.Windows.Forms;
+using System.Windows.Input;
 
 namespace FAManagementStudio.ViewModels
 {
@@ -24,14 +28,85 @@ namespace FAManagementStudio.ViewModels
                 RaisePropertyChanged(nameof(Query));
             }
         }
+
         public QueryTabViewModel(string header, string query)
         {
             _header = header;
             _query = query;
+            LoadQuery = new RelayCommand(() => LoadQueryMethod());
+            GivingNameSave = new RelayCommand(() => GivingNameSaveMethod());
+            OverwriteSave = new RelayCommand(() => OverwriteSaveMethod());
+            DropFile = new RelayCommand<string>(path =>
+            {
+                _loadPath = path;
+                Query = FileLoad(_loadPath, _fileEncoding);
+            });
         }
+
         public static QueryTabViewModel GetNewInstance()
         {
             return new QueryTabViewModel("+", "");
+        }
+
+        public ICommand LoadQuery { get; private set; }
+        public ICommand GivingNameSave { get; private set; }
+        public ICommand OverwriteSave { get; private set; }
+
+        public ICommand DropFile { get; private set; }
+
+        private Encoding _fileEncoding = Encoding.UTF8;
+
+        private string _loadPath = "";
+
+        private void LoadQueryMethod()
+        {
+            using (var dialog = new OpenFileDialog())
+            {
+                dialog.DefaultExt = "txt";
+                dialog.Filter = "txt files (*.txt)|*.txt|すべてのファイル(*.*)|*.*";
+                if (dialog.ShowDialog() != DialogResult.OK) return;
+                _loadPath = dialog.FileName;
+            }
+            Query = FileLoad(_loadPath, _fileEncoding);
+        }
+
+        private string FileLoad(string path, Encoding enc)
+        {
+            using (var stream = new StreamReader(path, enc))
+            {
+                return stream.ReadToEnd();
+            }
+        }
+
+        private void GivingNameSaveMethod()
+        {
+            using (var dialog = new SaveFileDialog())
+            {
+                dialog.FileName = $"{Header}.txt";
+                dialog.DefaultExt = "txt";
+                dialog.Filter = "txt files (*.txt)|*.txt|すべてのファイル(*.*)|*.*";
+                if (dialog.ShowDialog() != DialogResult.OK) return;
+                _loadPath = dialog.FileName;
+            }
+            SaveQuery(_loadPath, _fileEncoding);
+        }
+
+        private void OverwriteSaveMethod()
+        {
+            if (string.IsNullOrEmpty(_loadPath))
+            {
+                GivingNameSaveMethod();
+                return;
+            }
+            SaveQuery(_loadPath, _fileEncoding);
+        }
+
+        private void SaveQuery(string path, Encoding enc)
+        {
+            using (var stream = new StreamWriter(path, false, enc))
+            {
+                stream.Write(Query);
+            }
         }
     }
 }

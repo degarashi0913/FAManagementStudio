@@ -20,7 +20,7 @@ namespace FAManagementStudio.ViewModels
 
         public string DisplayDbName { get { return _dbInfo.Path.Substring(_dbInfo.Path.LastIndexOf('\\') + 1); } }
 
-        public List<TableViewModel> Tables { get; } = new List<TableViewModel>();
+        public List<ITableViewModel> Tables { get; } = new List<ITableViewModel>();
         public List<TriggerViewModel> Triggers { get; } = new List<TriggerViewModel>();
         public List<IndexViewModel> Indexes { get; } = new List<IndexViewModel>();
 
@@ -41,15 +41,22 @@ namespace FAManagementStudio.ViewModels
             LoadDatabase(path);
         }
 
-        public void LoadDatabase(string path)
+        private bool CanLoadDatabase(string path)
         {
+            var info = new FirebirdInfo();
+            return info.IsTargetOdsDb(path);
+        }
+
+        public bool LoadDatabase(string path)
+        {
+            if (!CanLoadDatabase(path)) return false;
             _dbInfo.Path = path;
             using (var con = GetConnection(path))
             {
                 con.Open();
                 foreach (var item in _dbInfo.GetTables(con))
                 {
-                    var vm = new TableViewModel(item);
+                    var vm = new TableViewModel(item.TableName);
                     foreach (var colums in item.GetColums(con))
                     {
                         vm.Colums.Add(new ColumViewMoodel(colums));
@@ -64,11 +71,21 @@ namespace FAManagementStudio.ViewModels
                     }
                     Tables.Add(vm);
                 }
-                Triggers.AddRange(Tables.SelectMany(x => x.Triggers));
-                Indexes.AddRange(Tables.SelectMany(x => x.Indexs));
+                Triggers.AddRange(Tables.SelectMany(x => ((TableViewModel)x).Triggers));
+                Indexes.AddRange(Tables.SelectMany(x => ((TableViewModel)x).Indexs));
+                foreach (var item in _dbInfo.GetViews(con))
+                {
+                    var vm = new ViewViewModel(item.ViewName, item.Source);
+                    foreach (var colums in item.GetColums(con))
+                    {
+                        vm.Colums.Add(new ColumViewMoodel(colums));
+                    }
+                    Tables.Add(vm);
+                }
                 RaisePropertyChanged(nameof(Tables));
                 RaisePropertyChanged(nameof(Triggers));
             }
+            return true;
         }
 
         public void ReloadDatabase()
@@ -95,16 +112,24 @@ namespace FAManagementStudio.ViewModels
     }
 }
 
-public class TableViewModel : BindableBase
+public interface ITableViewModel
 {
-    private TableInfo _inf;
-    public TableViewModel(TableInfo inf)
+    string TableName { get; }
+    string GetDdl(DbViewModel dbVm);
+    List<ColumViewMoodel> Colums { get; }
+    TableKind Kind { get; }
+}
+
+public class TableViewModel : BindableBase, ITableViewModel
+{
+    private string _name;
+    public TableViewModel(string name)
     {
-        _inf = inf;
+        _name = name;
     }
-    public string TableName { get { return _inf.TableName; } }
-    public string DisplayName { get { return _inf.TableName; } }
+    public string TableName { get { return _name; } }
     public List<ColumViewMoodel> Colums { get; } = new List<ColumViewMoodel>();
+    public TableKind Kind { get; } = TableKind.Table;
     public List<TriggerViewModel> Triggers { get; } = new List<TriggerViewModel>();
     public List<IndexViewModel> Indexs { get; } = new List<IndexViewModel>();
 
@@ -148,6 +173,25 @@ public class TableViewModel : BindableBase
                             .Select(x => $"CREATE DOMAIN {x.ColumType} AS {x.ColumDataType};\r\n");
         var domainStr = string.Join("", domain.ToArray());
         return domainStr + $"CREATE TABLE {TableName} ({Environment.NewLine}  { string.Join($",{Environment.NewLine}  ", colums.Union(index).ToArray()) + Environment.NewLine})";
+    }
+}
+
+public class ViewViewModel : BindableBase, ITableViewModel
+{
+    private string _name;
+    public ViewViewModel(string name, string source)
+    {
+        _name = name;
+        Source = source;
+    }
+    public string TableName { get { return _name; } }
+    public TableKind Kind { get; } = TableKind.View;
+    public List<ColumViewMoodel> Colums { get; } = new List<ColumViewMoodel>();
+    public string Source { get; private set; }
+    public string GetDdl(DbViewModel dbVm)
+    {
+        return $"CREATE VIEW {TableName} ({string.Join(", ", Colums.Select(x => x.ColumName).ToArray())}) AS" + Environment.NewLine
+            + Source;
     }
 }
 

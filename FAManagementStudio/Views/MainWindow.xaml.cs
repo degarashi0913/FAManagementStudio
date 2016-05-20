@@ -47,5 +47,11 @@ namespace FAManagementStudio.Views
         {
             QueryTab.SelectedIndex = 0;
         }
+
+        private void TextBox_PreviewDragEnter(object sender, DragEventArgs e)
+        {
+            e.Effects = DragDropEffects.Copy;
+            e.Handled = true;
+        }
     }
 }

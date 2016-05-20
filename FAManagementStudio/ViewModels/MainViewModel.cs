@@ -1,13 +1,16 @@
 ﻿using FAManagementStudio.Common;
 using FAManagementStudio.Models;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Reflection;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
@@ -19,6 +22,9 @@ namespace FAManagementStudio.ViewModels
         public MainViewModel()
         {
             SetCommand();
+#if !DEBUG
+            SetNewVersionStatus();
+#endif
         }
         private DbViewModel _db = new DbViewModel();
         private QueryInfo _queryInf = new QueryInfo();
@@ -28,7 +34,7 @@ namespace FAManagementStudio.ViewModels
         public int TagSelectedIndex { get; set; } = 0;
         public QueryTabViewModel TagSelectedValue { get; set; }
 
-        public List<TableViewModel> Tables
+        public List<ITableViewModel> Tables
         {
             get
             {
@@ -53,7 +59,22 @@ namespace FAManagementStudio.ViewModels
             }
         }
 
+        private Visibility _existNewVersion = Visibility.Collapsed;
+        public Visibility ExistNewVersion
+        {
+            get
+            {
+                return _existNewVersion;
+            }
+            set
+            {
+                _existNewVersion = value;
+                RaisePropertyChanged(nameof(ExistNewVersion));
+            }
+        }
+
         public object SelectedTableItem { get; set; }
+
 
         public ObservableCollection<DbViewModel> Databases { get; set; } = new ObservableCollection<DbViewModel>();
 
@@ -69,7 +90,9 @@ namespace FAManagementStudio.ViewModels
         public ICommand DbListDropFile { get; private set; }
 
         public ICommand SetSqlTemplate { get; private set; }
+        public ICommand ExecSqlTemplate { get; private set; }
         public ICommand SetSqlDataTemplate { get; private set; }
+        public ICommand ExecLimitedSql { get; private set; }
         public ICommand ReloadDatabase { get; private set; }
         public ICommand ShutdownDatabase { get; private set; }
         public ICommand AddTab { get; private set; }
@@ -105,12 +128,15 @@ namespace FAManagementStudio.ViewModels
                 if (string.IsNullOrEmpty(path)) return;
                 if (!File.Exists(path)) return;
                 var db = new DbViewModel();
-                await TaskEx.Run(() =>
+                var isLoad = await TaskEx.Run(() =>
                 {
-                    db.LoadDatabase(path);
+                    return db.LoadDatabase(path);
                 });
-                Databases.Add(db);
-                _history.DataAdd(path);
+                if (isLoad)
+                {
+                    Databases.Add(db);
+                    _history.DataAdd(path);
+                }
             });
 
             ExecuteQuery = new RelayCommand(async () =>
@@ -122,7 +148,6 @@ namespace FAManagementStudio.ViewModels
                {
                    QueryResult.GetExecuteResult(_queryInf, CurrentDatabase.ConnectionString, TagSelectedValue.Query);
                });
-
            });
 
             DropFile = new RelayCommand<string>((string path) =>
@@ -136,10 +161,23 @@ namespace FAManagementStudio.ViewModels
                 LoadDatabase.Execute(path);
             });
 
-            SetSqlTemplate = new RelayCommand<string>((string sqlKind) =>
+            SetSqlTemplate = new RelayCommand<SqlKind>((SqlKind sqlKind) =>
             {
                 TagSelectedValue.Query = CreateSqlSentence(SelectedTableItem, sqlKind);
                 RaisePropertyChanged(nameof(Queries));
+            });
+
+            ExecLimitedSql = new RelayCommand<string>((count) =>
+            {
+                TagSelectedValue.Query = CreateSqlSentence(SelectedTableItem, SqlKind.Select, int.Parse(count));
+                RaisePropertyChanged(nameof(Queries));
+                ExecuteQuery.Execute(null);
+            });
+
+            ExecSqlTemplate = new RelayCommand<SqlKind>((SqlKind sqlKind) =>
+            {
+                SetSqlTemplate.Execute(sqlKind);
+                ExecuteQuery.Execute(null);
             });
 
             ReloadDatabase = new RelayCommand(() => { CurrentDatabase.ReloadDatabase(); });
@@ -191,13 +229,14 @@ namespace FAManagementStudio.ViewModels
                 }
                 else if (s == "insert")
                 {
+                    if (table is ViewViewModel) return;
                     var colums = table.Colums.Select(x => x.ColumName).ToArray();
                     var escapedColumsStr = string.Join(", ", colums.Select(x => EscapeKeyWord(x)).ToArray());
 
                     var insertTemplate = $"insert into {table.TableName} ({escapedColumsStr})";
 
                     var qry = new QueryInfo();
-                    var res = qry.ExecuteQuery(CurrentDatabase.ConnectionString, CreateSelectStatement(table.TableName, colums)).First();
+                    var res = qry.ExecuteQuery(CurrentDatabase.ConnectionString, CreateSelectStatement(table.TableName, colums, 0)).First();
 
                     var sb = new StringBuilder();
 
@@ -216,18 +255,19 @@ namespace FAManagementStudio.ViewModels
             });
         }
 
-        private TableViewModel GetTreeViewTableName(object treeitem)
+        private ITableViewModel GetTreeViewTableName(object treeitem)
         {
-            var table = treeitem as TableViewModel;
+            var table = treeitem as ITableViewModel;
 
             if (table == null)
             {
+
                 return Tables.Where(x => 0 < x.Colums.Count(c => c == (ColumViewMoodel)treeitem)).First();
             }
             return table;
         }
 
-        private string CreateSqlSentence(object treeitem, string sqlKind)
+        private string CreateSqlSentence(object treeitem, SqlKind sqlKind, int limitCount = 0)
         {
             string[] colums;
             var col = treeitem as ColumViewMoodel;
@@ -242,15 +282,15 @@ namespace FAManagementStudio.ViewModels
                 colums = new[] { col.ColumName };
             }
 
-            if (sqlKind == "select")
+            if (sqlKind == SqlKind.Select)
             {
-                return CreateSelectStatement(table.TableName, colums);
+                return CreateSelectStatement(table.TableName, colums, limitCount);
             }
-            else if (sqlKind == "insert")
+            else if (sqlKind == SqlKind.Insert)
             {
                 return CreateInsertStatement(table.TableName, colums);
             }
-            else if (sqlKind == "update")
+            else if (sqlKind == SqlKind.Update)
             {
                 return CreateUpdateStatement(table.TableName, colums);
             }
@@ -262,10 +302,11 @@ namespace FAManagementStudio.ViewModels
 
         #endregion
 
-        private string CreateSelectStatement(string tableName, string[] colums)
+        private string CreateSelectStatement(string tableName, string[] colums, int topCount)
         {
             var escapedColumsStr = string.Join(", ", colums.Select(x => EscapeKeyWord(x)).ToArray());
-            return $"select {escapedColumsStr} from {tableName}";
+            var topSentence = 0 < topCount ? $" first({topCount})" : "";
+            return $"select{topSentence} {escapedColumsStr} from {tableName}";
         }
 
         private string CreateInsertStatement(string tableName, string[] colums)
@@ -285,6 +326,48 @@ namespace FAManagementStudio.ViewModels
         private string EscapeKeyWord(string colum)
         {
             return _sqlKeyWord.Contains(colum.ToLower()) ? $"'{colum}'" : colum;
+        }
+
+        private async void SetNewVersionStatus()
+        {
+            try
+            {
+                var latestVersion = "";
+                var version = Assembly.GetExecutingAssembly().GetName().Version;
+                var versionStr = $"{version.Major}.{version.Minor}.{version.Build}";
+                if ((AppSettingsManager.StartTime - AppSettingsManager.PreviousActivation).Days < 1)
+                {
+                    latestVersion = string.IsNullOrEmpty(AppSettingsManager.Version) ? versionStr : AppSettingsManager.Version;
+                }
+                else
+                {
+                    latestVersion = await GetNewVirsion();
+                    AppSettingsManager.Version = latestVersion;
+                }
+
+                if (latestVersion != versionStr)
+                {
+                    ExistNewVersion = Visibility.Visible;
+                };
+            }
+            catch { }
+        }
+
+        private Task<string> GetNewVirsion()
+        {
+            return TaskEx.Run<string>(() =>
+            {
+                var reqest = (HttpWebRequest)WebRequest.Create(@"https://github.com/degarashi0913/FAManagementStudio/releases/latest");
+                reqest.UserAgent = "FAManagementStudio";
+                reqest.Method = "GET";
+                using (var stream = reqest.GetResponse().GetResponseStream())
+                using (var readStream = new StreamReader(stream, Encoding.UTF8))
+                {
+                    var html = readStream.ReadToEnd();
+                    var title = Regex.Match(html, @"\<title\>(?<title>.*)\<\/title\>").Groups["title"].Value;
+                    return Regex.Match(title, @"FAManagementStudio-v(?<version>\d*\.\d*\.\d*)").Groups["version"].Value;
+                }
+            });
         }
     }
 }
