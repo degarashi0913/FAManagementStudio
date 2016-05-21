@@ -10,6 +10,7 @@
         xmlns:b="clr-namespace:FAManagementStudio.Views.Behaviors"
         xmlns:c="clr-namespace:FAManagementStudio.Views.Converters"
         xmlns:vm="clr-namespace:FAManagementStudio.ViewModels"
+        xmlns:v="clr-namespace:FAManagementStudio.Views"
         xmlns:controls="clr-namespace:FAManagementStudio.Controls;assembly=FAManagementStudio.Controls"
         xmlns:core="clr-namespace:System;assembly=mscorlib"
         mc:Ignorable="d"
@@ -35,7 +36,11 @@
     <i:Interaction.Behaviors>
         <b:WindowBehavior LoadedCommand="{Binding LoadHistry}" ClosedCommand="{Binding SaveHistry}"/>
     </i:Interaction.Behaviors>
-
+    <i:Interaction.Triggers>
+        <b:MessageBaseTriger Target="WindowOpen">
+            <b:ShowWindowAction WindowType="{x:Type v:ConnectionSettingsView}"/>
+        </b:MessageBaseTriger>
+    </i:Interaction.Triggers>
     <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
         <Grid.RowDefinitions>
             <RowDefinition Height="22"/>
@@ -111,6 +116,7 @@
                                 <ContextMenu>
                                     <MenuItem Header="再読み込み" Command="{Binding ReloadDatabase, Source={StaticResource viewModel}}"/>
                                     <MenuItem Header="切断" Command="{Binding ShutdownDatabase, Source={StaticResource viewModel}}"/>
+                                    <MenuItem Header="編集" Command="{Binding ChangeConfig, Source={StaticResource viewModel}}"/>
                                 </ContextMenu>
                             </Canvas.ContextMenu>
                             <Image Source="../Image/DbShape.png" Height="50" Width="50" Margin="0,3,0,0"/>

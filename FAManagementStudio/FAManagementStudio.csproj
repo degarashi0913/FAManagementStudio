@@ -70,10 +70,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Assemblies\Microsoft.Expression.Interactions.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.8.0.3\lib\net35\Newtonsoft.Json.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -106,14 +102,20 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Common\Definitions.cs" />
+    <Compile Include="Common\MessageBase.cs" />
+    <Compile Include="Common\Messenger.cs" />
     <Compile Include="Models\AppSettings.cs" />
     <Compile Include="Models\FirebirdInfo.cs" />
     <Compile Include="Models\Firebird\HeaderPage.cs" />
     <Compile Include="Models\Firebird\FbUtility.cs" />
     <Compile Include="Models\QueryResult.cs" />
+    <Compile Include="ViewModels\ConnectionSettingsViewModel.cs" />
     <Compile Include="ViewModels\DbViewModel.cs" />
     <Compile Include="ViewModels\QueryResultViewModel.cs" />
     <Compile Include="ViewModels\QueryTabViewModel.cs" />
+    <Compile Include="Views\Commons\MessageTrigger.cs" />
+    <Compile Include="Views\Commons\MessageBaseTriger.cs" />
+    <Compile Include="Views\Behaviors\ShowWindowAction.cs" />
     <Compile Include="Views\Behaviors\DynamicTabControlBehavior.cs" />
     <Compile Include="Views\Behaviors\FileDropBehavior.cs" />
     <Compile Include="Views\Behaviors\TreeViewSelectedItemBehavior.cs" />
@@ -124,9 +126,18 @@
     <Compile Include="Models\QueryInfo.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="Views\Behaviors\WindowBehavior.cs" />
+    <Compile Include="Views\Behaviors\WindowCloseAction.cs" />
+    <Compile Include="ViewModels\ViewModelBase.cs" />
+    <Compile Include="Views\ConnectionSettingsView.xaml.cs">
+      <DependentUpon>ConnectionSettingsView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Converters\TableIconConverter.cs" />
     <Compile Include="Views\Converters\ConstraintsKeyToIconConverter.cs" />
     <Compile Include="Views\Converters\GridSizeConverter.cs" />
+    <Page Include="Views\ConnectionSettingsView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -169,7 +180,9 @@
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Image\base_exclamationmark_32.png" />
@@ -201,6 +214,7 @@
     <Resource Include="Image\Table.png" />
     <Resource Include="Image\View.png" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>if $(PlatformName) equ x64 (

@@ -39,11 +39,23 @@ namespace FAManagementStudio.ViewModels
         {
             System.Windows.Application.Current.Dispatcher.Invoke(new Action(() =>
             {
-                foreach (var queryResult in inf.ExecuteQuery(connectionString, query))
+                try
+                {
+                    foreach (var queryResult in inf.ExecuteQuery(connectionString, query))
+                    {
+                        var vm = new ResultDetailViewModel();
+                        vm.View = queryResult.View;
+                        vm.SetAdditionalInfo(queryResult.Count, queryResult.ExecuteTime, queryResult.ExecuteSql);
+                        Result.Add(vm);
+                    }
+                }
+                catch (Exception e)
                 {
                     var vm = new ResultDetailViewModel();
-                    vm.View = queryResult.View;
-                    vm.SetAdditionalInfo(queryResult.Count, queryResult.ExecuteTime, queryResult.ExecuteSql);
+                    var table = new DataTable("Exception");
+                    table.Columns.Add("Message");
+                    table.Rows.Add(e.Message);
+                    vm.View = table;
                     Result.Add(vm);
                 }
             }));
