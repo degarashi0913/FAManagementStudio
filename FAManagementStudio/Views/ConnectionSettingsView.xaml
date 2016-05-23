@@ -43,7 +43,9 @@
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <DockPanel>
-                            <TextBlock Text="{Binding Name}" DockPanel.Dock="Left"/>
+                            <Viewbox MaxWidth="100" DockPanel.Dock="Left" StretchDirection="DownOnly">
+                                <TextBlock Text="{Binding Name}" />
+                            </Viewbox>
                             <CheckBox x:Name="EnableCheck" DockPanel.Dock="Right"/>
                             <TextBox  MinWidth="200" Text="{Binding Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding ElementName=EnableCheck,Path=IsChecked}" DockPanel.Dock="Right"/>
                             <TextBlock Text=":" Margin="5,0,5,0" DockPanel.Dock="Right"/>
@@ -61,8 +63,10 @@
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <DockPanel>
-                        <TextBlock Text="{Binding Name}" DockPanel.Dock="Left"/>
-                        <TextBox MinWidth="250" Text="{Binding Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,20,0" DockPanel.Dock="Right"/>
+                        <Viewbox MaxWidth="100" DockPanel.Dock="Left" StretchDirection="DownOnly">
+                            <TextBlock Text="{Binding Name}" />
+                        </Viewbox>
+                        <TextBox MinWidth="250" Text="{Binding Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,10,0" DockPanel.Dock="Right"/>
                         <TextBlock Text=":" Margin="5,0,5,0" DockPanel.Dock="Right"/>
                     </DockPanel>
                 </DataTemplate>
