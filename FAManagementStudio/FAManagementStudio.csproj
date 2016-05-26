@@ -186,20 +186,16 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Image\base_exclamationmark_32.png" />
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="Image\action_add_16xLG.png" />
     <Resource Include="Image\hardware_16xLG.png" />
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="Image\ForeigenKey.png" />
     <Resource Include="Image\PrimaryKey.png" />
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="Image\systemicon.ico" />
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="Image\DbShape.png" />
+    <Resource Include="Image\UpdateImage.png" />
+    <Resource Include="Image\Table.png" />
+    <Resource Include="Image\View.png" />
+    <Resource Include="Image\PFKey.png" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\FAManagementStudio.Controls\FAManagementStudio.Controls.csproj">
@@ -207,14 +203,6 @@
       <Name>FAManagementStudio.Controls</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Image\UpdateImage.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Image\Table.png" />
-    <Resource Include="Image\View.png" />
-  </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>if $(PlatformName) equ x64 (

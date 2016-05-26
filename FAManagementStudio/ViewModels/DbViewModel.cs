@@ -72,8 +72,8 @@ namespace FAManagementStudio.ViewModels
                     }
                     Tables.Add(vm);
                 }
-                Triggers.AddRange(Tables.SelectMany(x => ((TableViewModel)x).Triggers));
-                Indexes.AddRange(Tables.SelectMany(x => ((TableViewModel)x).Indexs));
+                Triggers.AddRange(Tables.SelectMany(x => ((TableViewModel)x).Triggers).ToArray());
+                Indexes.AddRange(Tables.SelectMany(x => ((TableViewModel)x).Indexs).ToArray());
                 foreach (var item in _dbInfo.GetViews(con))
                 {
                     var vm = new ViewViewModel(item.ViewName, item.Source);

@@ -20,19 +20,19 @@ namespace Tests
             var table = new TableViewModel("TEST");
             dbVm.Tables.Add(table);
 
-            var col1 = new ColumInfo("COL1", new FieldType(8, null, null, null, null), FAManagementStudio.Common.ConstraintsKind.Primary, "RDB$1", false);
+            var col1 = new ColumInfo("COL1", new FieldType(8, null, null, null, null), new ConstraintsInfo(ConstraintsKind.Primary), "RDB$1", false);
             table.Colums.Add(new ColumViewMoodel(col1));
-            var col2 = new ColumInfo("COL2", new FieldType(37, null, 100, null, null), FAManagementStudio.Common.ConstraintsKind.None, "RDB$2", false);
+            var col2 = new ColumInfo("COL2", new FieldType(37, null, 100, null, null), new ConstraintsInfo(ConstraintsKind.None), "RDB$2", false);
             table.Colums.Add(new ColumViewMoodel(col2));
-            var col3 = new ColumInfo("COL3", new FieldType(35, null, null, null, null), FAManagementStudio.Common.ConstraintsKind.None, "RDB$3", false);
+            var col3 = new ColumInfo("COL3", new FieldType(35, null, null, null, null), new ConstraintsInfo(ConstraintsKind.None), "RDB$3", false);
             table.Colums.Add(new ColumViewMoodel(col3));
-            var col4 = new ColumInfo("COL4", new FieldType(261, null, null, null, null), FAManagementStudio.Common.ConstraintsKind.None, "RDB$4", true);
+            var col4 = new ColumInfo("COL4", new FieldType(261, null, null, null, null), new ConstraintsInfo(ConstraintsKind.None), "RDB$4", true);
             table.Colums.Add(new ColumViewMoodel(col4));
 
             var idx = new IndexInfo();
             idx.Name = "RDB$PRIMARYKEY1";
             idx.TableName = table.TableName;
-            idx.Kind = FAManagementStudio.Common.ConstraintsKind.Primary;
+            idx.Kind = ConstraintsKind.Primary;
             idx.FieldNames.Add(col1.ColumName);
             var idxVm = new IndexViewModel(idx);
 
@@ -55,25 +55,25 @@ namespace Tests
             var table = new TableViewModel("TEST");
             dbVm.Tables.Add(table);
 
-            var col1 = new ColumInfo("COL1", new FieldType(8, null, null, null, null), FAManagementStudio.Common.ConstraintsKind.Primary, "RDB$1", false);
+            var col1 = new ColumInfo("COL1", new FieldType(8, null, null, null, null), new ConstraintsInfo(ConstraintsKind.Primary), "RDB$1", false);
             table.Colums.Add(new ColumViewMoodel(col1));
-            var col2 = new ColumInfo("COL2", new FieldType(37, null, 100, null, null), FAManagementStudio.Common.ConstraintsKind.Primary, "RDB$2", false);
+            var col2 = new ColumInfo("COL2", new FieldType(37, null, 100, null, null), new ConstraintsInfo(ConstraintsKind.Primary), "RDB$2", false);
             table.Colums.Add(new ColumViewMoodel(col2));
-            var col3 = new ColumInfo("COL3", new FieldType(35, null, null, null, null), FAManagementStudio.Common.ConstraintsKind.None, "RDB$3", false);
+            var col3 = new ColumInfo("COL3", new FieldType(35, null, null, null, null), new ConstraintsInfo(ConstraintsKind.None), "RDB$3", false);
             table.Colums.Add(new ColumViewMoodel(col3));
-            var col4 = new ColumInfo("COL4", new FieldType(261, null, null, null, null), FAManagementStudio.Common.ConstraintsKind.None, "RDB$4", true);
+            var col4 = new ColumInfo("COL4", new FieldType(261, null, null, null, null), new ConstraintsInfo(ConstraintsKind.None), "RDB$4", true);
             table.Colums.Add(new ColumViewMoodel(col4));
-            var col5 = new ColumInfo("COL5", new FieldType(7, 1, null, 4, 0), FAManagementStudio.Common.ConstraintsKind.None, "RDB$4", true);
+            var col5 = new ColumInfo("COL5", new FieldType(7, 1, null, 4, 0), new ConstraintsInfo(ConstraintsKind.None), "RDB$4", true);
             table.Colums.Add(new ColumViewMoodel(col5));
-            var col6 = new ColumInfo("COL6", new FieldType(8, 2, null, 4, -2), FAManagementStudio.Common.ConstraintsKind.None, "RDB$4", true);
+            var col6 = new ColumInfo("COL6", new FieldType(8, 2, null, 4, -2), new ConstraintsInfo(ConstraintsKind.None), "RDB$4", true);
             table.Colums.Add(new ColumViewMoodel(col6));
-            var col7 = new ColumInfo("COL7", new FieldType(16, 2, null, 10, -4), FAManagementStudio.Common.ConstraintsKind.None, "RDB$4", true);
+            var col7 = new ColumInfo("COL7", new FieldType(16, 2, null, 10, -4), new ConstraintsInfo(ConstraintsKind.None), "RDB$4", true);
             table.Colums.Add(new ColumViewMoodel(col7));
 
             var idx = new IndexInfo();
             idx.Name = "COMPLEXKEY";
             idx.TableName = table.TableName;
-            idx.Kind = FAManagementStudio.Common.ConstraintsKind.Primary;
+            idx.Kind = ConstraintsKind.Primary;
             idx.FieldNames.Add(col1.ColumName);
             idx.FieldNames.Add(col2.ColumName);
             var idxVm = new IndexViewModel(idx);
@@ -100,13 +100,13 @@ namespace Tests
             var table = new TableViewModel("TEST");
             dbVm.Tables.Add(table);
 
-            var col1 = new ColumInfo("COL1", new FieldType(8, null, null, null, null), FAManagementStudio.Common.ConstraintsKind.Primary, "SARARY", false);
+            var col1 = new ColumInfo("COL1", new FieldType(8, null, null, null, null), new ConstraintsInfo(ConstraintsKind.Primary), "SARARY", false);
             table.Colums.Add(new ColumViewMoodel(col1));
-            var col2 = new ColumInfo("COL2", new FieldType(37, null, 100, null, null), FAManagementStudio.Common.ConstraintsKind.Primary, "NAME", false);
+            var col2 = new ColumInfo("COL2", new FieldType(37, null, 100, null, null), new ConstraintsInfo(ConstraintsKind.Primary), "NAME", false);
             table.Colums.Add(new ColumViewMoodel(col2));
-            var col3 = new ColumInfo("COL3", new FieldType(35, null, null, null, null), FAManagementStudio.Common.ConstraintsKind.None, "RDB$3", false);
+            var col3 = new ColumInfo("COL3", new FieldType(35, null, null, null, null), new ConstraintsInfo(ConstraintsKind.None), "RDB$3", false);
             table.Colums.Add(new ColumViewMoodel(col3));
-            var col4 = new ColumInfo("COL4", new FieldType(261, null, null, null, null), FAManagementStudio.Common.ConstraintsKind.None, "RDB$4", true);
+            var col4 = new ColumInfo("COL4", new FieldType(261, null, null, null, null), new ConstraintsInfo(ConstraintsKind.None), "RDB$4", true);
             table.Colums.Add(new ColumViewMoodel(col4));
 
             var idx = new IndexInfo();
@@ -138,11 +138,11 @@ namespace Tests
             var table = new ViewViewModel("SNOW_LINE", "SELECT CITY, STATE, ALTITUDE FROM CITIES WHERE ALTITUDE > 5000");
             dbVm.Tables.Add(table);
 
-            var col1 = new ColumInfo("CITY", new FieldType(8, null, null, null, null), FAManagementStudio.Common.ConstraintsKind.Primary, "SARARY", false);
+            var col1 = new ColumInfo("CITY", new FieldType(8, null, null, null, null), new ConstraintsInfo(ConstraintsKind.Primary), "SARARY", false);
             table.Colums.Add(new ColumViewMoodel(col1));
-            var col2 = new ColumInfo("STATE", new FieldType(37, null, 100, null, null), FAManagementStudio.Common.ConstraintsKind.Primary, "NAME", false);
+            var col2 = new ColumInfo("STATE", new FieldType(37, null, 100, null, null), new ConstraintsInfo(ConstraintsKind.Primary), "NAME", false);
             table.Colums.Add(new ColumViewMoodel(col2));
-            var col3 = new ColumInfo("SNOW_ALTITUDE", new FieldType(35, null, null, null, null), FAManagementStudio.Common.ConstraintsKind.None, "RDB$3", false);
+            var col3 = new ColumInfo("SNOW_ALTITUDE", new FieldType(35, null, null, null, null), new ConstraintsInfo(ConstraintsKind.None), "RDB$3", false);
             table.Colums.Add(new ColumViewMoodel(col3));
 
             table.GetDdl(dbVm).Is(

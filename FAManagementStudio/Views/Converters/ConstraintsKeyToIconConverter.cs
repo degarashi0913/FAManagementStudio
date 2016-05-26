@@ -21,6 +21,8 @@ namespace FAManagementStudio.Views.Converters
                     return @"../Image/PrimaryKey.png";
                 case ConstraintsKind.Foreign:
                     return @"../Image/ForeigenKey.png";
+                case ConstraintsKind.Primary | ConstraintsKind.Foreign:
+                    return @"../Image/PFKey.png";
                 default:
                     return "";
             }

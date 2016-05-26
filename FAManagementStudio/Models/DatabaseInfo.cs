@@ -67,7 +67,7 @@ namespace FAManagementStudio.Models
                 var reader = command.ExecuteReader();
                 while (reader.Read())
                 {
-                    yield return new ViewInfo(((string)reader["Name"]).TrimEnd(), ((string)reader["Source"]).TrimEnd());
+                    yield return new ViewInfo(((string)reader["Name"]).TrimEnd(), ((string)reader["Source"]).Trim(' ', '\r', '\n'));
                 }
             }
         }
@@ -107,26 +107,23 @@ namespace FAManagementStudio.Models
 
         public IEnumerable<ColumInfo> GetColums(FbConnection con)
         {
+            var constraints = GetConstrains(con);
+
             using (var command = con.CreateCommand())
             {
                 command.CommandText =
-                    $"select rf.rdb$field_name Name, f.rdb$field_type Type, f.rdb$field_sub_type SubType , f.rdb$character_length CharSize, ky.rdb$constraint_type ConstraintType, rf.rdb$field_source FieldSource, rf.rdb$null_flag NullFlag, f.rdb$field_precision FieldPrecision, f.rdb$field_scale FieldScale " +
+                    $"select rf.rdb$field_name Name, f.rdb$field_type Type, f.rdb$field_sub_type SubType , f.rdb$character_length CharSize, rf.rdb$field_source FieldSource, rf.rdb$null_flag NullFlag, f.rdb$field_precision FieldPrecision, f.rdb$field_scale FieldScale " +
                         "from rdb$relation_fields rf " +
                         "join rdb$relations r on rf.rdb$relation_name = r.rdb$relation_name " +
                                             "and r.rdb$view_blr is null " +
                                             "and r.rdb$relation_type = 0 and r.rdb$system_flag = 0 " +
                         "join rdb$fields f on f.rdb$field_name = rf.rdb$field_source " +
-                        "left outer join (select rel.rdb$relation_name, seg.rdb$field_name, rel.rdb$constraint_type " +
-                                            "from rdb$relation_constraints rel " +
-                                            "left outer join  rdb$indices  idx on rel.rdb$index_name = idx.rdb$index_name " +
-                                            "left outer join rdb$index_segments seg on idx.rdb$index_name = seg.rdb$index_name) ky " +
-                         "on ky.rdb$relation_name = rf.rdb$relation_name and  ky.rdb$field_name = rf.rdb$field_name " +
-                     $"where rf.rdb$relation_name = '{this.TableName}' " +
-                      "order by rf.rdb$field_position; ";
+                    $"where rf.rdb$relation_name = '{this.TableName}' " +
+                     "order by rf.rdb$field_position; ";
                 var reader = command.ExecuteReader();
                 while (reader.Read())
                 {
-                    var key = (reader["ConstraintType"] == DBNull.Value) ? "" : (string)reader["ConstraintType"];
+                    var name = ((string)reader["Name"]).TrimEnd();
                     var size = (reader["CharSize"] == DBNull.Value) ? null : (short?)reader["CharSize"];
                     var subType = (reader["SubType"] == DBNull.Value) ? null : (short?)reader["SubType"];
                     var nullFlag = reader["NullFlag"] == DBNull.Value;
@@ -134,12 +131,42 @@ namespace FAManagementStudio.Models
                     var scale = (reader["FieldScale"] == DBNull.Value) ? null : (short?)reader["FieldScale"];
                     var type = new FieldType((short)reader["Type"], subType, size, precision, scale);
 
-                    yield return new ColumInfo(((string)reader["Name"]).TrimEnd(), type, GetConstraint(key), ((string)reader["FieldSource"]).TrimEnd(), nullFlag);
+                    var constraintInfo = new ConstraintsInfo();
+                    constraints.TryGetValue(name, out constraintInfo);
+
+                    yield return new ColumInfo(name, type, constraintInfo, ((string)reader["FieldSource"]).TrimEnd(), nullFlag);
                 }
             }
         }
 
-        private ConstraintsKind GetConstraint(string input)
+        private Dictionary<string, ConstraintsInfo> GetConstrains(FbConnection con)
+        {
+            var dic = new Dictionary<string, ConstraintsInfo>();
+            using (var command = con.CreateCommand())
+            {
+                command.CommandText =
+                    $"select seg.rdb$field_name Name, rel.rdb$constraint_type Type " +
+                     "from rdb$relation_constraints rel " +
+                     "left outer join rdb$indices idx on rel.rdb$index_name = idx.rdb$index_name " +
+                     "left outer join rdb$index_segments seg on idx.rdb$index_name = seg.rdb$index_name " +
+                    $"where rel.rdb$relation_name = '{this.TableName}' and seg.rdb$field_name != '' ";
+                var reader = command.ExecuteReader();
+                while (reader.Read())
+                {
+                    var name = ((string)reader["Name"]).TrimEnd();
+                    ConstraintsInfo inf;
+                    if (!dic.TryGetValue(name, out inf))
+                    {
+                        inf = new ConstraintsInfo();
+                        dic.Add(name, inf);
+                    }
+                    inf.SetKind(GetConstraintType((string)reader["Type"]));
+                }
+            }
+            return dic;
+        }
+
+        private ConstraintsKind GetConstraintType(string input)
         {
             var name = input.Trim();
             if (string.IsNullOrEmpty(name)) return ConstraintsKind.None;
@@ -207,7 +234,7 @@ namespace FAManagementStudio.Models
                         tmpInf = new IndexInfo();
                         tmpName = ((string)reader["Name"]).Trim();
                         tmpInf.Name = tmpName;
-                        tmpInf.Kind = GetConstraint((string)reader["ConstraintType"]);
+                        tmpInf.Kind = GetConstraintType((string)reader["ConstraintType"]);
                         tmpInf.ForigenKeyName = tmpInf.Kind == ConstraintsKind.Foreign ? (string)reader["ForeignKey"] : "";
                         tmpInf.TableName = this.TableName;
                         tmpInf.FieldNames.Add(((string)reader["FiledName"]).Trim());
@@ -242,11 +269,6 @@ namespace FAManagementStudio.Models
                                             "and r.rdb$view_blr is not null " +
                                             "and r.rdb$relation_type = 1 and r.rdb$system_flag = 0 " +
                         "join rdb$fields f on f.rdb$field_name = rf.rdb$field_source " +
-                        "left outer join (select rel.rdb$relation_name, seg.rdb$field_name, rel.rdb$constraint_type " +
-                                            "from rdb$relation_constraints rel " +
-                                            "left outer join  rdb$indices  idx on rel.rdb$index_name = idx.rdb$index_name " +
-                                            "left outer join rdb$index_segments seg on idx.rdb$index_name = seg.rdb$index_name) ky " +
-                         "on ky.rdb$relation_name = rf.rdb$relation_name and  ky.rdb$field_name = rf.rdb$field_name " +
                      $"where rf.rdb$relation_name = '{this.ViewName}' " +
                       "order by rf.rdb$field_position; ";
                 var reader = command.ExecuteReader();
@@ -259,7 +281,7 @@ namespace FAManagementStudio.Models
                     var scale = (reader["FieldScale"] == DBNull.Value) ? null : (short?)reader["FieldScale"];
                     var type = new FieldType((short)reader["Type"], subType, size, precision, scale);
 
-                    yield return new ColumInfo(((string)reader["Name"]).TrimEnd(), type, ConstraintsKind.None, ((string)reader["FieldSource"]).TrimEnd(), nullFlag);
+                    yield return new ColumInfo(((string)reader["Name"]).TrimEnd(), type, null, ((string)reader["FieldSource"]).TrimEnd(), nullFlag);
                 }
             }
         }
@@ -354,15 +376,46 @@ namespace FAManagementStudio.Models
         public string DomainName { get; set; }
         public bool NullFlag { get; set; }
 
-        public ConstraintsKind KeyKind { get; set; }
+        private ConstraintsInfo _inf;
+        private string v1;
+        private FieldType fieldType;
+        private ConstraintsKind primary;
+        private string v2;
+        private bool v3;
 
-        public ColumInfo(string name, FieldType type, ConstraintsKind keyKind, string domainName, bool nullFlag)
+        public ConstraintsKind KeyKind { get { return _inf.Kind; } }
+
+        public ColumInfo(string name, FieldType type, ConstraintsInfo inf, string domainName, bool nullFlag)
         {
             ColumName = name;
             ColumType = type;
-            KeyKind = keyKind;
+            _inf = inf;
             DomainName = domainName;
             NullFlag = nullFlag;
+        }
+
+        public ColumInfo(string v1, FieldType fieldType, ConstraintsKind primary, string v2, bool v3)
+        {
+            this.v1 = v1;
+            this.fieldType = fieldType;
+            this.primary = primary;
+            this.v2 = v2;
+            this.v3 = v3;
+        }
+    }
+
+    public class ConstraintsInfo
+    {
+        public ConstraintsInfo() { }
+        public ConstraintsInfo(ConstraintsKind kind)
+        {
+            Kind = kind;
+        }
+
+        public ConstraintsKind Kind { get; private set; } = ConstraintsKind.None;
+        public void SetKind(ConstraintsKind kind)
+        {
+            Kind |= kind;
         }
     }
 }
