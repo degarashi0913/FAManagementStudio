@@ -117,6 +117,7 @@
     <Compile Include="ViewModels\DbViewModel.cs" />
     <Compile Include="ViewModels\QueryResultViewModel.cs" />
     <Compile Include="ViewModels\QueryTabViewModel.cs" />
+    <Compile Include="Views\Behaviors\GridColumnGenerateBehavior.cs" />
     <Compile Include="Views\Commons\MessageTrigger.cs" />
     <Compile Include="Views\Commons\MessageBaseTriger.cs" />
     <Compile Include="Views\Behaviors\ShowWindowAction.cs" />

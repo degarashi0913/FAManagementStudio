@@ -271,7 +271,7 @@
                                                 MaxWidth="{Binding Path=ActualWidth, ElementName=ResultGrid, Converter={StaticResource WidthConverter}}"
                                                 Width="{Binding MaxWidth, RelativeSource={RelativeSource Self}}"
                                                 MaxHeight="{Binding Path=ActualHeight, ElementName=ResultRow, Converter={StaticResource HeightConverter}}"
-                                                IsReadOnly="True">
+                                                IsReadOnly="True" AutoGenerateColumns="True">
                                                 <toolkit:DataGrid.ContextMenu>
                                                     <ContextMenu>
                                                         <MenuItem Header="結果を保存 CSV(ヘッダ含)" Command="{Binding OutputCsv}" >
@@ -286,6 +286,9 @@
                                                         </MenuItem>
                                                     </ContextMenu>
                                                 </toolkit:DataGrid.ContextMenu>
+                                                <i:Interaction.Behaviors>
+                                                    <b:GridColumnGenerateBehavior/>
+                                                </i:Interaction.Behaviors>
                                             </toolkit:DataGrid>
                                             <TextBlock Text="{Binding AdditionalInfo}" TextDecorations="Underline" TextWrapping="Wrap" MaxWidth="{Binding MaxWidth, ElementName=ResultView}" Foreground="Gray" Margin="5,0,0,0"/>
                                         </StackPanel>
