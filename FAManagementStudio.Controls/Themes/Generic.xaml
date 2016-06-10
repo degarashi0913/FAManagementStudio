@@ -4,5 +4,6 @@
     xmlns:local="clr-namespace:FAManagementStudio.Controls">
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="/FAManagementStudio.Controls;component/Themes/Generic.PinButton.xaml"/>
+        <ResourceDictionary Source="/FAManagementStudio.Controls;component/Themes/Generic.BindableEditor.xaml"/>
     </ResourceDictionary.MergedDictionaries>
 </ResourceDictionary>
