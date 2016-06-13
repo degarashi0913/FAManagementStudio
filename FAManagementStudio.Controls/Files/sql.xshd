@@ -1,17 +1,14 @@
-﻿<?xml version="1.0"?>
-<SyntaxDefinition name="SQL" extensions=".sql" xmlns="http://icsharpcode.net/sharpdevelop/syntaxdefinition/2008">
-  <Color name="Digits" foreground="DarkBlue" exampleText="3.1415f"/>
-  <Color name="Comment" foreground="Green" exampleText="string text = &quot;Hello, World!&quot;"/>
-  <Color name="Punctuation" foreground="Red" exampleText="string text = &quot;Hello, World!&quot;"/>
-  <Color name="String" foreground="Olive" exampleText="string text = &quot;Hello, World!&quot;"/>
-  <Color name="String2" foreground="#993" exampleText="string text = &quot;Hello, World!&quot;"/>
-  <Color name="Keyword" fontWeight="bold" foreground="Blue" exampleText="SELECT"/>
-  <!--<Color name="Keyword1" fontWeight="normal" foreground="Blue" exampleText="NOCOUNT"/>-->
-  <Color name="MethodCall" foreground="MidnightBlue" fontWeight="bold" />
-  <Color name="ObjectReference" foreground="Teal" exampleText="Customer.Name" />
-  <Color name="CommentMarkerSetTodo" foreground="Red" fontWeight="bold" />
-  <Color name="CommentMarkerSetHackUndone" foreground="#E0E000" fontWeight="bold" />
-
+﻿<SyntaxDefinition name="SQL" extensions=".sql" xmlns="http://icsharpcode.net/sharpdevelop/syntaxdefinition/2008">
+  <Color name="Digits" foreground="#FF00008B" exampleText="3.1415f" />
+  <Color name="Comment" foreground="#FF008000" exampleText="string text = &quot;Hello, World!&quot;" />
+  <Color name="Punctuation" foreground="#FFFF0000" exampleText="string text = &quot;Hello, World!&quot;" />
+  <Color name="String" foreground="#FF808000" exampleText="string text = &quot;Hello, World!&quot;" />
+  <Color name="String2" foreground="#FF999933" exampleText="string text = &quot;Hello, World!&quot;" />
+  <Color name="Keyword" foreground="#FF0000FF" fontWeight="bold" exampleText="SELECT" />
+  <Color name="MethodCall" foreground="#FF191970" fontWeight="bold" />
+  <Color name="ObjectReference" foreground="#FF008080" exampleText="Customer.Name" />
+  <Color name="CommentMarkerSetTodo" foreground="#FFFF0000" fontWeight="bold" />
+  <Color name="CommentMarkerSetHackUndone" foreground="#FFE0E000" fontWeight="bold" />
   <RuleSet name="CommentMarkerSet">
     <Keywords color="CommentMarkerSetTodo">
       <Word>TODO</Word>
@@ -23,22 +20,20 @@
     </Keywords>
   </RuleSet>
   <RuleSet ignoreCase="true">
-    <Span color="String" multiline="true" >
+    <Span color="String" multiline="true">
       <Begin>'</Begin>
       <End>'</End>
     </Span>
-
-    <Span color="String2" multiline="true"  >
+    <Span color="String2" multiline="true">
       <Begin>"</Begin>
       <End>"</End>
     </Span>
-    <!-- span for escape sequences -->
-    <Span color="Comment" begin="--" end="\n" ruleSet="CommentMarkerSet"/>
-    <Span color="Comment" multiline="true" ruleSet="CommentMarkerSet">
+    <Span color="Comment" begin="--" end="\n" ruleSet="CommentMarkerSet" />
+    <Span color="Comment" ruleSet="CommentMarkerSet" multiline="true">
       <Begin>/\*</Begin>
       <End>\*/</End>
     </Span>
-    <Keywords color="Keyword" >
+    <Keywords color="Keyword">
       <Word>ABS</Word>
       <Word>ACCENT</Word>
       <Word>ACOS</Word>
@@ -384,7 +379,7 @@
       <Word>YEAR</Word>
       <Word>YEARDAY</Word>
     </Keywords>
-    <Rule color="ObjectReference">([\d\w]+)\.([\d\w]+)</Rule>
+    <Rule color="ObjectReference">([\d\w]+)\.([\d\w$]+)</Rule>
     <Rule color="Punctuation">
       [?,.;()\[\]{}+\-/%*&lt;&gt;^+~!|&amp;]+
     </Rule>
