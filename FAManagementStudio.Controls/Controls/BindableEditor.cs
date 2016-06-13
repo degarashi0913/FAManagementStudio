@@ -36,17 +36,17 @@ namespace FAManagementStudio.Controls
         }
 
         public static DependencyProperty TextProperty = DependencyProperty.Register(nameof(Text), typeof(string), typeof(BindableEditor),
-            new PropertyMetadata((obj, args) =>
-            {
-                var target = (BindableEditor)obj;
-                if (target.baseText != (string)args.NewValue)
-                    target.baseText = (string)args.NewValue;
-            })
+            new PropertyMetadata(string.Empty, (obj, args) =>
+             {
+                 var target = (BindableEditor)obj;
+                 if (target.baseText != (string)args.NewValue)
+                     target.baseText = (string)args.NewValue;
+             })
         );
 
         protected override void OnTextChanged(EventArgs e)
         {
-            if (Text != null && Text != baseText)
+            if (Text != baseText)
             {
                 SetValue(TextProperty, baseText);
             }
