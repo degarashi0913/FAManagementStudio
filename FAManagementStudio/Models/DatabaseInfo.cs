@@ -132,7 +132,10 @@ namespace FAManagementStudio.Models
                     var type = new FieldType((short)reader["Type"], subType, size, precision, scale);
 
                     var constraintInfo = new ConstraintsInfo();
-                    constraints.TryGetValue(name, out constraintInfo);
+                    if (constraints.ContainsKey(name))
+                    {
+                        constraintInfo = constraints[name];
+                    }
 
                     yield return new ColumInfo(name, type, constraintInfo, ((string)reader["FieldSource"]).TrimEnd(), nullFlag);
                 }
@@ -377,11 +380,6 @@ namespace FAManagementStudio.Models
         public bool NullFlag { get; set; }
 
         private ConstraintsInfo _inf;
-        private string v1;
-        private FieldType fieldType;
-        private ConstraintsKind primary;
-        private string v2;
-        private bool v3;
 
         public ConstraintsKind KeyKind { get { return _inf.Kind; } }
 
@@ -392,15 +390,6 @@ namespace FAManagementStudio.Models
             _inf = inf;
             DomainName = domainName;
             NullFlag = nullFlag;
-        }
-
-        public ColumInfo(string v1, FieldType fieldType, ConstraintsKind primary, string v2, bool v3)
-        {
-            this.v1 = v1;
-            this.fieldType = fieldType;
-            this.primary = primary;
-            this.v2 = v2;
-            this.v3 = v3;
         }
     }
 
