@@ -95,6 +95,7 @@ namespace FAManagementStudio.ViewModels
         public ICommand ReloadDatabase { get; private set; }
         public ICommand ShutdownDatabase { get; private set; }
         public ICommand ChangeConfig { get; private set; }
+        public ICommand ShowEntity { get; private set; }
         public ICommand AddTab { get; private set; }
         public ICommand DeleteTabItem { get; private set; }
 
@@ -188,6 +189,12 @@ namespace FAManagementStudio.ViewModels
             {
                 var vm = new ConnectionSettingsViewModel(_db.DbInfo);
                 MessengerInstance.Send(new MessageBase(vm, "WindowOpen"));
+            });
+
+            ShowEntity = new RelayCommand(() =>
+            {
+                var vm = new EntityRelationshipViewModel(_db);
+                MessengerInstance.Send(new MessageBase(vm, "EintityWindowOpen"));
             });
 
             AddTab = new RelayCommand(() =>

@@ -18,9 +18,15 @@ namespace FAManagementStudio.Views.Behaviors
             get { return (Type)GetValue(ViewModelTypeProperty); }
             set { SetValue(ViewModelTypeProperty, value); }
         }
+        public bool IsDialog
+        {
+            get { return (bool)GetValue(IsDialogProperty); }
+            set { SetValue(IsDialogProperty, value); }
+        }
         public static readonly DependencyProperty WindowTypeProperty = DependencyProperty.Register(nameof(WindowType), typeof(Type), typeof(ShowWindowAction), new PropertyMetadata(null));
 
         public static readonly DependencyProperty ViewModelTypeProperty = DependencyProperty.Register(nameof(ViewModelType), typeof(Type), typeof(ShowWindowAction), new PropertyMetadata(null));
+        public static readonly DependencyProperty IsDialogProperty = DependencyProperty.Register(nameof(IsDialog), typeof(bool), typeof(ShowWindowAction), new PropertyMetadata(null));
 
         protected override void Invoke(object parameter)
         {
@@ -32,7 +38,14 @@ namespace FAManagementStudio.Views.Behaviors
             var viewModel = ((parameter as MessageBase)?.Sender as ViewModelBase);
             if (viewModel != null) window.DataContext = viewModel;
 
-            window.ShowDialog();
+            if (IsDialog)
+            {
+                window.ShowDialog();
+            }
+            else
+            {
+                window.Show();
+            }
 
             viewModel = (ViewModelBase)window.DataContext;
         }

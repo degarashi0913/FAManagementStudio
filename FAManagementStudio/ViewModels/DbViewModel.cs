@@ -231,7 +231,7 @@ public class ColumViewMoodel : BindableBase
         get { return !_inf.DomainName.StartsWith("RDB$"); }
     }
 
-    public ConstraintsKind KeyKind { get { return _inf.KeyKind; } }
+    public ConstraintsInfo ConstraintsInf { get { return _inf.ConstraintsInf; } }
     public bool NullFlag { get { return _inf.NullFlag; } }
 }
 

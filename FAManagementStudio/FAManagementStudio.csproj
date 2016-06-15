@@ -66,6 +66,14 @@
       <HintPath>..\packages\FirebirdSql.Data.FirebirdClient.3.2.0.0\lib\net35\FirebirdSql.Data.FirebirdClient.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="GraphSharp, Version=1.0.2.0, Culture=neutral, PublicKeyToken=f9c24778325a6b82, processorArchitecture=MSIL">
+      <HintPath>..\packages\GraphSharp.1.0.2.0\lib\net35\GraphSharp.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="GraphSharp.Controls, Version=1.0.2.0, Culture=neutral, PublicKeyToken=f9c24778325a6b82, processorArchitecture=MSIL">
+      <HintPath>..\packages\GraphSharp.1.0.2.0\lib\net35\GraphSharp.Controls.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="ICSharpCode.AvalonEdit, Version=5.0.3.0, Culture=neutral, PublicKeyToken=9cc39be672370310, processorArchitecture=MSIL">
       <HintPath>..\packages\AvalonEdit.5.0.3\lib\Net35\ICSharpCode.AvalonEdit.dll</HintPath>
       <Private>True</Private>
@@ -75,6 +83,9 @@
       <HintPath>..\Assemblies\Microsoft.Expression.Interactions.dll</HintPath>
     </Reference>
     <Reference Include="PresentationCore" />
+    <Reference Include="QuickGraph">
+      <HintPath>..\packages\QuickGraph.3.3.51106.0\lib\net35\QuickGraph.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
@@ -96,6 +107,10 @@
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationFramework" />
     <Reference Include="WindowsFormsIntegration" />
+    <Reference Include="WPFExtensions, Version=1.0.3437.34043, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\WPFExtensions.1.0.0\lib\WPFExtensions.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="WPFToolkit">
       <HintPath>..\Assemblies\WPFToolkit.dll</HintPath>
     </Reference>
@@ -115,6 +130,7 @@
     <Compile Include="Models\QueryResult.cs" />
     <Compile Include="ViewModels\ConnectionSettingsViewModel.cs" />
     <Compile Include="ViewModels\DbViewModel.cs" />
+    <Compile Include="ViewModels\EntityRelationshipViewModel.cs" />
     <Compile Include="ViewModels\QueryResultViewModel.cs" />
     <Compile Include="ViewModels\QueryTabViewModel.cs" />
     <Compile Include="Views\Behaviors\GridColumnGenerateBehavior.cs" />
@@ -143,6 +159,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\EntityRelationshipView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -150,6 +170,9 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Views\EntityRelationshipView.xaml.cs">
+      <DependentUpon>EntityRelationshipView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>

@@ -148,11 +148,17 @@ namespace FAManagementStudio.Models
             using (var command = con.CreateCommand())
             {
                 command.CommandText =
-                    $"select seg.rdb$field_name Name, rel.rdb$constraint_type Type " +
-                     "from rdb$relation_constraints rel " +
-                     "left outer join rdb$indices idx on rel.rdb$index_name = idx.rdb$index_name " +
-                     "left outer join rdb$index_segments seg on idx.rdb$index_name = seg.rdb$index_name " +
-                    $"where rel.rdb$relation_name = '{this.TableName}' and seg.rdb$field_name != '' ";
+                    "select seg.rdb$field_name Name, rel.rdb$constraint_type Type, idx.foreign_key_table ForeignKeyTable " +
+                    "from rdb$relation_constraints rel " +
+                    "left outer join( " +
+                    "  select idx.rdb$index_name, idx.rdb$relation_name, idx2.rdb$relation_name foreign_key_table " +
+                    "    from( " +
+                    "    select idx.rdb$index_name, idx.rdb$relation_name, idx.rdb$foreign_key  from rdb$indices idx " +
+                    "    ) idx " +
+                    "    left outer join rdb$indices idx2 on idx.rdb$foreign_key = idx2.rdb$index_name " +
+                    ") idx on  rel.rdb$index_name = idx.rdb$index_name " +
+                    "left outer join rdb$index_segments seg on idx.rdb$index_name  = seg.rdb$index_name " +
+                   $"where rel.rdb$relation_name = '{this.TableName}' and seg.rdb$field_name != '' ";
                 var reader = command.ExecuteReader();
                 while (reader.Read())
                 {
@@ -163,7 +169,12 @@ namespace FAManagementStudio.Models
                         inf = new ConstraintsInfo();
                         dic.Add(name, inf);
                     }
-                    inf.SetKind(GetConstraintType((string)reader["Type"]));
+                    var type = GetConstraintType((string)reader["Type"]);
+                    inf.SetKind(type);
+                    if (type == ConstraintsKind.Foreign)
+                    {
+                        inf.ForeignKeyTableName = ((string)reader["ForeignKeyTable"]).TrimEnd();
+                    }
                 }
             }
             return dic;
@@ -378,16 +389,13 @@ namespace FAManagementStudio.Models
         public FieldType ColumType { get; set; }
         public string DomainName { get; set; }
         public bool NullFlag { get; set; }
-
-        private ConstraintsInfo _inf;
-
-        public ConstraintsKind KeyKind { get { return _inf.Kind; } }
+        public ConstraintsInfo ConstraintsInf { get; set; }
 
         public ColumInfo(string name, FieldType type, ConstraintsInfo inf, string domainName, bool nullFlag)
         {
             ColumName = name;
             ColumType = type;
-            _inf = inf;
+            ConstraintsInf = inf;
             DomainName = domainName;
             NullFlag = nullFlag;
         }
@@ -400,7 +408,7 @@ namespace FAManagementStudio.Models
         {
             Kind = kind;
         }
-
+        public string ForeignKeyTableName { get; set; }
         public ConstraintsKind Kind { get; private set; } = ConstraintsKind.None;
         public void SetKind(ConstraintsKind kind)
         {
