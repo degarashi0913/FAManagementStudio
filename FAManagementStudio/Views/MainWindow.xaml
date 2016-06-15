@@ -38,7 +38,10 @@
     </i:Interaction.Behaviors>
     <i:Interaction.Triggers>
         <b:MessageBaseTriger Target="WindowOpen">
-            <b:ShowWindowAction WindowType="{x:Type v:ConnectionSettingsView}"/>
+            <b:ShowWindowAction WindowType="{x:Type v:ConnectionSettingsView}" IsDialog="True" />
+        </b:MessageBaseTriger>
+        <b:MessageBaseTriger Target="EintityWindowOpen">
+            <b:ShowWindowAction WindowType="{x:Type v:EntityRelationshipView}" IsDialog="False" />
         </b:MessageBaseTriger>
     </i:Interaction.Triggers>
     <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
@@ -117,6 +120,8 @@
                                     <MenuItem Header="再読み込み" Command="{Binding ReloadDatabase, Source={StaticResource viewModel}}"/>
                                     <MenuItem Header="切断" Command="{Binding ShutdownDatabase, Source={StaticResource viewModel}}"/>
                                     <MenuItem Header="編集" Command="{Binding ChangeConfig, Source={StaticResource viewModel}}"/>
+                                    <Separator Margin="0,-4"/>
+                                    <MenuItem Header="相関図" Command="{Binding ShowEntity, Source={StaticResource viewModel}}"/>
                                 </ContextMenu>
                             </Canvas.ContextMenu>
                             <Image Source="../Image/DbShape.png" Height="50" Width="50" Margin="0,3,0,0"/>
@@ -167,7 +172,7 @@
                             <HierarchicalDataTemplate.ItemTemplate>
                                 <HierarchicalDataTemplate >
                                     <StackPanel Orientation="Horizontal" Margin="-11,0,0,0" ContextMenu="{StaticResource contextMenu}">
-                                        <Image Source="{Binding KeyKind, Converter={StaticResource KeyConverter}}" Width="11" Stretch="Uniform"/>
+                                        <Image Source="{Binding ConstraintsInf.Kind, Converter={StaticResource KeyConverter}}" Width="11" Stretch="Uniform"/>
                                         <TextBlock Text="{Binding Path=DisplayName}" />
                                     </StackPanel>
                                 </HierarchicalDataTemplate>
