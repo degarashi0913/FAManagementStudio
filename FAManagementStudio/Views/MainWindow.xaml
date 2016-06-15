@@ -121,7 +121,7 @@
                                     <MenuItem Header="切断" Command="{Binding ShutdownDatabase, Source={StaticResource viewModel}}"/>
                                     <MenuItem Header="編集" Command="{Binding ChangeConfig, Source={StaticResource viewModel}}"/>
                                     <Separator Margin="0,-4"/>
-                                    <MenuItem Header="相関図" Command="{Binding ShowEntity, Source={StaticResource viewModel}}"/>
+                                    <MenuItem Header="相関図(β機能)" Command="{Binding ShowEntity, Source={StaticResource viewModel}}"/>
                                 </ContextMenu>
                             </Canvas.ContextMenu>
                             <Image Source="../Image/DbShape.png" Height="50" Width="50" Margin="0,3,0,0"/>
