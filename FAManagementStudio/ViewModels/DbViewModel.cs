@@ -1,22 +1,22 @@
 ﻿using FAManagementStudio.Common;
 using FAManagementStudio.Models;
-using FirebirdSql.Data.FirebirdClient;
-using System.Collections.Generic;
-using System.Text;
-using System.Windows.Data;
-using System.Linq;
 using FAManagementStudio.ViewModels;
+using FirebirdSql.Data.FirebirdClient;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Windows.Data;
 
 namespace FAManagementStudio.ViewModels
 {
-    public class DbViewModel : BindableBase
+    public class DbViewModel : ViewModelBase
     {
         public DbViewModel()
         {
         }
 
         private DatabaseInfo _dbInfo = new DatabaseInfo();
+        public DatabaseInfo DbInfo { get { return _dbInfo; } }
 
         public string DisplayDbName { get { return _dbInfo.Path.Substring(_dbInfo.Path.LastIndexOf('\\') + 1); } }
 
@@ -34,7 +34,8 @@ namespace FAManagementStudio.ViewModels
 
         public void CreateDatabase(string path)
         {
-            using (var con = GetConnection(path))
+            _dbInfo.Path = path;
+            using (var con = new FbConnection(_dbInfo.ConnectionString))
             {
                 _dbInfo.CreateDatabase(con);
             }
@@ -51,7 +52,7 @@ namespace FAManagementStudio.ViewModels
         {
             if (!CanLoadDatabase(path)) return false;
             _dbInfo.Path = path;
-            using (var con = GetConnection(path))
+            using (var con = new FbConnection(_dbInfo.ConnectionString))
             {
                 con.Open();
                 foreach (var item in _dbInfo.GetTables(con))
@@ -71,8 +72,8 @@ namespace FAManagementStudio.ViewModels
                     }
                     Tables.Add(vm);
                 }
-                Triggers.AddRange(Tables.SelectMany(x => ((TableViewModel)x).Triggers));
-                Indexes.AddRange(Tables.SelectMany(x => ((TableViewModel)x).Indexs));
+                Triggers.AddRange(Tables.SelectMany(x => ((TableViewModel)x).Triggers).ToArray());
+                Indexes.AddRange(Tables.SelectMany(x => ((TableViewModel)x).Indexs).ToArray());
                 foreach (var item in _dbInfo.GetViews(con))
                 {
                     var vm = new ViewViewModel(item.ViewName, item.Source);
@@ -92,22 +93,10 @@ namespace FAManagementStudio.ViewModels
         {
             Tables.Clear();
             Triggers.Clear();
-            LoadDatabase(_dbInfo.Path);
+            var path = _dbInfo.Path;
+            _dbInfo = new DatabaseInfo();
+            LoadDatabase(path);
             CollectionViewSource.GetDefaultView(this.Tables).Refresh();
-        }
-
-        private FbConnection GetConnection(string path)
-        {
-            var builder = new FbConnectionStringBuilder();
-            builder.DataSource = "localhost";
-            builder.Database = path;
-            builder.Charset = FbCharset.Utf8.ToString();
-            builder.UserID = "SYSDBA";
-            builder.Password = "masterkey";
-            builder.ServerType = FbServerType.Embedded;
-            builder.Pooling = false;
-
-            return new FbConnection(builder.ConnectionString);
         }
     }
 }
@@ -242,7 +231,7 @@ public class ColumViewMoodel : BindableBase
         get { return !_inf.DomainName.StartsWith("RDB$"); }
     }
 
-    public ConstraintsKind KeyKind { get { return _inf.KeyKind; } }
+    public ConstraintsInfo ConstraintsInf { get { return _inf.ConstraintsInf; } }
     public bool NullFlag { get { return _inf.NullFlag; } }
 }
 

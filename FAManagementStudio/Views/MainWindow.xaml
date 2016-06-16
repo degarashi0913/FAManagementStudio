@@ -10,6 +10,7 @@
         xmlns:b="clr-namespace:FAManagementStudio.Views.Behaviors"
         xmlns:c="clr-namespace:FAManagementStudio.Views.Converters"
         xmlns:vm="clr-namespace:FAManagementStudio.ViewModels"
+        xmlns:v="clr-namespace:FAManagementStudio.Views"
         xmlns:controls="clr-namespace:FAManagementStudio.Controls;assembly=FAManagementStudio.Controls"
         xmlns:core="clr-namespace:System;assembly=mscorlib"
         mc:Ignorable="d"
@@ -35,7 +36,14 @@
     <i:Interaction.Behaviors>
         <b:WindowBehavior LoadedCommand="{Binding LoadHistry}" ClosedCommand="{Binding SaveHistry}"/>
     </i:Interaction.Behaviors>
-
+    <i:Interaction.Triggers>
+        <b:MessageBaseTriger Target="WindowOpen">
+            <b:ShowWindowAction WindowType="{x:Type v:ConnectionSettingsView}" IsDialog="True" />
+        </b:MessageBaseTriger>
+        <b:MessageBaseTriger Target="EintityWindowOpen">
+            <b:ShowWindowAction WindowType="{x:Type v:EntityRelationshipView}" IsDialog="False" />
+        </b:MessageBaseTriger>
+    </i:Interaction.Triggers>
     <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
         <Grid.RowDefinitions>
             <RowDefinition Height="22"/>
@@ -111,6 +119,9 @@
                                 <ContextMenu>
                                     <MenuItem Header="再読み込み" Command="{Binding ReloadDatabase, Source={StaticResource viewModel}}"/>
                                     <MenuItem Header="切断" Command="{Binding ShutdownDatabase, Source={StaticResource viewModel}}"/>
+                                    <MenuItem Header="編集" Command="{Binding ChangeConfig, Source={StaticResource viewModel}}"/>
+                                    <Separator Margin="0,-4"/>
+                                    <MenuItem Header="相関図(β機能)" Command="{Binding ShowEntity, Source={StaticResource viewModel}}"/>
                                 </ContextMenu>
                             </Canvas.ContextMenu>
                             <Image Source="../Image/DbShape.png" Height="50" Width="50" Margin="0,3,0,0"/>
@@ -161,7 +172,7 @@
                             <HierarchicalDataTemplate.ItemTemplate>
                                 <HierarchicalDataTemplate >
                                     <StackPanel Orientation="Horizontal" Margin="-11,0,0,0" ContextMenu="{StaticResource contextMenu}">
-                                        <Image Source="{Binding KeyKind, Converter={StaticResource KeyConverter}}" Width="11" Stretch="Uniform"/>
+                                        <Image Source="{Binding ConstraintsInf.Kind, Converter={StaticResource KeyConverter}}" Width="11" Stretch="Uniform"/>
                                         <TextBlock Text="{Binding Path=DisplayName}" />
                                     </StackPanel>
                                 </HierarchicalDataTemplate>
@@ -216,20 +227,20 @@
                     </TabControl.ItemTemplate>
                     <TabControl.ContentTemplate>
                         <DataTemplate>
-                            <TextBox AllowDrop="True" Text="{Binding Query, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" AcceptsReturn="True" TextWrapping="Wrap" Margin="0,2" Grid.RowSpan="2" VerticalScrollBarVisibility="Auto"  PreviewDragEnter="TextBox_PreviewDragEnter"
+                            <controls:BindableEditor AllowDrop="True" Text="{Binding Query, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalScrollBarVisibility="Disabled" Margin="0,2" Grid.RowSpan="2"  PreviewDragEnter="TextBox_PreviewDragEnter"
             PreviewDragOver="TextBox_PreviewDragEnter">
-                                <TextBox.Resources>
+                                <controls:BindableEditor.Resources>
                                     <Common:CommandReference x:Key="OverwriteSave" Command="{Binding OverwriteSave}"/>
                                     <Common:CommandReference x:Key="DropFile" Command="{Binding DropFile}"/>
-                                </TextBox.Resources>
-                                <TextBox.InputBindings>
+                                </controls:BindableEditor.Resources>
+                                <controls:BindableEditor.InputBindings>
                                     <KeyBinding Key="F5" Command="{StaticResource Execute}" />
                                     <KeyBinding Modifiers="Ctrl" Key="S" Command="{StaticResource OverwriteSave}" />
-                                </TextBox.InputBindings>
+                                </controls:BindableEditor.InputBindings>
                                 <i:Interaction.Behaviors>
                                     <b:FileDropBehavior DropedCommand="{Binding DropFile}" FetchMode="Once"/>
                                 </i:Interaction.Behaviors>
-                            </TextBox>
+                            </controls:BindableEditor>
                         </DataTemplate>
                     </TabControl.ContentTemplate>
                 </TabControl>
@@ -265,7 +276,7 @@
                                                 MaxWidth="{Binding Path=ActualWidth, ElementName=ResultGrid, Converter={StaticResource WidthConverter}}"
                                                 Width="{Binding MaxWidth, RelativeSource={RelativeSource Self}}"
                                                 MaxHeight="{Binding Path=ActualHeight, ElementName=ResultRow, Converter={StaticResource HeightConverter}}"
-                                                IsReadOnly="True">
+                                                IsReadOnly="True" AutoGenerateColumns="True">
                                                 <toolkit:DataGrid.ContextMenu>
                                                     <ContextMenu>
                                                         <MenuItem Header="結果を保存 CSV(ヘッダ含)" Command="{Binding OutputCsv}" >
@@ -280,6 +291,9 @@
                                                         </MenuItem>
                                                     </ContextMenu>
                                                 </toolkit:DataGrid.ContextMenu>
+                                                <i:Interaction.Behaviors>
+                                                    <b:GridColumnGenerateBehavior/>
+                                                </i:Interaction.Behaviors>
                                             </toolkit:DataGrid>
                                             <TextBlock Text="{Binding AdditionalInfo}" TextDecorations="Underline" TextWrapping="Wrap" MaxWidth="{Binding MaxWidth, ElementName=ResultView}" Foreground="Gray" Margin="5,0,0,0"/>
                                         </StackPanel>

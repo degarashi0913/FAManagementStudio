@@ -1,6 +1,5 @@
 ﻿using FAManagementStudio.Common;
 using FAManagementStudio.Models;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -17,7 +16,7 @@ using System.Windows.Input;
 
 namespace FAManagementStudio.ViewModels
 {
-    public class MainViewModel : BindableBase
+    public class MainViewModel : ViewModelBase
     {
         public MainViewModel()
         {
@@ -95,6 +94,8 @@ namespace FAManagementStudio.ViewModels
         public ICommand ExecLimitedSql { get; private set; }
         public ICommand ReloadDatabase { get; private set; }
         public ICommand ShutdownDatabase { get; private set; }
+        public ICommand ChangeConfig { get; private set; }
+        public ICommand ShowEntity { get; private set; }
         public ICommand AddTab { get; private set; }
         public ICommand DeleteTabItem { get; private set; }
 
@@ -183,6 +184,18 @@ namespace FAManagementStudio.ViewModels
             ReloadDatabase = new RelayCommand(() => { CurrentDatabase.ReloadDatabase(); });
 
             ShutdownDatabase = new RelayCommand(() => { Databases.Remove(CurrentDatabase); });
+
+            ChangeConfig = new RelayCommand(() =>
+            {
+                var vm = new ConnectionSettingsViewModel(_db.DbInfo);
+                MessengerInstance.Send(new MessageBase(vm, "WindowOpen"));
+            });
+
+            ShowEntity = new RelayCommand(() =>
+            {
+                var vm = new EntityRelationshipViewModel(_db);
+                MessengerInstance.Send(new MessageBase(vm, "EintityWindowOpen"));
+            });
 
             AddTab = new RelayCommand(() =>
             {

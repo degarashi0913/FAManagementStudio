@@ -1,0 +1,69 @@
+﻿<Window x:Class="FAManagementStudio.Views.EntityRelationshipView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:FAManagementStudio.Views"
+        xmlns:graph="clr-namespace:GraphSharp.Controls;assembly=GraphSharp.Controls"
+        xmlns:extensions="clr-namespace:WPFExtensions.Controls;assembly=WPFExtensions"
+        xmlns:vm="clr-namespace:FAManagementStudio.ViewModels"
+        xmlns:c="clr-namespace:FAManagementStudio.Views.Converters"
+        mc:Ignorable="d"
+        Title="相関図" Height="500" Width="800">
+    <Window.DataContext>
+        <vm:EntityRelationshipViewModel />
+    </Window.DataContext>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="45"/>
+            <RowDefinition Height="1*"/>
+        </Grid.RowDefinitions>
+        <StackPanel Grid.Row="0">
+            <Button Content="再配置" Click="RelayoutButton_Clisk" />
+            <StackPanel Orientation="Horizontal">
+                <Button Content="ExpanderOpen" Click="ExpandOpenButton_Click" />
+                <Button Content="ExpanderClose" Click="ExpandCloseButton_Click" />
+                <ComboBox x:Name="Combo" ItemsSource="{Binding LayoutAlgorithmFactory.AlgorithmTypes,ElementName=Layout}" SelectedValue="{Binding LayoutAlgorithmType,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" />
+            </StackPanel>
+        </StackPanel>
+        <extensions:ZoomControl Grid.Row="1">
+            <graph:GraphLayout x:Name="Layout" Margin="0,0,0,0" Graph="{Binding Graph}" 
+                               LayoutMode="Automatic" LayoutParameters="{Binding Parameter, Mode=TwoWay}"
+                               OverlapRemovalConstraint="Automatic" OverlapRemovalAlgorithmType="FSA" LayoutAlgorithmType="{Binding LayoutAlgorithmType}" >
+                <graph:GraphLayout.Resources>
+                    <Style TargetType="{x:Type graph:VertexControl}">
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="{x:Type graph:VertexControl}">
+                                    <Border BorderThickness="1" CornerRadius="5" BorderBrush="Brown">
+                                        <StackPanel>
+                                            <StackPanel Orientation="Horizontal">
+                                                <Image Source="../Image/Table.png" Height="30" Width="30" />
+                                                <TextBlock Text="{Binding TableName}" TextAlignment="Center" />
+                                            </StackPanel>
+                                            <Expander Header="Colums">
+                                                <ItemsControl ItemsSource="{Binding Colums}">
+                                                    <ItemsControl.Resources>
+                                                        <c:ConstraintsKeyToIconConverter x:Key="KeyConverter"/>
+                                                    </ItemsControl.Resources>
+                                                    <ItemsControl.ItemTemplate>
+                                                        <DataTemplate>
+                                                            <StackPanel Orientation="Horizontal" Margin="15,0,5,0">
+                                                                <Image Source="{Binding ConstraintsInf.Kind, Converter={StaticResource KeyConverter}}" Width="11" Stretch="Uniform"/>
+                                                                <TextBlock Text="{Binding DisplayName}" />
+                                                            </StackPanel>
+                                                        </DataTemplate>
+                                                    </ItemsControl.ItemTemplate>
+                                                </ItemsControl>
+                                            </Expander>
+                                        </StackPanel>
+                                    </Border>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </graph:GraphLayout.Resources>
+            </graph:GraphLayout>
+        </extensions:ZoomControl>
+    </Grid>
+</Window>
