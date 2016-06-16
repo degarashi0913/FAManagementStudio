@@ -9,7 +9,7 @@
         xmlns:vm="clr-namespace:FAManagementStudio.ViewModels"
         xmlns:c="clr-namespace:FAManagementStudio.Views.Converters"
         mc:Ignorable="d"
-        Title="相関図" Height="500" Width="800">
+        Title="相関図" Height="500" Width="800" Icon="../Image/systemicon.ico" WindowStartupLocation="CenterOwner">
     <Window.DataContext>
         <vm:EntityRelationshipViewModel />
     </Window.DataContext>
