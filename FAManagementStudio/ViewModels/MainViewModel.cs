@@ -103,7 +103,7 @@ namespace FAManagementStudio.ViewModels
         public ICommand SaveHistry { get; private set; }
         public ICommand OpenGitPage { get; private set; }
 
-        public ICommand PinCommand { get; private set; }
+        public ICommand ReleasePinCommand { get; private set; }
 
         public ICommand PinedCommand { get; private set; }
 
@@ -225,9 +225,9 @@ namespace FAManagementStudio.ViewModels
                 Datasource.Insert(0, new QueryResultViewModel("Result"));
                 SelectedResultIndex = 0;
                 RaisePropertyChanged(nameof(SelectedResultIndex));
-            });
+            }, () => 0 < Datasource[0].Result.Count);
 
-            PinCommand = new RelayCommand<QueryResultViewModel>((data) =>
+            ReleasePinCommand = new RelayCommand<QueryResultViewModel>((data) =>
             {
                 Datasource.Remove(data);
             });
