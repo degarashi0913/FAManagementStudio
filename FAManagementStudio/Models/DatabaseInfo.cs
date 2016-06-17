@@ -248,7 +248,8 @@ namespace FAManagementStudio.Models
                         tmpInf = new IndexInfo();
                         tmpName = ((string)reader["Name"]).Trim();
                         tmpInf.Name = tmpName;
-                        tmpInf.Kind = GetConstraintType((string)reader["ConstraintType"]);
+                        var constraintType = reader["ConstraintType"] == DBNull.Value ? "" : (string)(reader["ConstraintType"]);
+                        tmpInf.Kind = GetConstraintType(constraintType);
                         tmpInf.ForigenKeyName = tmpInf.Kind == ConstraintsKind.Foreign ? (string)reader["ForeignKey"] : "";
                         tmpInf.TableName = this.TableName;
                         tmpInf.FieldNames.Add(((string)reader["FiledName"]).Trim());
