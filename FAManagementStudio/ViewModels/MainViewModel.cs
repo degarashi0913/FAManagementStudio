@@ -242,7 +242,7 @@ namespace FAManagementStudio.ViewModels
                 }
                 else if (s == "insert")
                 {
-                    if (table is ViewViewModel) return;
+                    if (table is TableViewViewModel) return;
                     var colums = table.Colums.Select(x => x.ColumName).ToArray();
                     var escapedColumsStr = string.Join(", ", colums.Select(x => EscapeKeyWord(x)).ToArray());
 

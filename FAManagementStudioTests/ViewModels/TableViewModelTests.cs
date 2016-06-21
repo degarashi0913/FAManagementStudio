@@ -135,7 +135,7 @@ namespace Tests
         public void GetDdlTest4()
         {
             var dbVm = new DbViewModel();
-            var table = new ViewViewModel("SNOW_LINE", "SELECT CITY, STATE, ALTITUDE FROM CITIES WHERE ALTITUDE > 5000");
+            var table = new TableViewViewModel("SNOW_LINE", "SELECT CITY, STATE, ALTITUDE FROM CITIES WHERE ALTITUDE > 5000");
             dbVm.Tables.Add(table);
 
             var col1 = new ColumInfo("CITY", new FieldType(8, null, null, null, null), new ConstraintsInfo(ConstraintsKind.Primary), "SARARY", false);

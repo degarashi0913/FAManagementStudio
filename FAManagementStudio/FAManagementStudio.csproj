@@ -124,12 +124,23 @@
     <Compile Include="Common\MessageBase.cs" />
     <Compile Include="Common\Messenger.cs" />
     <Compile Include="Models\AppSettings.cs" />
+    <Compile Include="Models\Commons\FieldType.cs" />
+    <Compile Include="Models\Db\ColumInfo.cs" />
+    <Compile Include="Models\Db\IndexInfo.cs" />
+    <Compile Include="Models\Db\TableInfo.cs" />
+    <Compile Include="Models\Db\TriggerInfo.cs" />
+    <Compile Include="Models\Db\ViewInfo.cs" />
     <Compile Include="Models\FirebirdInfo.cs" />
     <Compile Include="Models\Firebird\HeaderPage.cs" />
     <Compile Include="Models\Firebird\FbUtility.cs" />
     <Compile Include="Models\QueryResult.cs" />
     <Compile Include="ViewModels\ConnectionSettingsViewModel.cs" />
-    <Compile Include="ViewModels\DbViewModel.cs" />
+    <Compile Include="ViewModels\Db\ColumViewMoodel.cs" />
+    <Compile Include="ViewModels\Db\DbViewModel.cs" />
+    <Compile Include="ViewModels\Db\IndexViewModel.cs" />
+    <Compile Include="ViewModels\Db\TableViewModel.cs" />
+    <Compile Include="ViewModels\Db\TableViewViewModel.cs" />
+    <Compile Include="ViewModels\Db\TriggerViewModel.cs" />
     <Compile Include="ViewModels\EntityRelationshipViewModel.cs" />
     <Compile Include="ViewModels\QueryResultViewModel.cs" />
     <Compile Include="ViewModels\QueryTabViewModel.cs" />
@@ -148,7 +159,7 @@
     <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="Views\Behaviors\WindowBehavior.cs" />
     <Compile Include="Views\Behaviors\WindowCloseAction.cs" />
-    <Compile Include="ViewModels\ViewModelBase.cs" />
+    <Compile Include="ViewModels\Commons\ViewModelBase.cs" />
     <Compile Include="Views\ConnectionSettingsView.xaml.cs">
       <DependentUpon>ConnectionSettingsView.xaml</DependentUpon>
     </Compile>
@@ -180,7 +191,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Models\DatabaseInfo.cs" />
+    <Compile Include="Models\Db\DatabaseInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
