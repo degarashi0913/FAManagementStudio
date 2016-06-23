@@ -23,9 +23,42 @@ namespace FAManagementStudio.ViewModels
         public List<ITableViewModel> Tables { get; } = new List<ITableViewModel>();
         public List<TriggerViewModel> Triggers { get; } = new List<TriggerViewModel>();
         public List<IndexViewModel> Indexes { get; } = new List<IndexViewModel>();
+        private List<DomainViewModel> _domains;
+        public List<DomainViewModel> Domains
+        {
+            get
+            {
+                if (_domains == null) _domains = GetDomains();
+                return _domains;
+            }
+        }
+
+        private List<DomainViewModel> GetDomains()
+        {
+            var list = new List<DomainViewModel>();
+            using (var con = new FbConnection(_dbInfo.ConnectionString))
+            {
+                con.Open();
+                foreach (var item in _dbInfo.GetDomain(con))
+                {
+                    list.Add(new DomainViewModel(item));
+                }
+            }
+            return list;
+        }
 
         public string ConnectionString { get { return _dbInfo.ConnectionString; } }
         public string Path { get { return _dbInfo.Path; } }
+
+        private AdditionalDbInfoControl _additionalInfo;
+        public AdditionalDbInfoControl AdditionalInfo
+        {
+            get
+            {
+                if (_additionalInfo == null) _additionalInfo = new AdditionalDbInfoControl(this);
+                return _additionalInfo;
+            }
+        }
 
         public bool CanExecute()
         {
@@ -85,6 +118,7 @@ namespace FAManagementStudio.ViewModels
                 }
                 RaisePropertyChanged(nameof(Tables));
                 RaisePropertyChanged(nameof(Triggers));
+                RaisePropertyChanged(nameof(Indexes));
             }
             return true;
         }
@@ -93,9 +127,12 @@ namespace FAManagementStudio.ViewModels
         {
             Tables.Clear();
             Triggers.Clear();
+            Indexes.Clear();
+            _domains = null;
             var path = _dbInfo.Path;
             _dbInfo = new DatabaseInfo();
             LoadDatabase(path);
+            _additionalInfo.RefrechData(this);
             CollectionViewSource.GetDefaultView(this.Tables).Refresh();
         }
     }

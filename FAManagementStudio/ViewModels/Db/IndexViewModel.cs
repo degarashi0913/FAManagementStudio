@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace FAManagementStudio.ViewModels
 {
-    public class IndexViewModel
+    public class IndexViewModel : IAddtionalDbInfo
     {
         private IndexInfo _index;
         public IndexViewModel(IndexInfo inf)

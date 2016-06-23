@@ -126,6 +126,7 @@
     <Compile Include="Models\AppSettings.cs" />
     <Compile Include="Models\Commons\FieldType.cs" />
     <Compile Include="Models\Db\ColumInfo.cs" />
+    <Compile Include="Models\Db\DomainInfo.cs" />
     <Compile Include="Models\Db\IndexInfo.cs" />
     <Compile Include="Models\Db\TableInfo.cs" />
     <Compile Include="Models\Db\TriggerInfo.cs" />
@@ -134,9 +135,11 @@
     <Compile Include="Models\Firebird\HeaderPage.cs" />
     <Compile Include="Models\Firebird\FbUtility.cs" />
     <Compile Include="Models\QueryResult.cs" />
+    <Compile Include="ViewModels\AdditionalDbInfoViewModel.cs" />
     <Compile Include="ViewModels\ConnectionSettingsViewModel.cs" />
     <Compile Include="ViewModels\Db\ColumViewMoodel.cs" />
     <Compile Include="ViewModels\Db\DbViewModel.cs" />
+    <Compile Include="ViewModels\Db\DomainViewModel.cs" />
     <Compile Include="ViewModels\Db\IndexViewModel.cs" />
     <Compile Include="ViewModels\Db\TableViewModel.cs" />
     <Compile Include="ViewModels\Db\TableViewViewModel.cs" />
@@ -241,6 +244,9 @@
       <Project>{0ae2fcf9-be9a-453a-a5b5-c294e9c1b06d}</Project>
       <Name>FAManagementStudio.Controls</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Image\DatabaseItem.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

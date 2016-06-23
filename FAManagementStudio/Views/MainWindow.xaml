@@ -181,16 +181,53 @@
                     </TreeView.ItemTemplate>
                 </TreeView>
                 <GridSplitter Grid.Row="1" Style="{StaticResource HorizontalSpliterStyle}" />
-                <ListBox Grid.Row="2" ItemsSource="{Binding Triggers}" >
-                    <ListBox.ItemTemplate>
-                        <DataTemplate>
-                            <StackPanel Orientation="Horizontal" ToolTip="{Binding Source}">
-                                <TextBlock Text="{Binding TableName}" Width="50"/>
-                                <TextBlock Text="{Binding Name}"/>
-                            </StackPanel>
-                        </DataTemplate>
-                    </ListBox.ItemTemplate>
-                </ListBox>
+                <DockPanel Grid.Row="2">
+                    <Button DockPanel.Dock="Bottom" Content="Other Info" Background="Transparent" Command="{Binding  ElementName=AdditionalBox, Path=DataContext.ContentChange}"/>
+                    <ItemsControl DockPanel.Dock="Bottom" Name="AdditionalBox"  DataContext="{Binding AdditionalInfo}" ItemsSource="{Binding DataContext.CurrentContent, RelativeSource={RelativeSource Self}}">
+                        <ItemsControl.Template>
+                            <ControlTemplate>
+                                <ScrollViewer x:Name="ScrollViewer" Padding="{TemplateBinding Padding}">
+                                    <ItemsPresenter />
+                                </ScrollViewer>
+                            </ControlTemplate>
+                        </ItemsControl.Template>
+                        <ItemsControl.Resources>
+                            <DataTemplate DataType="{x:Type vm:AdditionalDbInfoViewModel}">
+                                <Button Command="{Binding  ElementName=AdditionalBox, Path=DataContext.ContentChange}"  CommandParameter="{Binding DisplayName}" Background="Transparent">
+                                    <StackPanel Orientation="Horizontal">
+                                        <Image Width="15" Height="15" Source="../Image/DatabaseItem.png" />
+                                        <Label Content="{Binding DisplayName}" />
+                                    </StackPanel>
+                                </Button>
+                            </DataTemplate>
+                            <DataTemplate DataType="{x:Type vm:TriggerViewModel}">
+                                <Border BorderBrush="Silver" BorderThickness="1">
+                                    <StackPanel ToolTip="{Binding Source}">
+                                        <TextBlock Text="{Binding Name, StringFormat=Name: {0}}" />
+                                        <TextBlock Text="{Binding TableName, StringFormat=Table: {0}}" />
+                                    </StackPanel>
+                                </Border>
+                            </DataTemplate>
+                            <DataTemplate DataType="{x:Type vm:IndexViewModel}">
+                                <Border BorderBrush="Silver" BorderThickness="1">
+                                    <StackPanel >
+                                        <TextBlock Text="{Binding IndexName, StringFormat=Name: {0}}" />
+                                        <TextBlock Text="{Binding TableName, StringFormat=Table: {0}}" />
+                                        <TextBlock Text="{Binding Kind, StringFormat=Kind: {0}}" />
+                                    </StackPanel>
+                                </Border>
+                            </DataTemplate>
+                            <DataTemplate DataType="{x:Type vm:DomainViewModel}">
+                                <Border BorderBrush="Silver" BorderThickness="1">
+                                    <StackPanel >
+                                        <TextBlock Text="{Binding DomainName, StringFormat=Name: {0}}" />
+                                        <TextBlock Text="{Binding DomainType, StringFormat=Type: {0}}"/>
+                                    </StackPanel>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.Resources>
+                    </ItemsControl>
+                </DockPanel>
             </Grid>
             <GridSplitter Grid.Column="3" Style="{StaticResource VirticalSpliterStyle}"  />
             <Grid x:Name="ResultGrid" Grid.Column="4">

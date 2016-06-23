@@ -55,6 +55,7 @@ namespace FAManagementStudio.ViewModels
                 RaisePropertyChanged(nameof(Tables));
                 RaisePropertyChanged(nameof(CurrentDatabase));
                 RaisePropertyChanged(nameof(Triggers));
+                RaisePropertyChanged(nameof(AdditionalInfo));
             }
         }
 
@@ -74,6 +75,7 @@ namespace FAManagementStudio.ViewModels
 
         public object SelectedTableItem { get; set; }
 
+        public AdditionalDbInfoControl AdditionalInfo { get { return _db.AdditionalInfo; } }
 
         public ObservableCollection<DbViewModel> Databases { get; set; } = new ObservableCollection<DbViewModel>();
 
