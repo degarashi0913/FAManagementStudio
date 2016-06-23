@@ -24,24 +24,11 @@ namespace FAManagementStudio.Controls
         private static string PinImage = @"pack://application:,,,/FAManagementStudio.Controls;component/Images/PinItem.png";
         private static string PinedImage = @"pack://application:,,,/FAManagementStudio.Controls;component/Images/PinnedItem.png";
 
-        public static readonly DependencyProperty PinedProperty = DependencyProperty.Register(nameof(Pined), typeof(bool), typeof(PinButton), new PropertyMetadata(false, new PropertyChangedCallback(OnPinedChnaged)));
-
-        private static void OnPinedChnaged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            var obj = d as PinButton;
-            if (obj.Pined)
-            {
-                obj.PinedCommand?.Execute(obj.DataContext);
-            }
-            else
-            {
-                obj.PinCommand?.Execute(obj.DataContext);
-            }
-        }
+        public static readonly DependencyProperty PinedProperty = DependencyProperty.Register(nameof(Pined), typeof(bool), typeof(PinButton), new PropertyMetadata(false, null));
 
         public static readonly DependencyProperty ImagePathProperty = DependencyProperty.Register(nameof(ImagePath), typeof(string), typeof(PinButton), new PropertyMetadata(PinImage));
 
-        public static readonly DependencyProperty PinCommandProperty = DependencyProperty.Register(nameof(PinCommand), typeof(ICommand), typeof(PinButton), new PropertyMetadata(null));
+        public static readonly DependencyProperty ReleasePinCommandProperty = DependencyProperty.Register(nameof(ReleasePinCommand), typeof(ICommand), typeof(PinButton), new PropertyMetadata(null));
 
         public static readonly DependencyProperty PinedCommandProperty = DependencyProperty.Register(nameof(PinedCommand), typeof(ICommand), typeof(PinButton), new PropertyMetadata(null));
 
@@ -53,8 +40,28 @@ namespace FAManagementStudio.Controls
 
         protected override void OnClick()
         {
+            ICommand command;
+            if (this.Pined)
+            {
+                command = ReleasePinCommand;
+            }
+            else
+            {
+                command = PinedCommand;
+            }
+            if (ExecuteCommand(command, this.DataContext))
+            {
+                Pined = !Pined;
+            }
             base.OnClick();
-            this.Pined = !this.Pined;
+        }
+
+        private bool ExecuteCommand(ICommand command, object param)
+        {
+            if (command == null) return false;
+            if (!command.CanExecute(param)) return false;
+            command.Execute(param);
+            return true;
         }
 
         public bool Pined
@@ -67,10 +74,10 @@ namespace FAManagementStudio.Controls
             }
         }
 
-        public ICommand PinCommand
+        public ICommand ReleasePinCommand
         {
-            get { return (ICommand)GetValue(PinCommandProperty); }
-            set { SetValue(PinCommandProperty, value); }
+            get { return (ICommand)GetValue(ReleasePinCommandProperty); }
+            set { SetValue(ReleasePinCommandProperty, value); }
         }
 
         public ICommand PinedCommand

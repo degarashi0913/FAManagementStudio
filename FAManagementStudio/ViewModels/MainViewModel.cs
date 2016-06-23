@@ -55,6 +55,7 @@ namespace FAManagementStudio.ViewModels
                 RaisePropertyChanged(nameof(Tables));
                 RaisePropertyChanged(nameof(CurrentDatabase));
                 RaisePropertyChanged(nameof(Triggers));
+                RaisePropertyChanged(nameof(AdditionalInfo));
             }
         }
 
@@ -74,6 +75,7 @@ namespace FAManagementStudio.ViewModels
 
         public object SelectedTableItem { get; set; }
 
+        public AdditionalDbInfoControl AdditionalInfo { get { return _db.AdditionalInfo; } }
 
         public ObservableCollection<DbViewModel> Databases { get; set; } = new ObservableCollection<DbViewModel>();
 
@@ -103,7 +105,7 @@ namespace FAManagementStudio.ViewModels
         public ICommand SaveHistry { get; private set; }
         public ICommand OpenGitPage { get; private set; }
 
-        public ICommand PinCommand { get; private set; }
+        public ICommand ReleasePinCommand { get; private set; }
 
         public ICommand PinedCommand { get; private set; }
 
@@ -225,9 +227,9 @@ namespace FAManagementStudio.ViewModels
                 Datasource.Insert(0, new QueryResultViewModel("Result"));
                 SelectedResultIndex = 0;
                 RaisePropertyChanged(nameof(SelectedResultIndex));
-            });
+            }, () => 0 < Datasource[0].Result.Count);
 
-            PinCommand = new RelayCommand<QueryResultViewModel>((data) =>
+            ReleasePinCommand = new RelayCommand<QueryResultViewModel>((data) =>
             {
                 Datasource.Remove(data);
             });
@@ -242,7 +244,7 @@ namespace FAManagementStudio.ViewModels
                 }
                 else if (s == "insert")
                 {
-                    if (table is ViewViewModel) return;
+                    if (table is TableViewViewModel) return;
                     var colums = table.Colums.Select(x => x.ColumName).ToArray();
                     var escapedColumsStr = string.Join(", ", colums.Select(x => EscapeKeyWord(x)).ToArray());
 
