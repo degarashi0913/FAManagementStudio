@@ -66,6 +66,7 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Common\RelayCommand.cs" />
     <Compile Include="Controls\BindableEditor.cs" />
     <Compile Include="Controls\PinButton.cs" />
     <Page Include="Themes\Generic.BindableEditor.xaml">
