@@ -15,7 +15,7 @@
     </Window.DataContext>
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="45"/>
+            <RowDefinition Height="48"/>
             <RowDefinition Height="1*"/>
         </Grid.RowDefinitions>
         <StackPanel Grid.Row="0">
@@ -23,7 +23,12 @@
             <StackPanel Orientation="Horizontal">
                 <Button Content="ExpanderOpen" Click="ExpandOpenButton_Click" />
                 <Button Content="ExpanderClose" Click="ExpandCloseButton_Click" />
-                <ComboBox x:Name="Combo" ItemsSource="{Binding LayoutAlgorithmFactory.AlgorithmTypes,ElementName=Layout}" SelectedValue="{Binding LayoutAlgorithmType,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" />
+                <Border BorderBrush="Silver" BorderThickness="1" Background="Silver">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="LayoutAlgorithm: " VerticalAlignment="Center"/>
+                        <ComboBox x:Name="Combo" ItemsSource="{Binding LayoutAlgorithmFactory.AlgorithmTypes,ElementName=Layout}" SelectedValue="{Binding LayoutAlgorithmType,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" />
+                    </StackPanel>
+                </Border>
             </StackPanel>
         </StackPanel>
         <extensions:ZoomControl Grid.Row="1">
