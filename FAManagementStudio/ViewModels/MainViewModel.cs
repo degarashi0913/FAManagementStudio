@@ -24,6 +24,7 @@ namespace FAManagementStudio.ViewModels
 #if !DEBUG
             SetNewVersionStatus();
 #endif
+            SetQueryProject();
         }
         private DbViewModel _db = new DbViewModel();
         private QueryInfo _queryInf = new QueryInfo();
@@ -106,6 +107,10 @@ namespace FAManagementStudio.ViewModels
         public ICommand OpenGitPage { get; private set; }
 
         public ICommand ReleasePinCommand { get; private set; }
+
+        public ICommand ShowPathSettings { get; private set; }
+
+        public ICommand ProjectItemOpen { get; private set; }
 
         public ICommand PinedCommand { get; private set; }
 
@@ -268,6 +273,24 @@ namespace FAManagementStudio.ViewModels
                 Queries[idx].Query = result;
                 RaisePropertyChanged(nameof(Queries));
             });
+
+            ShowPathSettings = new RelayCommand(() =>
+            {
+                var vm = new BasePathSettingsViewModel(QueryProjects);
+                MessengerInstance.Send(new MessageBase(vm, "BasePathSettingsWindowOpen"));
+            });
+
+            ProjectItemOpen = new RelayCommand<object>((obj) =>
+            {
+                var item = obj as QueryProjectFileViewModel;
+                if (item == null) return;
+                var idx = Queries.IndexOf(TagSelectedValue);
+                try
+                {
+                    Queries[idx].Query = Queries[idx].FileLoad(item.FullPath, Encoding.UTF8);
+                }
+                catch (IOException) { }
+            });
         }
 
         private ITableViewModel GetTreeViewTableName(object treeitem)
@@ -381,6 +404,19 @@ namespace FAManagementStudio.ViewModels
                     var html = readStream.ReadToEnd();
                     var title = Regex.Match(html, @"\<title\>(?<title>.*)\<\/title\>").Groups["title"].Value;
                     return Regex.Match(title, @"FAManagementStudio-v(?<version>\d*\.\d*\.\d*)").Groups["version"].Value;
+                }
+            });
+        }
+
+        public ObservableCollection<IProjectNodeViewModel> QueryProjects { get; } = new ObservableCollection<IProjectNodeViewModel>();
+
+        private async void SetQueryProject()
+        {
+            await TaskEx.Run(() =>
+            {
+                foreach (var pItem in QueryProjectViewModel.GetData(AppSettingsManager.QueryProjectBasePaths.ToArray()))
+                {
+                    Application.Current.Dispatcher.Invoke(new Action(() => QueryProjects.Add(pItem)));
                 }
             });
         }

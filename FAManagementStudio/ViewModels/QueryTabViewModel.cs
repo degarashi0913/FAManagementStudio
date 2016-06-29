@@ -70,7 +70,7 @@ namespace FAManagementStudio.ViewModels
             Query = FileLoad(_loadPath, _fileEncoding);
         }
 
-        private string FileLoad(string path, Encoding enc)
+        public string FileLoad(string path, Encoding enc)
         {
             using (var stream = new StreamReader(path, enc))
             {

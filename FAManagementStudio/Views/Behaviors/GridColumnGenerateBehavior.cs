@@ -10,14 +10,16 @@ namespace FAManagementStudio.Views.Behaviors
     /// </summary>
     public class GridColumnGenerateBehavior : Behavior<DataGrid>
     {
+        public GridColumnGenerateBehavior() { }
         protected override void OnAttached()
         {
+            base.OnAttached();
             AssociatedObject.ItemContainerGenerator.ItemsChanged += ItemContainerGenerator_ItemsChanged;
         }
 
         private void ItemContainerGenerator_ItemsChanged(object sender, ItemsChangedEventArgs e)
         {
-            var itemsource = this.AssociatedObject.ItemsSource as DataView;
+            var itemsource = this.AssociatedObject?.ItemsSource as DataView;
             if (itemsource?.Count == 0)
             {
                 AssociatedObject.Columns.Clear();
@@ -31,6 +33,7 @@ namespace FAManagementStudio.Views.Behaviors
         protected override void OnDetaching()
         {
             AssociatedObject.ItemContainerGenerator.ItemsChanged -= ItemContainerGenerator_ItemsChanged;
+            base.OnDetaching();
         }
     }
 }
