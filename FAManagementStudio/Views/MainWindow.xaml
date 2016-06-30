@@ -98,10 +98,12 @@
                     <RowDefinition Height="2"/>
                     <RowDefinition Height="150"/>
                 </Grid.RowDefinitions>
-                <ListBox Grid.Row="0" HorizontalAlignment="Stretch" MinWidth="80" ItemsSource="{Binding Databases}" HorizontalContentAlignment="Center" SelectedItem="{Binding CurrentDatabase}" AllowDrop="True" ToolTip="データベースファイルをドロップ" >
+                <ListBox x:Name="DbListBox" Grid.Row="0" HorizontalAlignment="Stretch" MinWidth="80" ItemsSource="{Binding Databases}" HorizontalContentAlignment="Center" SelectedItem="{Binding CurrentDatabase, Mode=TwoWay}" AllowDrop="True" ToolTip="データベースファイルをドロップ" >
                     <ListBox.Resources>
                         <SolidColorBrush x:Key="{x:Static SystemColors.ControlBrushKey}" Color="{DynamicResource {x:Static SystemColors.HighlightColorKey}}" />
-                        <Common:CommandReference x:Key="Shutdown" Command="{Binding ShutdownDatabase, Source={StaticResource viewModel}}"/>
+                        <Common:CommandReference x:Key="Shutdown" Command="{Binding DataContext.ShutdownDatabase, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}"/>
+                        <Common:CommandReference x:Key="ChangeConfig" Command="{Binding DataContext.ChangeConfig, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}"/>
+                        <Common:CommandReference x:Key="ShowEntity" Command="{Binding DataContext.ShowEntity, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}"/>
                     </ListBox.Resources>
                     <ListBox.ItemContainerStyle>
                         <Style>
@@ -123,11 +125,11 @@
                             <Canvas Height="70" Width="50" ToolTip="{Binding Path}">
                                 <Canvas.ContextMenu>
                                     <ContextMenu>
-                                        <MenuItem Header="再読み込み" Command="{Binding ReloadDatabase, Source={StaticResource viewModel}}"/>
-                                        <MenuItem Header="切断" Command="{Binding ShutdownDatabase, Source={StaticResource viewModel}}"/>
-                                        <MenuItem Header="編集" Command="{Binding ChangeConfig, Source={StaticResource viewModel}}"/>
+                                        <MenuItem Header="再読み込み" Command="{Binding ReloadDatabase}"/>
+                                        <MenuItem Header="切断" Command="{StaticResource Shutdown}"/>
+                                        <MenuItem Header="編集" Command="{StaticResource ChangeConfig}"/>
                                         <Separator Margin="0,-4"/>
-                                        <MenuItem Header="相関図(β機能)" Command="{Binding ShowEntity, Source={StaticResource viewModel}}"/>
+                                        <MenuItem Header="相関図(β機能)" Command="{StaticResource ShowEntity}"/>
                                     </ContextMenu>
                                 </Canvas.ContextMenu>
                                 <Image Source="../Image/DbShape.png" Height="50" Width="50" Margin="0,3,0,0"/>
@@ -164,7 +166,13 @@
                     <RowDefinition Height="2"/>
                     <RowDefinition Height="150"/>
                 </Grid.RowDefinitions>
-                <TreeView Grid.Row="0" MinWidth="170" ItemsSource="{Binding Tables}">
+                <Grid.Resources>
+                    <Common:CommandReference x:Key="ExecSqlTemplate" Command="{Binding DataContext.ExecSqlTemplate, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}"/>
+                    <Common:CommandReference x:Key="ExecLimitedSql" Command="{Binding DataContext.ExecLimitedSql, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}"/>
+                    <Common:CommandReference x:Key="SetSqlTemplate" Command="{Binding DataContext.SetSqlTemplate, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}"/>
+                    <Common:CommandReference x:Key="SetSqlDataTemplate" Command="{Binding DataContext.SetSqlDataTemplate, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}"/>
+                </Grid.Resources>
+                <TreeView Grid.Row="0" MinWidth="170" ItemsSource="{Binding SelectedValue.Tables, ElementName=DbListBox}">
                     <i:Interaction.Behaviors>
                         <b:TreeViewSelectedItemBehavior SelectedItem="{Binding SelectedTableItem, Mode=TwoWay}" />
                     </i:Interaction.Behaviors>
@@ -172,16 +180,16 @@
                         <c:ConstraintsKeyToIconConverter x:Key="KeyConverter"/>
                         <c:TableIconConverter x:Key="TableIconConverter" />
                         <ContextMenu x:Key="contextMenu">
-                            <MenuItem Header="EXEC SELECT *" Command="{Binding ExecSqlTemplate, Source={StaticResource viewModel}}" CommandParameter="{x:Static Common:SqlKind.Select}" />
-                            <MenuItem Header="EXEC SELECT FIRST(1000) *" Command="{Binding ExecLimitedSql, Source={StaticResource viewModel}}" CommandParameter="1000" />
+                            <MenuItem Header="EXEC SELECT *" Command="{StaticResource ExecSqlTemplate}" CommandParameter="{x:Static Common:SqlKind.Select}" />
+                            <MenuItem Header="EXEC SELECT FIRST(1000) *" Command="{StaticResource ExecLimitedSql}" CommandParameter="1000" />
                             <Separator Margin="0,-4"/>
-                            <MenuItem Header="SELECT *" Command="{Binding SetSqlTemplate, Source={StaticResource viewModel}}" CommandParameter="{x:Static Common:SqlKind.Select}" />
-                            <MenuItem Header="INSERT *" Command="{Binding SetSqlTemplate, Source={StaticResource viewModel}}" CommandParameter="{x:Static Common:SqlKind.Insert}" />
-                            <MenuItem Header="UPDATE *" Command="{Binding SetSqlTemplate, Source={StaticResource viewModel}}" CommandParameter="{x:Static Common:SqlKind.Update}" />
+                            <MenuItem Header="SELECT *" Command="{StaticResource SetSqlTemplate}" CommandParameter="{x:Static Common:SqlKind.Select}" />
+                            <MenuItem Header="INSERT *" Command="{StaticResource SetSqlTemplate}" CommandParameter="{x:Static Common:SqlKind.Insert}" />
+                            <MenuItem Header="UPDATE *" Command="{StaticResource SetSqlTemplate}" CommandParameter="{x:Static Common:SqlKind.Update}" />
                             <Separator Margin="0,-4"/>
                             <MenuItem Header="Reverse DB(開発中)">
-                                <MenuItem Header="CREATE(仮)" Command="{Binding SetSqlDataTemplate, Source={StaticResource viewModel}}" CommandParameter="table"/>
-                                <MenuItem Header="INSERT(仮)" Command="{Binding SetSqlDataTemplate, Source={StaticResource viewModel}}" CommandParameter="insert"/>
+                                <MenuItem Header="CREATE(仮)" Command="{StaticResource SetSqlDataTemplate}" CommandParameter="table"/>
+                                <MenuItem Header="INSERT(仮)" Command="{StaticResource SetSqlDataTemplate}" CommandParameter="insert"/>
                             </MenuItem>
                         </ContextMenu>
                     </TreeView.Resources>
@@ -210,7 +218,7 @@
                 <GridSplitter Grid.Row="1" Style="{StaticResource HorizontalSpliterStyle}" />
                 <DockPanel Grid.Row="2">
                     <Button DockPanel.Dock="Bottom" Content="Other Info" Background="Transparent" Command="{Binding  ElementName=AdditionalBox, Path=DataContext.ContentChange}"/>
-                    <ItemsControl DockPanel.Dock="Bottom" Name="AdditionalBox"  DataContext="{Binding AdditionalInfo}" ItemsSource="{Binding DataContext.CurrentContent, RelativeSource={RelativeSource Self}}">
+                    <ItemsControl DockPanel.Dock="Bottom" Name="AdditionalBox"  DataContext="{Binding SelectedValue.AdditionalInfo, ElementName=DbListBox}" ItemsSource="{Binding DataContext.CurrentContent, RelativeSource={RelativeSource Self}}">
                         <ItemsControl.Template>
                             <ControlTemplate>
                                 <ScrollViewer x:Name="ScrollViewer" Padding="{TemplateBinding Padding}">

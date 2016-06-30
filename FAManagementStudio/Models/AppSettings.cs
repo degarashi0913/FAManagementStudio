@@ -42,7 +42,7 @@ namespace FAManagementStudio.Models
         {
             get
             {
-                if (_settings.QueryProjectBasePaths == null) _settings.QueryProjectBasePaths = new List<string>() { @"D:\_TestBase" };
+                if (_settings.QueryProjectBasePaths == null) _settings.QueryProjectBasePaths = new List<string>();
                 return _settings.QueryProjectBasePaths;
             }
         }
