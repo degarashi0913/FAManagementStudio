@@ -257,6 +257,7 @@ namespace FAManagementStudio.ViewModels
                 var idx = Queries.IndexOf(TagSelectedValue);
                 try
                 {
+                    Queries[idx].Header = Path.GetFileNameWithoutExtension(item.FullPath);
                     Queries[idx].Query = Queries[idx].FileLoad(item.FullPath, Encoding.UTF8);
                 }
                 catch (IOException) { }

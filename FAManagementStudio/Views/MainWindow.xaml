@@ -280,13 +280,14 @@
                             <EventSetter Event="TabItem.MouseRightButtonDown" Handler="TabItem_MouseRightButtonDown"/>
                         </Style>
                         <Common:CommandReference x:Key="Execute" Command="{Binding ExecuteQuery}"/>
+                        <Common:CommandReference x:Key="DeleteTabItem" Command="{Binding DataContext.DeleteTabItem, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}"/>
                     </TabControl.Resources>
                     <TabControl.ItemTemplate>
                         <DataTemplate>
                             <StackPanel>
                                 <StackPanel.ContextMenu>
                                     <ContextMenu>
-                                        <MenuItem Header="閉じる" Command="{Binding DeleteTabItem, Source={ StaticResource viewModel}}"/>
+                                        <MenuItem Header="閉じる" Command="{StaticResource DeleteTabItem}"/>
                                         <Separator />
                                         <MenuItem Header="読み込み" Command="{Binding LoadQuery}"/>
                                         <MenuItem Header="名前を付けて保存" Command="{Binding GivingNameSave}"/>

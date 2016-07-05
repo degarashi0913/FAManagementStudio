@@ -27,7 +27,7 @@ namespace FAManagementStudio.ViewModels
         {
             Name = name;
             FullPath = fullPath;
-            watcher = new FileSystemWatcher(fullPath, "*.txt");
+            watcher = new FileSystemWatcher(fullPath, "*.fmq");
 
             watcher.Created += (sender, e) =>
             {
@@ -91,7 +91,7 @@ namespace FAManagementStudio.ViewModels
             {
                 list.Add(new QueryProjectFolderViewModel(folder.Name, folder.FullName));
             }
-            foreach (var file in dir.GetFiles("*.txt"))
+            foreach (var file in dir.GetFiles("*.fmq"))
             {
                 list.Add(new QueryProjectFileViewModel(file.Name, file.FullName));
             }
