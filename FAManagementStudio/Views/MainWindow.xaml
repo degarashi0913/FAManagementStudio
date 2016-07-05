@@ -30,9 +30,9 @@
             <Setter Property="ResizeDirection" Value="Rows"/>
         </Style>
     </Window.Resources>
-    <Window.DataContext>
+    <!--<Window.DataContext> Not Avoid Disigner Mode Error
         <StaticResourceExtension ResourceKey="viewModel" />
-    </Window.DataContext>
+    </Window.DataContext>-->
     <i:Interaction.Behaviors>
         <b:WindowBehavior LoadedCommand="{Binding LoadHistry}" ClosedCommand="{Binding SaveHistry}"/>
     </i:Interaction.Behaviors>
@@ -43,6 +43,9 @@
         <b:MessageBaseTriger Target="EintityWindowOpen">
             <b:ShowWindowAction WindowType="{x:Type v:EntityRelationshipView}" IsDialog="False" />
         </b:MessageBaseTriger>
+        <b:MessageBaseTriger Target="BasePathSettingsWindowOpen">
+            <b:ShowWindowAction WindowType="{x:Type v:BasePathSettingsView}" IsDialog="True" />
+        </b:MessageBaseTriger>
     </i:Interaction.Triggers>
     <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
         <Grid.RowDefinitions>
@@ -51,9 +54,7 @@
         </Grid.RowDefinitions>
         <DockPanel>
             <Button Command="{Binding OpenGitPage}" DockPanel.Dock="Right" Width="20">
-                <TextBlock>
-                    <Bold>？</Bold>
-                </TextBlock>
+                <TextBlock Text="？" FontWeight="Bold" />
             </Button>
             <Image Width="18" Height="18" Source="../Image/UpdateImage.png" Visibility="{Binding ExistNewVersion}" DockPanel.Dock="Right" ToolTip="新しいバージョンが利用できます" Margin="0,0,2,0"/>
             <StackPanel Orientation="Horizontal">
@@ -82,54 +83,82 @@
                 </Button>
                 <TextBlock Margin="2,0,0,0" Text="{Binding CurrentDatabase.Path}" VerticalAlignment="Center" />
             </StackPanel>
-
         </DockPanel>
         <Grid Grid.Row="1" HorizontalAlignment="Stretch">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="80" />
+                <ColumnDefinition Width="100" />
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="170" />
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="1*" />
             </Grid.ColumnDefinitions>
-            <ListBox Grid.Column="0" HorizontalAlignment="Stretch" MinWidth="80" ItemsSource="{Binding Databases}" HorizontalContentAlignment="Center" SelectedItem="{Binding CurrentDatabase}" AllowDrop="True" ToolTip="データベースファイルをドロップ" >
-                <ListBox.Resources>
-                    <SolidColorBrush x:Key="{x:Static SystemColors.ControlBrushKey}" Color="{DynamicResource {x:Static SystemColors.HighlightColorKey}}" />
-                    <Common:CommandReference x:Key="Shutdown" Command="{Binding ShutdownDatabase, Source={StaticResource viewModel}}"/>
-                </ListBox.Resources>
-                <ListBox.ItemContainerStyle>
-                    <Style>
-                        <Style.Triggers>
-                            <Trigger Property="Selector.IsSelected" Value="True">
-                                <Setter Property="TextElement.Foreground" Value="White"/>
-                            </Trigger>
-                        </Style.Triggers>
-                    </Style>
-                </ListBox.ItemContainerStyle>
-                <ListBox.InputBindings>
-                    <KeyBinding Command="{StaticResource Shutdown}" Key="Delete"/>
-                </ListBox.InputBindings>
-                <i:Interaction.Behaviors>
-                    <b:FileDropBehavior DropedCommand="{Binding DbListDropFile}"/>
-                </i:Interaction.Behaviors>
-                <ListBox.ItemTemplate>
-                    <DataTemplate>
-                        <Canvas Height="70" Width="50" ToolTip="{Binding Path}">
-                            <Canvas.ContextMenu>
-                                <ContextMenu>
-                                    <MenuItem Header="再読み込み" Command="{Binding ReloadDatabase, Source={StaticResource viewModel}}"/>
-                                    <MenuItem Header="切断" Command="{Binding ShutdownDatabase, Source={StaticResource viewModel}}"/>
-                                    <MenuItem Header="編集" Command="{Binding ChangeConfig, Source={StaticResource viewModel}}"/>
-                                    <Separator Margin="0,-4"/>
-                                    <MenuItem Header="相関図(β機能)" Command="{Binding ShowEntity, Source={StaticResource viewModel}}"/>
-                                </ContextMenu>
-                            </Canvas.ContextMenu>
-                            <Image Source="../Image/DbShape.png" Height="50" Width="50" Margin="0,3,0,0"/>
-                            <TextBlock Text="{Binding DisplayDbName}" Canvas.Top="50" TextAlignment="Center" Margin="-15,2,0,0" Width="80" />
-                        </Canvas>
-                    </DataTemplate>
-                </ListBox.ItemTemplate>
-            </ListBox>
+            <Grid Grid.Column="0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="2"/>
+                    <RowDefinition Height="150"/>
+                </Grid.RowDefinitions>
+                <ListBox x:Name="DbListBox" Grid.Row="0" HorizontalAlignment="Stretch" MinWidth="80" ItemsSource="{Binding Databases}" HorizontalContentAlignment="Center" SelectedItem="{Binding CurrentDatabase, Mode=TwoWay}" AllowDrop="True" ToolTip="データベースファイルをドロップ" >
+                    <ListBox.Resources>
+                        <SolidColorBrush x:Key="{x:Static SystemColors.ControlBrushKey}" Color="{DynamicResource {x:Static SystemColors.HighlightColorKey}}" />
+                        <Common:CommandReference x:Key="Shutdown" Command="{Binding DataContext.ShutdownDatabase, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}"/>
+                        <Common:CommandReference x:Key="ChangeConfig" Command="{Binding DataContext.ChangeConfig, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}"/>
+                        <Common:CommandReference x:Key="ShowEntity" Command="{Binding DataContext.ShowEntity, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}"/>
+                    </ListBox.Resources>
+                    <ListBox.ItemContainerStyle>
+                        <Style>
+                            <Style.Triggers>
+                                <Trigger Property="Selector.IsSelected" Value="True">
+                                    <Setter Property="TextElement.Foreground" Value="White"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ListBox.ItemContainerStyle>
+                    <ListBox.InputBindings>
+                        <KeyBinding Command="{StaticResource Shutdown}" Key="Delete"/>
+                    </ListBox.InputBindings>
+                    <i:Interaction.Behaviors>
+                        <b:FileDropBehavior DropedCommand="{Binding DbListDropFile}"/>
+                    </i:Interaction.Behaviors>
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Canvas Height="70" Width="50" ToolTip="{Binding Path}">
+                                <Canvas.ContextMenu>
+                                    <ContextMenu>
+                                        <MenuItem Header="再読み込み" Command="{Binding ReloadDatabase}"/>
+                                        <MenuItem Header="切断" Command="{StaticResource Shutdown}"/>
+                                        <MenuItem Header="編集" Command="{StaticResource ChangeConfig}"/>
+                                        <Separator Margin="0,-4"/>
+                                        <MenuItem Header="相関図(β機能)" Command="{StaticResource ShowEntity}"/>
+                                    </ContextMenu>
+                                </Canvas.ContextMenu>
+                                <Image Source="../Image/DbShape.png" Height="50" Width="50" Margin="0,3,0,0"/>
+                                <TextBlock Text="{Binding DisplayDbName}" Canvas.Top="50" TextAlignment="Center" Margin="-15,2,0,0" Width="80" />
+                            </Canvas>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+                <GridSplitter Grid.Row="1" Style="{StaticResource HorizontalSpliterStyle}" />
+                <DockPanel Grid.Row="2">
+                    <Button DockPanel.Dock="Bottom" Content="BasePathSettings" Background="Transparent" Command="{Binding ShowPathSettings}" />
+                    <TreeView ItemsSource="{Binding QueryProjects}">
+                        <i:Interaction.Behaviors>
+                            <b:TreeViewItemDobleClickBehavior ClickCommand="{Binding ProjectItemOpen}" />
+                        </i:Interaction.Behaviors>
+                        <TreeView.Resources>
+                            <HierarchicalDataTemplate DataType="{x:Type vm:QueryProjectFolderViewModel}" ItemsSource="{Binding Children}">
+                                <TextBlock Text="{Binding Name}"/>
+                            </HierarchicalDataTemplate>
+                            <HierarchicalDataTemplate DataType="{x:Type vm:QueryProjectFileViewModel}">
+                                <StackPanel Orientation="Horizontal" Margin="-11,0,0,0">
+                                    <Image Source="../Image/File.png" Width="11" Stretch="Uniform"/>
+                                    <TextBlock Text="{Binding Path=Name}"/>
+                                </StackPanel>
+                            </HierarchicalDataTemplate>
+                        </TreeView.Resources>
+                    </TreeView>
+                </DockPanel>
+            </Grid>
             <GridSplitter Grid.Column="1" Style="{StaticResource VirticalSpliterStyle}" />
             <Grid Grid.Column="2" >
                 <Grid.RowDefinitions>
@@ -137,7 +166,13 @@
                     <RowDefinition Height="2"/>
                     <RowDefinition Height="150"/>
                 </Grid.RowDefinitions>
-                <TreeView Grid.Row="0" MinWidth="170" ItemsSource="{Binding Tables}">
+                <Grid.Resources>
+                    <Common:CommandReference x:Key="ExecSqlTemplate" Command="{Binding DataContext.ExecSqlTemplate, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}"/>
+                    <Common:CommandReference x:Key="ExecLimitedSql" Command="{Binding DataContext.ExecLimitedSql, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}"/>
+                    <Common:CommandReference x:Key="SetSqlTemplate" Command="{Binding DataContext.SetSqlTemplate, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}"/>
+                    <Common:CommandReference x:Key="SetSqlDataTemplate" Command="{Binding DataContext.SetSqlDataTemplate, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}"/>
+                </Grid.Resources>
+                <TreeView Grid.Row="0" MinWidth="170" ItemsSource="{Binding SelectedValue.Tables, ElementName=DbListBox}">
                     <i:Interaction.Behaviors>
                         <b:TreeViewSelectedItemBehavior SelectedItem="{Binding SelectedTableItem, Mode=TwoWay}" />
                     </i:Interaction.Behaviors>
@@ -145,16 +180,16 @@
                         <c:ConstraintsKeyToIconConverter x:Key="KeyConverter"/>
                         <c:TableIconConverter x:Key="TableIconConverter" />
                         <ContextMenu x:Key="contextMenu">
-                            <MenuItem Header="EXEC SELECT *" Command="{Binding ExecSqlTemplate, Source={StaticResource viewModel}}" CommandParameter="{x:Static Common:SqlKind.Select}" />
-                            <MenuItem Header="EXEC SELECT FIRST(1000) *" Command="{Binding ExecLimitedSql, Source={StaticResource viewModel}}" CommandParameter="1000" />
+                            <MenuItem Header="EXEC SELECT *" Command="{StaticResource ExecSqlTemplate}" CommandParameter="{x:Static Common:SqlKind.Select}" />
+                            <MenuItem Header="EXEC SELECT FIRST(1000) *" Command="{StaticResource ExecLimitedSql}" CommandParameter="1000" />
                             <Separator Margin="0,-4"/>
-                            <MenuItem Header="SELECT *" Command="{Binding SetSqlTemplate, Source={StaticResource viewModel}}" CommandParameter="{x:Static Common:SqlKind.Select}" />
-                            <MenuItem Header="INSERT *" Command="{Binding SetSqlTemplate, Source={StaticResource viewModel}}" CommandParameter="{x:Static Common:SqlKind.Insert}" />
-                            <MenuItem Header="UPDATE *" Command="{Binding SetSqlTemplate, Source={StaticResource viewModel}}" CommandParameter="{x:Static Common:SqlKind.Update}" />
+                            <MenuItem Header="SELECT *" Command="{StaticResource SetSqlTemplate}" CommandParameter="{x:Static Common:SqlKind.Select}" />
+                            <MenuItem Header="INSERT *" Command="{StaticResource SetSqlTemplate}" CommandParameter="{x:Static Common:SqlKind.Insert}" />
+                            <MenuItem Header="UPDATE *" Command="{StaticResource SetSqlTemplate}" CommandParameter="{x:Static Common:SqlKind.Update}" />
                             <Separator Margin="0,-4"/>
                             <MenuItem Header="Reverse DB(開発中)">
-                                <MenuItem Header="CREATE(仮)" Command="{Binding SetSqlDataTemplate, Source={StaticResource viewModel}}" CommandParameter="table"/>
-                                <MenuItem Header="INSERT(仮)" Command="{Binding SetSqlDataTemplate, Source={StaticResource viewModel}}" CommandParameter="insert"/>
+                                <MenuItem Header="CREATE(仮)" Command="{StaticResource SetSqlDataTemplate}" CommandParameter="table"/>
+                                <MenuItem Header="INSERT(仮)" Command="{StaticResource SetSqlDataTemplate}" CommandParameter="insert"/>
                             </MenuItem>
                         </ContextMenu>
                     </TreeView.Resources>
@@ -183,7 +218,7 @@
                 <GridSplitter Grid.Row="1" Style="{StaticResource HorizontalSpliterStyle}" />
                 <DockPanel Grid.Row="2">
                     <Button DockPanel.Dock="Bottom" Content="Other Info" Background="Transparent" Command="{Binding  ElementName=AdditionalBox, Path=DataContext.ContentChange}"/>
-                    <ItemsControl DockPanel.Dock="Bottom" Name="AdditionalBox"  DataContext="{Binding AdditionalInfo}" ItemsSource="{Binding DataContext.CurrentContent, RelativeSource={RelativeSource Self}}">
+                    <ItemsControl DockPanel.Dock="Bottom" Name="AdditionalBox"  DataContext="{Binding SelectedValue.AdditionalInfo, ElementName=DbListBox}" ItemsSource="{Binding DataContext.CurrentContent, RelativeSource={RelativeSource Self}}">
                         <ItemsControl.Template>
                             <ControlTemplate>
                                 <ScrollViewer x:Name="ScrollViewer" Padding="{TemplateBinding Padding}">
@@ -245,13 +280,14 @@
                             <EventSetter Event="TabItem.MouseRightButtonDown" Handler="TabItem_MouseRightButtonDown"/>
                         </Style>
                         <Common:CommandReference x:Key="Execute" Command="{Binding ExecuteQuery}"/>
+                        <Common:CommandReference x:Key="DeleteTabItem" Command="{Binding DataContext.DeleteTabItem, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}"/>
                     </TabControl.Resources>
                     <TabControl.ItemTemplate>
                         <DataTemplate>
                             <StackPanel>
                                 <StackPanel.ContextMenu>
                                     <ContextMenu>
-                                        <MenuItem Header="閉じる" Command="{Binding DeleteTabItem, Source={ StaticResource viewModel}}"/>
+                                        <MenuItem Header="閉じる" Command="{StaticResource DeleteTabItem}"/>
                                         <Separator />
                                         <MenuItem Header="読み込み" Command="{Binding LoadQuery}"/>
                                         <MenuItem Header="名前を付けて保存" Command="{Binding GivingNameSave}"/>
@@ -329,7 +365,7 @@
                                                     </ContextMenu>
                                                 </toolkit:DataGrid.ContextMenu>
                                                 <i:Interaction.Behaviors>
-                                                    <b:GridColumnGenerateBehavior/>
+                                                    <b:GridColumnGenerateBehavior />
                                                 </i:Interaction.Behaviors>
                                             </toolkit:DataGrid>
                                             <TextBlock Text="{Binding AdditionalInfo}" TextDecorations="Underline" TextWrapping="Wrap" MaxWidth="{Binding MaxWidth, ElementName=ResultView}" Foreground="Gray" Margin="5,0,0,0"/>

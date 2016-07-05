@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Data;
+using System.Windows.Input;
 
 namespace FAManagementStudio.ViewModels
 {
@@ -13,6 +14,12 @@ namespace FAManagementStudio.ViewModels
     {
         public DbViewModel()
         {
+            SetCommand();
+        }
+
+        private void SetCommand()
+        {
+            ReloadDatabase = new RelayCommand(() => Reload());
         }
 
         private DatabaseInfo _dbInfo = new DatabaseInfo();
@@ -123,7 +130,8 @@ namespace FAManagementStudio.ViewModels
             return true;
         }
 
-        public void ReloadDatabase()
+        public ICommand ReloadDatabase { get; private set; }
+        public void Reload()
         {
             Tables.Clear();
             Triggers.Clear();
@@ -132,7 +140,7 @@ namespace FAManagementStudio.ViewModels
             var path = _dbInfo.Path;
             _dbInfo = new DatabaseInfo();
             LoadDatabase(path);
-            _additionalInfo.RefrechData(this);
+            AdditionalInfo.RefrechData(this);
             CollectionViewSource.GetDefaultView(this.Tables).Refresh();
         }
     }

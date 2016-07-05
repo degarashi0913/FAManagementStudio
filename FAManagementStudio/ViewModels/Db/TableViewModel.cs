@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace FAManagementStudio.ViewModels
 {
-    public class TableViewModel : BindableBase, ITableViewModel
+    public class TableViewModel : ViewModelBase, ITableViewModel
     {
         private string _name;
         public TableViewModel(string name)

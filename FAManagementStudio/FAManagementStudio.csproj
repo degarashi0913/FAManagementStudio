@@ -136,6 +136,7 @@
     <Compile Include="Models\Firebird\FbUtility.cs" />
     <Compile Include="Models\QueryResult.cs" />
     <Compile Include="ViewModels\AdditionalDbInfoViewModel.cs" />
+    <Compile Include="ViewModels\BasePathSettingsViewModel.cs" />
     <Compile Include="ViewModels\ConnectionSettingsViewModel.cs" />
     <Compile Include="ViewModels\Db\ColumViewMoodel.cs" />
     <Compile Include="ViewModels\Db\DbViewModel.cs" />
@@ -145,9 +146,14 @@
     <Compile Include="ViewModels\Db\TableViewViewModel.cs" />
     <Compile Include="ViewModels\Db\TriggerViewModel.cs" />
     <Compile Include="ViewModels\EntityRelationshipViewModel.cs" />
+    <Compile Include="ViewModels\QueryProjectViewModel.cs" />
     <Compile Include="ViewModels\QueryResultViewModel.cs" />
     <Compile Include="ViewModels\QueryTabViewModel.cs" />
+    <Compile Include="Views\BasePathSettingsView.xaml.cs">
+      <DependentUpon>BasePathSettingsView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Behaviors\GridColumnGenerateBehavior.cs" />
+    <Compile Include="Views\Behaviors\TreeViewItemDobleClickBehavior.cs" />
     <Compile Include="Views\Commons\MessageTrigger.cs" />
     <Compile Include="Views\Commons\MessageBaseTriger.cs" />
     <Compile Include="Views\Behaviors\ShowWindowAction.cs" />
@@ -169,6 +175,10 @@
     <Compile Include="Views\Converters\TableIconConverter.cs" />
     <Compile Include="Views\Converters\ConstraintsKeyToIconConverter.cs" />
     <Compile Include="Views\Converters\GridSizeConverter.cs" />
+    <Page Include="Views\BasePathSettingsView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\ConnectionSettingsView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -247,6 +257,9 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Image\DatabaseItem.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Image\File.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

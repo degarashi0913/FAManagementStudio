@@ -62,16 +62,19 @@ namespace FAManagementStudio.ViewModels
         {
             using (var dialog = new OpenFileDialog())
             {
-                dialog.DefaultExt = "txt";
-                dialog.Filter = "txt files (*.txt)|*.txt|すべてのファイル(*.*)|*.*";
+                dialog.DefaultExt = "fmq";
+                dialog.Filter = "FamQuery (*.fmq)|*.fmq|txt files (*.txt)|*.txt|すべてのファイル(*.*)|*.*";
                 if (dialog.ShowDialog() != DialogResult.OK) return;
-                _loadPath = dialog.FileName;
             }
             Query = FileLoad(_loadPath, _fileEncoding);
         }
 
-        private string FileLoad(string path, Encoding enc)
+        public string FileLoad(string path, Encoding enc)
         {
+            if (Path.GetExtension(path) == ".fmq")
+            {
+                _loadPath = path;
+            }
             using (var stream = new StreamReader(path, enc))
             {
                 return stream.ReadToEnd();
@@ -82,9 +85,9 @@ namespace FAManagementStudio.ViewModels
         {
             using (var dialog = new SaveFileDialog())
             {
-                dialog.FileName = $"{Header}.txt";
-                dialog.DefaultExt = "txt";
-                dialog.Filter = "txt files (*.txt)|*.txt|すべてのファイル(*.*)|*.*";
+                dialog.FileName = $"{Header}.fmq";
+                dialog.DefaultExt = "fmq";
+                dialog.Filter = "FamQuery (*.fmq)|*.fmq|すべてのファイル(*.*)|*.*";
                 if (dialog.ShowDialog() != DialogResult.OK) return;
                 _loadPath = dialog.FileName;
             }

@@ -3,7 +3,7 @@ using FAManagementStudio.Models;
 
 namespace FAManagementStudio.ViewModels
 {
-    public class ColumViewMoodel : BindableBase
+    public class ColumViewMoodel : ViewModelBase
     {
         private ColumInfo _inf;
         public ColumViewMoodel(ColumInfo inf)

@@ -3,7 +3,7 @@ using FAManagementStudio.Models;
 
 namespace FAManagementStudio.ViewModels
 {
-    public class TriggerViewModel : BindableBase, IAddtionalDbInfo
+    public class TriggerViewModel : ViewModelBase, IAddtionalDbInfo
     {
         private TriggerInfo _inf;
         public TriggerViewModel(TriggerInfo inf)

@@ -24,8 +24,8 @@ namespace FAManagementStudio.ViewModels
 #if !DEBUG
             SetNewVersionStatus();
 #endif
+            SetQueryProject();
         }
-        private DbViewModel _db = new DbViewModel();
         private QueryInfo _queryInf = new QueryInfo();
         public string InputPath { get; set; }
 
@@ -33,31 +33,7 @@ namespace FAManagementStudio.ViewModels
         public int TagSelectedIndex { get; set; } = 0;
         public QueryTabViewModel TagSelectedValue { get; set; }
 
-        public List<ITableViewModel> Tables
-        {
-            get
-            {
-                return CurrentDatabase.Tables;
-            }
-        }
-
-        public List<TriggerViewModel> Triggers { get { return _db.Triggers; } }
-
-        public DbViewModel CurrentDatabase
-        {
-            get
-            {
-                return _db;
-            }
-            set
-            {
-                _db = value;
-                RaisePropertyChanged(nameof(Tables));
-                RaisePropertyChanged(nameof(CurrentDatabase));
-                RaisePropertyChanged(nameof(Triggers));
-                RaisePropertyChanged(nameof(AdditionalInfo));
-            }
-        }
+        public DbViewModel CurrentDatabase { get; set; }
 
         private Visibility _existNewVersion = Visibility.Collapsed;
         public Visibility ExistNewVersion
@@ -75,9 +51,7 @@ namespace FAManagementStudio.ViewModels
 
         public object SelectedTableItem { get; set; }
 
-        public AdditionalDbInfoControl AdditionalInfo { get { return _db.AdditionalInfo; } }
-
-        public ObservableCollection<DbViewModel> Databases { get; set; } = new ObservableCollection<DbViewModel>();
+        public ObservableCollection<DbViewModel> Databases { get; } = new ObservableCollection<DbViewModel>();
 
         public ObservableCollection<QueryResultViewModel> Datasource { get; } = new ObservableCollection<QueryResultViewModel> { new QueryResultViewModel("Result") };
         public int SelectedResultIndex { get; set; } = 0;
@@ -94,7 +68,6 @@ namespace FAManagementStudio.ViewModels
         public ICommand ExecSqlTemplate { get; private set; }
         public ICommand SetSqlDataTemplate { get; private set; }
         public ICommand ExecLimitedSql { get; private set; }
-        public ICommand ReloadDatabase { get; private set; }
         public ICommand ShutdownDatabase { get; private set; }
         public ICommand ChangeConfig { get; private set; }
         public ICommand ShowEntity { get; private set; }
@@ -106,6 +79,10 @@ namespace FAManagementStudio.ViewModels
         public ICommand OpenGitPage { get; private set; }
 
         public ICommand ReleasePinCommand { get; private set; }
+
+        public ICommand ShowPathSettings { get; private set; }
+
+        public ICommand ProjectItemOpen { get; private set; }
 
         public ICommand PinedCommand { get; private set; }
 
@@ -183,19 +160,17 @@ namespace FAManagementStudio.ViewModels
                 ExecuteQuery.Execute(null);
             });
 
-            ReloadDatabase = new RelayCommand(() => { CurrentDatabase.ReloadDatabase(); });
-
             ShutdownDatabase = new RelayCommand(() => { Databases.Remove(CurrentDatabase); });
 
             ChangeConfig = new RelayCommand(() =>
             {
-                var vm = new ConnectionSettingsViewModel(_db.DbInfo);
+                var vm = new ConnectionSettingsViewModel(CurrentDatabase?.DbInfo);
                 MessengerInstance.Send(new MessageBase(vm, "WindowOpen"));
             });
 
             ShowEntity = new RelayCommand(() =>
             {
-                var vm = new EntityRelationshipViewModel(_db);
+                var vm = new EntityRelationshipViewModel(CurrentDatabase);
                 MessengerInstance.Send(new MessageBase(vm, "EintityWindowOpen"));
             });
 
@@ -236,7 +211,7 @@ namespace FAManagementStudio.ViewModels
 
             SetSqlDataTemplate = new RelayCommand<string>((s) =>
             {
-                var table = GetTreeViewTableName(SelectedTableItem);
+                var table = GetTreeViewTableName(CurrentDatabase, SelectedTableItem);
                 var result = "";
                 if (s == "table")
                 {
@@ -268,16 +243,35 @@ namespace FAManagementStudio.ViewModels
                 Queries[idx].Query = result;
                 RaisePropertyChanged(nameof(Queries));
             });
+
+            ShowPathSettings = new RelayCommand(() =>
+            {
+                var vm = new BasePathSettingsViewModel(QueryProjects);
+                MessengerInstance.Send(new MessageBase(vm, "BasePathSettingsWindowOpen"));
+            });
+
+            ProjectItemOpen = new RelayCommand<object>((obj) =>
+            {
+                var item = obj as QueryProjectFileViewModel;
+                if (item == null) return;
+                var idx = Queries.IndexOf(TagSelectedValue);
+                try
+                {
+                    Queries[idx].Header = Path.GetFileNameWithoutExtension(item.FullPath);
+                    Queries[idx].Query = Queries[idx].FileLoad(item.FullPath, Encoding.UTF8);
+                }
+                catch (IOException) { }
+            });
         }
 
-        private ITableViewModel GetTreeViewTableName(object treeitem)
+        private ITableViewModel GetTreeViewTableName(DbViewModel db, object treeitem)
         {
             var table = treeitem as ITableViewModel;
 
             if (table == null)
             {
 
-                return Tables.Where(x => 0 < x.Colums.Count(c => c == (ColumViewMoodel)treeitem)).First();
+                return db.Tables.Where(x => 0 < x.Colums.Count(c => c == (ColumViewMoodel)treeitem)).First();
             }
             return table;
         }
@@ -286,7 +280,7 @@ namespace FAManagementStudio.ViewModels
         {
             string[] colums;
             var col = treeitem as ColumViewMoodel;
-            var table = GetTreeViewTableName(treeitem);
+            var table = GetTreeViewTableName(CurrentDatabase, treeitem);
 
             if (col == null)
             {
@@ -381,6 +375,19 @@ namespace FAManagementStudio.ViewModels
                     var html = readStream.ReadToEnd();
                     var title = Regex.Match(html, @"\<title\>(?<title>.*)\<\/title\>").Groups["title"].Value;
                     return Regex.Match(title, @"FAManagementStudio-v(?<version>\d*\.\d*\.\d*)").Groups["version"].Value;
+                }
+            });
+        }
+
+        public ObservableCollection<IProjectNodeViewModel> QueryProjects { get; } = new ObservableCollection<IProjectNodeViewModel>();
+
+        private async void SetQueryProject()
+        {
+            await TaskEx.Run(() =>
+            {
+                foreach (var pItem in QueryProjectViewModel.GetData(AppSettingsManager.QueryProjectBasePaths.ToArray()))
+                {
+                    Application.Current.Dispatcher.Invoke(new Action(() => QueryProjects.Add(pItem)));
                 }
             });
         }
