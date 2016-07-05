@@ -153,6 +153,7 @@
       <DependentUpon>BasePathSettingsView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Behaviors\GridColumnGenerateBehavior.cs" />
+    <Compile Include="Views\Behaviors\ImageButtonBehavior.cs" />
     <Compile Include="Views\Behaviors\TreeViewItemDobleClickBehavior.cs" />
     <Compile Include="Views\Commons\MessageTrigger.cs" />
     <Compile Include="Views\Commons\MessageBaseTriger.cs" />
@@ -172,6 +173,7 @@
     <Compile Include="Views\ConnectionSettingsView.xaml.cs">
       <DependentUpon>ConnectionSettingsView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\Converters\ImageButtonConverter.cs" />
     <Compile Include="Views\Converters\TableIconConverter.cs" />
     <Compile Include="Views\Converters\ConstraintsKeyToIconConverter.cs" />
     <Compile Include="Views\Converters\GridSizeConverter.cs" />
@@ -260,6 +262,10 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Image\File.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Image\ExecutionPlan.png" />
+    <Resource Include="Image\PinItem.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

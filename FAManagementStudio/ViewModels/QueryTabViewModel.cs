@@ -28,7 +28,26 @@ namespace FAManagementStudio.ViewModels
                 RaisePropertyChanged(nameof(Query));
             }
         }
-
+        private bool _isNewResult = false;
+        public bool IsNewResult
+        {
+            get { return _isNewResult; }
+            set
+            {
+                _isNewResult = value;
+                RaisePropertyChanged(nameof(IsNewResult));
+            }
+        }
+        private bool _isShowExecutionPlan = false;
+        public bool IsShowExecutionPlan
+        {
+            get { return _isShowExecutionPlan; }
+            set
+            {
+                _isShowExecutionPlan = value;
+                RaisePropertyChanged(nameof(IsShowExecutionPlan));
+            }
+        }
         public QueryTabViewModel(string header, string query)
         {
             _header = header;

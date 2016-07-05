@@ -281,6 +281,8 @@
                         </Style>
                         <Common:CommandReference x:Key="Execute" Command="{Binding ExecuteQuery}"/>
                         <Common:CommandReference x:Key="DeleteTabItem" Command="{Binding DataContext.DeleteTabItem, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}"/>
+                        <c:ImageOpacityConverter x:Key="OpacityConverter"/>
+                        <c:ImageButtonBackColorConverter x:Key="BackColorConverter"/>
                     </TabControl.Resources>
                     <TabControl.ItemTemplate>
                         <DataTemplate>
@@ -300,20 +302,36 @@
                     </TabControl.ItemTemplate>
                     <TabControl.ContentTemplate>
                         <DataTemplate>
-                            <controls:BindableEditor AllowDrop="True" Text="{Binding Query, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalScrollBarVisibility="Disabled" Margin="0,2" Grid.RowSpan="2"  PreviewDragEnter="TextBox_PreviewDragEnter"
+                            <DockPanel>
+                                <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Height="15">
+                                    <Button Focusable="False" ToolTip="Create New Result Tab" Background="{Binding IsNewResult, Converter={StaticResource BackColorConverter}}">
+                                        <i:Interaction.Behaviors>
+                                            <b:ImageButtonBehavior ChangeEnable="{Binding IsNewResult, Mode=TwoWay}"/>
+                                        </i:Interaction.Behaviors>
+                                        <Image Source="../Image/PinItem.png" Opacity="{Binding IsNewResult, Converter={StaticResource OpacityConverter}}"/>
+                                    </Button>
+                                    <Button Focusable="False" ToolTip="Show Execute Plan" Background="{Binding IsShowExecutionPlan, Converter={StaticResource BackColorConverter}}">
+                                        <i:Interaction.Behaviors>
+                                            <b:ImageButtonBehavior ChangeEnable="{Binding IsShowExecutionPlan, Mode=TwoWay}"/>
+                                        </i:Interaction.Behaviors>
+                                        <Image Source="../Image/ExecutionPlan.png" Opacity="{Binding IsShowExecutionPlan,Converter={StaticResource OpacityConverter}}"/>
+                                    </Button>
+                                </StackPanel>
+                                <controls:BindableEditor DockPanel.Dock="Top" AllowDrop="True" Text="{Binding Query, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalScrollBarVisibility="Disabled" Margin="0,2" Grid.RowSpan="2"  PreviewDragEnter="TextBox_PreviewDragEnter"
             PreviewDragOver="TextBox_PreviewDragEnter">
-                                <controls:BindableEditor.Resources>
-                                    <Common:CommandReference x:Key="OverwriteSave" Command="{Binding OverwriteSave}"/>
-                                    <Common:CommandReference x:Key="DropFile" Command="{Binding DropFile}"/>
-                                </controls:BindableEditor.Resources>
-                                <controls:BindableEditor.InputBindings>
-                                    <KeyBinding Key="F5" Command="{StaticResource Execute}" />
-                                    <KeyBinding Modifiers="Ctrl" Key="S" Command="{StaticResource OverwriteSave}" />
-                                </controls:BindableEditor.InputBindings>
-                                <i:Interaction.Behaviors>
-                                    <b:FileDropBehavior DropedCommand="{Binding DropFile}" FetchMode="Once"/>
-                                </i:Interaction.Behaviors>
-                            </controls:BindableEditor>
+                                    <controls:BindableEditor.Resources>
+                                        <Common:CommandReference x:Key="OverwriteSave" Command="{Binding OverwriteSave}"/>
+                                        <Common:CommandReference x:Key="DropFile" Command="{Binding DropFile}"/>
+                                    </controls:BindableEditor.Resources>
+                                    <controls:BindableEditor.InputBindings>
+                                        <KeyBinding Key="F5" Command="{StaticResource Execute}" />
+                                        <KeyBinding Modifiers="Ctrl" Key="S" Command="{StaticResource OverwriteSave}" />
+                                    </controls:BindableEditor.InputBindings>
+                                    <i:Interaction.Behaviors>
+                                        <b:FileDropBehavior DropedCommand="{Binding DropFile}" FetchMode="Once"/>
+                                    </i:Interaction.Behaviors>
+                                </controls:BindableEditor>
+                            </DockPanel>
                         </DataTemplate>
                     </TabControl.ContentTemplate>
                 </TabControl>

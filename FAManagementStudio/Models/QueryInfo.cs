@@ -9,6 +9,7 @@ namespace FAManagementStudio.Models
 {
     public class QueryInfo : BindableBase
     {
+        public bool ShowExecutePlan { private get; set; } = false;
         public IEnumerable<QueryResult> ExecuteQuery(string connectionString, string query)
         {
             if (string.IsNullOrEmpty(query?.Trim())) yield break;
@@ -31,7 +32,7 @@ namespace FAManagementStudio.Models
                 switch (item.Type)
                 {
                     case QueryType.Select:
-                        result = ExecuteReader(con, item.Query);
+                        result = ExecuteReader(con, item.Query, ShowExecutePlan);
                         break;
                     case QueryType.Update:
                         result = ExecuteUpdate(con, item.Query);
@@ -64,7 +65,7 @@ namespace FAManagementStudio.Models
             return table;
         }
 
-        private QueryResult ExecuteReader(FbConnection con, string query)
+        private QueryResult ExecuteReader(FbConnection con, string query, bool showExecutePlan)
         {
             using (var command = con.CreateCommand())
             {
@@ -92,8 +93,9 @@ namespace FAManagementStudio.Models
                     table.Rows.Add(row);
                 }
                 var executeTime = DateTime.Now - startTime;
+                var plan = showExecutePlan ? command.CommandPlan : "";
 
-                return new QueryResult(table, executeTime, query, table.Rows.Count);
+                return new QueryResult(table, executeTime, query, table.Rows.Count, plan);
             }
         }
 

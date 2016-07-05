@@ -26,7 +26,6 @@ namespace FAManagementStudio.ViewModels
 #endif
             SetQueryProject();
         }
-        private QueryInfo _queryInf = new QueryInfo();
         public string InputPath { get; set; }
 
         public ObservableCollection<QueryTabViewModel> Queries { get; } = new ObservableCollection<QueryTabViewModel> { new QueryTabViewModel("Query1", ""), QueryTabViewModel.GetNewInstance() };
@@ -122,11 +121,13 @@ namespace FAManagementStudio.ViewModels
             ExecuteQuery = new RelayCommand(async () =>
            {
                if (CurrentDatabase == null || !CurrentDatabase.CanExecute()) return;
+               if (TagSelectedValue.IsNewResult) PinedCommand.Execute(null);
                var QueryResult = Datasource[0];
                QueryResult.Result.Clear();
                await TaskEx.Run(() =>
                {
-                   QueryResult.GetExecuteResult(_queryInf, CurrentDatabase.ConnectionString, TagSelectedValue.Query);
+                   var inf = new QueryInfo { ShowExecutePlan = TagSelectedValue.IsShowExecutionPlan };
+                   QueryResult.GetExecuteResult(inf, CurrentDatabase.ConnectionString, TagSelectedValue.Query);
                });
            });
 

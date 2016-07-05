@@ -45,7 +45,7 @@ namespace FAManagementStudio.ViewModels
                     {
                         var vm = new ResultDetailViewModel();
                         vm.View = queryResult.View;
-                        vm.SetAdditionalInfo(queryResult.Count, queryResult.ExecuteTime, queryResult.ExecuteSql);
+                        vm.SetAdditionalInfo(queryResult.Count, queryResult.ExecuteTime, queryResult.ExecuteSql, queryResult.ExecutionPlan);
                         Result.Add(vm);
                     }
                 }
@@ -106,7 +106,7 @@ namespace FAManagementStudio.ViewModels
             });
         }
 
-        public void SetAdditionalInfo(int count, TimeSpan time, string query)
+        public void SetAdditionalInfo(int count, TimeSpan time, string query, string executionPlan)
         {
             AdditionalInfo = "";
             if (0 < count)
@@ -118,6 +118,10 @@ namespace FAManagementStudio.ViewModels
                 AdditionalInfo += $"実行時間: {time.TotalSeconds}秒 ";
             }
             AdditionalInfo += query;
+            if (!string.IsNullOrEmpty(executionPlan))
+            {
+                AdditionalInfo += Environment.NewLine + $"実行プラン: {executionPlan}";
+            }
         }
     }
 }
