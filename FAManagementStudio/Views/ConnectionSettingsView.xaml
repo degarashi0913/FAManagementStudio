@@ -8,6 +8,9 @@
         xmlns:vm="clr-namespace:FAManagementStudio.ViewModels"
         xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
         xmlns:b="clr-namespace:FAManagementStudio.Views.Behaviors"
+        xmlns:core="clr-namespace:System;assembly=mscorlib"
+        xmlns:s="clr-namespace:FAManagementStudio.Views.Selectors"
+        xmlns:c="clr-namespace:FAManagementStudio.Views.Converters"
         Title="接続情報" Height="300" Width="400" Icon="../Image/systemicon.ico" WindowStartupLocation="CenterOwner">
     <Window.DataContext>
         <vm:ConnectionSettingsViewModel/>
@@ -18,6 +21,20 @@
         </b:MessageBaseTriger>
     </i:Interaction.Triggers>
     <DockPanel>
+        <DockPanel.Resources>
+            <c:BoolConverter x:Key="bConverter" />
+            <DataTemplate x:Key="Other">
+                <TextBox Text="{Binding Value}"/>
+            </DataTemplate>
+            <DataTemplate x:Key="Boolean">
+                <ComboBox SelectedValue="{Binding Value, Converter={StaticResource bConverter}}" >
+                    <ComboBox.Items>
+                        <core:Boolean>False</core:Boolean>
+                        <core:Boolean>True</core:Boolean>
+                    </ComboBox.Items>
+                </ComboBox>
+            </DataTemplate>
+        </DockPanel.Resources>
         <StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom" HorizontalAlignment="Center" Margin="0,0,0,5">
             <StackPanel.Resources>
                 <Style x:Key="ButtonStyle" TargetType="Button">
@@ -47,7 +64,11 @@
                                 <TextBlock Text="{Binding Name}" />
                             </Viewbox>
                             <CheckBox x:Name="EnableCheck" DockPanel.Dock="Right"/>
-                            <TextBox  MinWidth="200" Text="{Binding Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding ElementName=EnableCheck,Path=IsChecked}" DockPanel.Dock="Right"/>
+                            <ContentControl MinWidth="200" Content="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBoxItem}}}" IsEnabled="{Binding ElementName=EnableCheck,Path=IsChecked}" DockPanel.Dock="Right">
+                                <ContentControl.ContentTemplateSelector>
+                                    <s:ConnectionContentSelector />
+                                </ContentControl.ContentTemplateSelector>
+                            </ContentControl>
                             <TextBlock Text=":" Margin="5,0,5,0" DockPanel.Dock="Right"/>
                         </DockPanel>
                     </DataTemplate>
@@ -66,7 +87,11 @@
                         <Viewbox MaxWidth="100" DockPanel.Dock="Left" StretchDirection="DownOnly">
                             <TextBlock Text="{Binding Name}" />
                         </Viewbox>
-                        <TextBox MinWidth="250" Text="{Binding Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,10,0" DockPanel.Dock="Right"/>
+                        <ContentControl Content="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBoxItem}}}" Margin="0,0,10,0" DockPanel.Dock="Right"  MinWidth="250" >
+                            <ContentControl.ContentTemplateSelector>
+                                <s:ConnectionContentSelector />
+                            </ContentControl.ContentTemplateSelector>
+                        </ContentControl>
                         <TextBlock Text=":" Margin="5,0,5,0" DockPanel.Dock="Right"/>
                     </DockPanel>
                 </DataTemplate>
