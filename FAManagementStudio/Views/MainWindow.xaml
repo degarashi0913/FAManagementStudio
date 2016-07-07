@@ -129,7 +129,7 @@
                                         <MenuItem Header="切断" Command="{StaticResource Shutdown}"/>
                                         <MenuItem Header="編集" Command="{StaticResource ChangeConfig}"/>
                                         <Separator Margin="0,-4"/>
-                                        <MenuItem Header="相関図(β機能)" Command="{StaticResource ShowEntity}"/>
+                                        <MenuItem Header="相関図" Command="{StaticResource ShowEntity}"/>
                                     </ContextMenu>
                                 </Canvas.ContextMenu>
                                 <Image Source="../Image/DbShape.png" Height="50" Width="50" Margin="0,3,0,0"/>
@@ -290,7 +290,7 @@
                                 <StackPanel.ContextMenu>
                                     <ContextMenu>
                                         <MenuItem Header="閉じる" Command="{StaticResource DeleteTabItem}"/>
-                                        <Separator />
+                                        <Separator Margin="0,-4" />
                                         <MenuItem Header="読み込み" Command="{Binding LoadQuery}"/>
                                         <MenuItem Header="名前を付けて保存" Command="{Binding GivingNameSave}"/>
                                         <MenuItem Header="上書き保存" Command="{Binding OverwriteSave}"/>
