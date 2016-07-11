@@ -322,7 +322,7 @@
                                     </Button>
                                 </StackPanel>
                                 <controls:BindableEditor DockPanel.Dock="Top" AllowDrop="True" Text="{Binding Query, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalScrollBarVisibility="Disabled" Margin="0,2" Grid.RowSpan="2"  PreviewDragEnter="TextBox_PreviewDragEnter"
-            PreviewDragOver="TextBox_PreviewDragEnter">
+            PreviewDragOver="TextBox_PreviewDragEnter" FontSize="14">
                                     <controls:BindableEditor.Resources>
                                         <Common:CommandReference x:Key="OverwriteSave" Command="{Binding OverwriteSave}"/>
                                         <Common:CommandReference x:Key="DropFile" Command="{Binding DropFile}"/>
