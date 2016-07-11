@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FAManagementStudio.Models;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
@@ -18,6 +19,7 @@ namespace FAManagementStudio
     {
         protected override void OnExit(ExitEventArgs e)
         {
+            AppSettingsManager.Save();
             //FB 3秒問題のため、暫定実装。
             UnloadDll(Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), @"fbembed.dll"));
             base.OnExit(e);

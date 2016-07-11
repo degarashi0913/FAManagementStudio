@@ -49,7 +49,6 @@ namespace FAManagementStudio.ViewModels
 
             CloseWindow = new RelayCommand(() =>
             {
-                AppSettingsManager.Save();
                 MessengerInstance.Send(new MessageBase(this, "WindowClose"));
             });
         }

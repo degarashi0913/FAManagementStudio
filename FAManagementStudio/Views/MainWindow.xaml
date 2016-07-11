@@ -141,13 +141,17 @@
                 <GridSplitter Grid.Row="1" Style="{StaticResource HorizontalSpliterStyle}" />
                 <DockPanel Grid.Row="2">
                     <Button DockPanel.Dock="Bottom" Content="BasePathSettings" Background="Transparent" Command="{Binding ShowPathSettings}" Focusable="False" />
-                    <TreeView ItemsSource="{Binding QueryProjects}">
+                    <TreeView ItemsSource="{Binding QueryProjects}" AllowDrop="True">
                         <i:Interaction.Behaviors>
                             <b:TreeViewItemDobleClickBehavior ClickCommand="{Binding ProjectItemOpen}" />
+                            <b:FileDropBehavior DropedCommand="{Binding ProjectItemDrop}" FetchMode="Once"/>
                         </i:Interaction.Behaviors>
                         <TreeView.Resources>
                             <HierarchicalDataTemplate DataType="{x:Type vm:QueryProjectFolderViewModel}" ItemsSource="{Binding Children}">
-                                <TextBlock Text="{Binding Name}"/>
+                                <StackPanel Orientation="Horizontal" Margin="-2,0,0,0">
+                                    <Image Source="../Image/Folder.png" Width="11" Stretch="Uniform"/>
+                                    <TextBlock Text="{Binding Name}"/>
+                                </StackPanel>
                             </HierarchicalDataTemplate>
                             <HierarchicalDataTemplate DataType="{x:Type vm:QueryProjectFileViewModel}">
                                 <StackPanel Orientation="Horizontal" Margin="-11,0,0,0">

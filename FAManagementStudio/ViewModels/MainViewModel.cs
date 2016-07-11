@@ -82,6 +82,7 @@ namespace FAManagementStudio.ViewModels
         public ICommand ShowPathSettings { get; private set; }
 
         public ICommand ProjectItemOpen { get; private set; }
+        public ICommand ProjectItemDrop { get; private set; }
 
         public ICommand PinedCommand { get; private set; }
 
@@ -262,6 +263,11 @@ namespace FAManagementStudio.ViewModels
                     Queries[idx].Query = Queries[idx].FileLoad(item.FullPath, Encoding.UTF8);
                 }
                 catch (IOException) { }
+            });
+            ProjectItemDrop = new RelayCommand<string>((string path) =>
+            {
+                QueryProjects.Add(QueryProjectViewModel.GetData(path).First());
+                AppSettingsManager.QueryProjectBasePaths.Add(path);
             });
         }
 
