@@ -122,7 +122,7 @@ namespace FAManagementStudio.ViewModels
             ExecuteQuery = new RelayCommand(async () =>
            {
                if (CurrentDatabase == null || !CurrentDatabase.CanExecute()) return;
-               if (TagSelectedValue.IsNewResult) PinedCommand.Execute(null);
+               if (TagSelectedValue.IsNewResult) Datasource[0].Pined = true;
                var QueryResult = Datasource[0];
                QueryResult.Result.Clear();
                await TaskEx.Run(() =>

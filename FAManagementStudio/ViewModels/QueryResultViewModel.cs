@@ -24,6 +24,17 @@ namespace FAManagementStudio.ViewModels
             }
         }
 
+        private bool _pined = false;
+        public bool Pined
+        {
+            get { return _pined; }
+            set
+            {
+                _pined = value;
+                RaisePropertyChanged(nameof(Pined));
+            }
+        }
+
         private ObservableCollection<ResultDetailViewModel> _result = new ObservableCollection<ResultDetailViewModel>();
         public ObservableCollection<ResultDetailViewModel> Result
         {
