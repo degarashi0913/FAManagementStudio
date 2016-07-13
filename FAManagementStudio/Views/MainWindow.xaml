@@ -345,7 +345,7 @@
                         <DataTemplate>
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Text="{Binding Header}" />
-                                <controls:PinButton Margin="3,0,0,0" ReleasePinCommand="{Binding DataContext.ReleasePinCommand, RelativeSource={RelativeSource AncestorType=Window}}" PinedCommand="{Binding DataContext.PinedCommand, RelativeSource={RelativeSource AncestorType=Window}}"/>
+                                <controls:PinButton Pined="{Binding Pined}" Margin="3,0,0,0" ReleasePinCommand="{Binding DataContext.ReleasePinCommand, RelativeSource={RelativeSource AncestorType=Window}}" PinedCommand="{Binding DataContext.PinedCommand, RelativeSource={RelativeSource AncestorType=Window}}"/>
                             </StackPanel>
                         </DataTemplate>
                     </TabControl.ItemTemplate>

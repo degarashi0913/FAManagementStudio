@@ -24,7 +24,7 @@ namespace FAManagementStudio.Controls
         private static string PinImage = @"pack://application:,,,/FAManagementStudio.Controls;component/Images/PinItem.png";
         private static string PinedImage = @"pack://application:,,,/FAManagementStudio.Controls;component/Images/PinnedItem.png";
 
-        public static readonly DependencyProperty PinedProperty = DependencyProperty.Register(nameof(Pined), typeof(bool), typeof(PinButton), new PropertyMetadata(false, null));
+        public static readonly DependencyProperty PinedProperty = DependencyProperty.Register(nameof(Pined), typeof(bool), typeof(PinButton), new PropertyMetadata(false, PinedPropertyChanged));
 
         public static readonly DependencyProperty ImagePathProperty = DependencyProperty.Register(nameof(ImagePath), typeof(string), typeof(PinButton), new PropertyMetadata(PinImage));
 
@@ -38,6 +38,23 @@ namespace FAManagementStudio.Controls
             set { SetValue(ImagePathProperty, value); }
         }
 
+        private static void PinedPropertyChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e)
+        {
+            ICommand command;
+            var aObj = obj as PinButton;
+            if (aObj.Pined)
+            {
+                command = aObj.PinedCommand;
+                aObj.ImagePath = PinedImage;
+            }
+            else
+            {
+                command = aObj.ReleasePinCommand;
+                aObj.ImagePath = PinImage;
+            }
+            command.Execute(aObj.DataContext);
+        }
+
         protected override void OnClick()
         {
             ICommand command;
@@ -49,10 +66,8 @@ namespace FAManagementStudio.Controls
             {
                 command = PinedCommand;
             }
-            if (ExecuteCommand(command, this.DataContext))
-            {
-                Pined = !Pined;
-            }
+            if (!command.CanExecute(this.DataContext)) return;
+            Pined = !Pined;
             base.OnClick();
         }
 
@@ -67,11 +82,7 @@ namespace FAManagementStudio.Controls
         public bool Pined
         {
             get { return (bool)GetValue(PinedProperty); }
-            set
-            {
-                SetValue(PinedProperty, value);
-                ImagePath = value ? PinedImage : PinImage;
-            }
+            set { SetValue(PinedProperty, value); }
         }
 
         public ICommand ReleasePinCommand
