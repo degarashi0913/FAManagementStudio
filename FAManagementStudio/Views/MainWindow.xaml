@@ -2,7 +2,6 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:toolkit="http://schemas.microsoft.com/wpf/2008/toolkit"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
         xmlns:local="clr-namespace:FAManagementStudio"
@@ -105,15 +104,6 @@
                         <Common:CommandReference x:Key="ChangeConfig" Command="{Binding DataContext.ChangeConfig, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}"/>
                         <Common:CommandReference x:Key="ShowEntity" Command="{Binding DataContext.ShowEntity, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}"/>
                     </ListBox.Resources>
-                    <ListBox.ItemContainerStyle>
-                        <Style>
-                            <Style.Triggers>
-                                <Trigger Property="Selector.IsSelected" Value="True">
-                                    <Setter Property="TextElement.Foreground" Value="White"/>
-                                </Trigger>
-                            </Style.Triggers>
-                        </Style>
-                    </ListBox.ItemContainerStyle>
                     <ListBox.InputBindings>
                         <KeyBinding Command="{StaticResource Shutdown}" Key="Delete"/>
                     </ListBox.InputBindings>
@@ -128,7 +118,7 @@
                                         <MenuItem Header="再読み込み" Command="{Binding ReloadDatabase}"/>
                                         <MenuItem Header="切断" Command="{StaticResource Shutdown}"/>
                                         <MenuItem Header="編集" Command="{StaticResource ChangeConfig}"/>
-                                        <Separator Margin="0,-4"/>
+                                        <Separator />
                                         <MenuItem Header="相関図" Command="{StaticResource ShowEntity}"/>
                                     </ContextMenu>
                                 </Canvas.ContextMenu>
@@ -186,11 +176,11 @@
                         <ContextMenu x:Key="contextMenu">
                             <MenuItem Header="EXEC SELECT *" Command="{StaticResource ExecSqlTemplate}" CommandParameter="{x:Static Common:SqlKind.Select}" />
                             <MenuItem Header="EXEC SELECT FIRST(1000) *" Command="{StaticResource ExecLimitedSql}" CommandParameter="1000" />
-                            <Separator Margin="0,-4"/>
+                            <Separator />
                             <MenuItem Header="SELECT *" Command="{StaticResource SetSqlTemplate}" CommandParameter="{x:Static Common:SqlKind.Select}" />
                             <MenuItem Header="INSERT *" Command="{StaticResource SetSqlTemplate}" CommandParameter="{x:Static Common:SqlKind.Insert}" />
                             <MenuItem Header="UPDATE *" Command="{StaticResource SetSqlTemplate}" CommandParameter="{x:Static Common:SqlKind.Update}" />
-                            <Separator Margin="0,-4"/>
+                            <Separator />
                             <MenuItem Header="Reverse DB(開発中)">
                                 <MenuItem Header="CREATE(仮)" Command="{StaticResource SetSqlDataTemplate}" CommandParameter="table"/>
                                 <MenuItem Header="INSERT(仮)" Command="{StaticResource SetSqlDataTemplate}" CommandParameter="insert"/>
@@ -294,7 +284,7 @@
                                 <StackPanel.ContextMenu>
                                     <ContextMenu>
                                         <MenuItem Header="閉じる" Command="{StaticResource DeleteTabItem}"/>
-                                        <Separator Margin="0,-4" />
+                                        <Separator />
                                         <MenuItem Header="読み込み" Command="{Binding LoadQuery}"/>
                                         <MenuItem Header="名前を付けて保存" Command="{Binding GivingNameSave}"/>
                                         <MenuItem Header="上書き保存" Command="{Binding OverwriteSave}"/>
@@ -364,7 +354,7 @@
                                 <ListBox.ItemTemplate>
                                     <DataTemplate>
                                         <StackPanel Orientation="Vertical" Margin="0,0,0,10">
-                                            <toolkit:DataGrid Name="ResultView" HorizontalAlignment="Stretch"
+                                            <DataGrid Name="ResultView" HorizontalAlignment="Stretch"
                                                 ItemsSource="{Binding View}" Margin="0,0,0,0" EnableColumnVirtualization="True" EnableRowVirtualization="True"
                                                 VirtualizingStackPanel.IsVirtualizing="True" VirtualizingStackPanel.VirtualizationMode="Recycling" 
                                                 CanUserAddRows="False" CanUserDeleteRows="False"
@@ -372,7 +362,7 @@
                                                 Width="{Binding MaxWidth, RelativeSource={RelativeSource Self}}"
                                                 MaxHeight="{Binding Path=ActualHeight, ElementName=ResultRow, Converter={StaticResource HeightConverter}}"
                                                 IsReadOnly="True" AutoGenerateColumns="True">
-                                                <toolkit:DataGrid.ContextMenu>
+                                                <DataGrid.ContextMenu>
                                                     <ContextMenu>
                                                         <MenuItem Header="結果を保存 CSV(ヘッダ含)" Command="{Binding OutputCsv}" >
                                                             <MenuItem.CommandParameter>
@@ -385,11 +375,11 @@
                                                             </MenuItem.CommandParameter>
                                                         </MenuItem>
                                                     </ContextMenu>
-                                                </toolkit:DataGrid.ContextMenu>
+                                                </DataGrid.ContextMenu>
                                                 <i:Interaction.Behaviors>
                                                     <b:GridColumnGenerateBehavior />
                                                 </i:Interaction.Behaviors>
-                                            </toolkit:DataGrid>
+                                            </DataGrid>
                                             <TextBlock Text="{Binding AdditionalInfo}" TextDecorations="Underline" TextWrapping="Wrap" MaxWidth="{Binding MaxWidth, ElementName=ResultView}" Foreground="Gray" Margin="5,0,0,0"/>
                                         </StackPanel>
                                     </DataTemplate>

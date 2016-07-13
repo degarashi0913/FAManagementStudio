@@ -108,7 +108,7 @@ namespace FAManagementStudio.ViewModels
                 if (string.IsNullOrEmpty(path)) return;
                 if (!File.Exists(path)) return;
                 var db = new DbViewModel();
-                var isLoad = await TaskEx.Run(() =>
+                var isLoad = await Task.Run(() =>
                 {
                     return db.LoadDatabase(path);
                 });
@@ -125,7 +125,7 @@ namespace FAManagementStudio.ViewModels
                if (TagSelectedValue.IsNewResult) PinedCommand.Execute(null);
                var QueryResult = Datasource[0];
                QueryResult.Result.Clear();
-               await TaskEx.Run(() =>
+               await Task.Run(() =>
                {
                    var inf = new QueryInfo { ShowExecutePlan = TagSelectedValue.IsShowExecutionPlan };
                    QueryResult.GetExecuteResult(inf, CurrentDatabase.ConnectionString, TagSelectedValue.Query);
@@ -371,7 +371,7 @@ namespace FAManagementStudio.ViewModels
 
         private Task<string> GetNewVirsion()
         {
-            return TaskEx.Run<string>(() =>
+            return Task.Run<string>(() =>
             {
                 var reqest = (HttpWebRequest)WebRequest.Create(@"https://github.com/degarashi0913/FAManagementStudio/releases/latest");
                 reqest.UserAgent = "FAManagementStudio";
@@ -390,7 +390,7 @@ namespace FAManagementStudio.ViewModels
 
         private async void SetQueryProject()
         {
-            await TaskEx.Run(() =>
+            await Task.Run(() =>
             {
                 foreach (var pItem in QueryProjectViewModel.GetData(AppSettingsManager.QueryProjectBasePaths.ToArray()))
                 {

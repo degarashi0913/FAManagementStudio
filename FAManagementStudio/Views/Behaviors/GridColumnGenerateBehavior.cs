@@ -1,5 +1,5 @@
-﻿using Microsoft.Windows.Controls;
-using System.Data;
+﻿using System.Data;
+using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Interactivity;
 
