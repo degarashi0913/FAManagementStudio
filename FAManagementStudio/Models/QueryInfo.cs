@@ -163,7 +163,7 @@ namespace FAManagementStudio.Models
             var inputStr = input;
             var lowerString = input.ToLower();
 
-            var key = "(create|alter)[\\s\\n]+(trigger|procedure)[\\s\\n]+";
+            var key = "((create|alter)[\\s\\n]+(trigger|procedure)[\\s\\n]+|(execute[\\s\\n]+block[\\s\\n]+))";
             var reg = Regex.Match(inputStr, key, RegexOptions.IgnoreCase);
             var idx = 0;
             if (reg.Success)

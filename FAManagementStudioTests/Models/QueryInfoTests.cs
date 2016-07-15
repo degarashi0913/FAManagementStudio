@@ -95,7 +95,28 @@ new.a = gen_id(gen_foo, 1);
 end;
 
 select * from fuga where hoho = 'eeee'
---comment4";
+--comment4
+
+--ExecuteSample1
+execute block
+as
+declare i int = 0;
+begin
+  while (i < 128) do
+  begin
+    insert into AsciiTable values (:i, ascii_char(:i));
+    i = i + 1;
+  end
+end;
+
+--ExecuteSample2
+execute block (x double precision = ?, y double precision = ?)
+returns (gmean double precision)
+as
+begin
+  gmean = sqrt(x*y);
+  suspend;
+end;";
 
             (inf.AsDynamic().GetStatement(input1) as string[]).IsStructuralEqual(new[] {
 @"create trigger set_foo_primary for foo
@@ -111,7 +132,25 @@ before insert
 as begin
 new.a = gen_id(gen_foo, 1);
 end",
-@"select * from fuga where hoho = 'eeee'"});
+@"select * from fuga where hoho = 'eeee'",
+@"execute block
+as
+declare i int = 0;
+begin
+  while (i < 128) do
+  begin
+    insert into AsciiTable values (:i, ascii_char(:i));
+    i = i + 1;
+  end
+end",
+@"execute block (x double precision = ?, y double precision = ?)
+returns (gmean double precision)
+as
+begin
+  gmean = sqrt(x*y);
+  suspend;
+end"
+});
         }
 
         [TestMethod()]
