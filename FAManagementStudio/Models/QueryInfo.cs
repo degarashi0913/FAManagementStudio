@@ -149,6 +149,10 @@ namespace FAManagementStudio.Models
                 {
                     list.Add(new AnalyzedQuery() { Type = QueryType.Update, Query = query });
                 }
+                else if (Regex.Match(query, "execute[\\s\\n]+block[\\s\\n]+returns[\\s\\n(]+", RegexOptions.IgnoreCase).Success)
+                {
+                    list.Add(new AnalyzedQuery() { Type = QueryType.Select, Query = query });
+                }
                 else
                 {
                     list.Add(new AnalyzedQuery() { Type = QueryType.Othres, Query = query });
