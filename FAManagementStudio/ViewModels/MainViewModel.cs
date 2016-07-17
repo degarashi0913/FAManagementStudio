@@ -166,12 +166,14 @@ namespace FAManagementStudio.ViewModels
 
             ChangeConfig = new RelayCommand(() =>
             {
-                var vm = new ConnectionSettingsViewModel(CurrentDatabase?.DbInfo);
+                if (CurrentDatabase == null) return;
+                var vm = new ConnectionSettingsViewModel(CurrentDatabase.DbInfo);
                 MessengerInstance.Send(new MessageBase(vm, "WindowOpen"));
             });
 
             ShowEntity = new RelayCommand(() =>
             {
+                if (CurrentDatabase == null) return;
                 var vm = new EntityRelationshipViewModel(CurrentDatabase);
                 MessengerInstance.Send(new MessageBase(vm, "EintityWindowOpen"));
             });
