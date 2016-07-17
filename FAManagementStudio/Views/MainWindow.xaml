@@ -104,14 +104,22 @@
                         <Common:CommandReference x:Key="Shutdown" Command="{Binding DataContext.ShutdownDatabase, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}"/>
                         <Common:CommandReference x:Key="ChangeConfig" Command="{Binding DataContext.ChangeConfig, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}"/>
                         <Common:CommandReference x:Key="ShowEntity" Command="{Binding DataContext.ShowEntity, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}"/>
+                        <ContextMenu x:Key="DbListContextMenu">
+                            <MenuItem Header="再読み込み" Command="{Binding ReloadDatabase}"/>
+                            <MenuItem Header="切断" Command="{StaticResource Shutdown}"/>
+                            <MenuItem Header="編集" Command="{StaticResource ChangeConfig}"/>
+                            <Separator Margin="0,-4"/>
+                            <MenuItem Header="相関図" Command="{StaticResource ShowEntity}"/>
+                        </ContextMenu>
                     </ListBox.Resources>
                     <ListBox.ItemContainerStyle>
-                        <Style>
+                        <Style TargetType="{x:Type ListBoxItem}">
                             <Style.Triggers>
                                 <Trigger Property="Selector.IsSelected" Value="True">
                                     <Setter Property="TextElement.Foreground" Value="White"/>
                                 </Trigger>
                             </Style.Triggers>
+                            <Setter Property="ContextMenu" Value="{StaticResource DbListContextMenu}" />
                         </Style>
                     </ListBox.ItemContainerStyle>
                     <ListBox.InputBindings>
@@ -119,19 +127,11 @@
                     </ListBox.InputBindings>
                     <i:Interaction.Behaviors>
                         <b:FileDropBehavior DropedCommand="{Binding DbListDropFile}"/>
+                        <b:GetFocusWhenMovedTabKeyBehavior />
                     </i:Interaction.Behaviors>
                     <ListBox.ItemTemplate>
                         <DataTemplate>
                             <Canvas Height="70" Width="50" ToolTip="{Binding Path}">
-                                <Canvas.ContextMenu>
-                                    <ContextMenu>
-                                        <MenuItem Header="再読み込み" Command="{Binding ReloadDatabase}"/>
-                                        <MenuItem Header="切断" Command="{StaticResource Shutdown}"/>
-                                        <MenuItem Header="編集" Command="{StaticResource ChangeConfig}"/>
-                                        <Separator Margin="0,-4"/>
-                                        <MenuItem Header="相関図" Command="{StaticResource ShowEntity}"/>
-                                    </ContextMenu>
-                                </Canvas.ContextMenu>
                                 <Image Source="../Image/DbShape.png" Height="50" Width="50" Margin="0,3,0,0"/>
                                 <TextBlock Text="{Binding DisplayDbName}" Canvas.Top="50" TextAlignment="Center" Margin="-15,2,0,0" Width="80" />
                             </Canvas>
@@ -200,17 +200,18 @@
                     <TreeView.ItemContainerStyle>
                         <Style TargetType="{x:Type TreeViewItem}">
                             <EventSetter Event="TreeViewItem.MouseRightButtonDown" Handler="TreeViewItem_MouseRightButtonDown"/>
+                            <Setter Property="ContextMenu" Value="{StaticResource contextMenu}" />
                         </Style>
                     </TreeView.ItemContainerStyle>
-                    <TreeView.ItemTemplate >
+                    <TreeView.ItemTemplate>
                         <HierarchicalDataTemplate ItemsSource="{Binding Colums}">
-                            <StackPanel Orientation="Horizontal" Margin="-2,0,0,0" ContextMenu="{StaticResource contextMenu}">
+                            <StackPanel Orientation="Horizontal" Margin="-2,0,0,0">
                                 <Image Source="{Binding Kind, Converter={StaticResource TableIconConverter}}" Width="11" Stretch="Uniform"/>
                                 <TextBlock Text="{Binding Path=TableName}"/>
                             </StackPanel>
                             <HierarchicalDataTemplate.ItemTemplate>
                                 <HierarchicalDataTemplate >
-                                    <StackPanel Orientation="Horizontal" Margin="-11,0,0,0" ContextMenu="{StaticResource contextMenu}">
+                                    <StackPanel Orientation="Horizontal" Margin="-11,0,0,0">
                                         <Image Source="{Binding ConstraintsInf.Kind, Converter={StaticResource KeyConverter}}" Width="11" Stretch="Uniform"/>
                                         <TextBlock Text="{Binding Path=DisplayName}" />
                                     </StackPanel>
