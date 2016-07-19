@@ -26,7 +26,6 @@ namespace FAManagementStudio.ViewModels
 #endif
             SetQueryProject();
         }
-        private QueryInfo _queryInf = new QueryInfo();
         public string InputPath { get; set; }
 
         public ObservableCollection<QueryTabViewModel> Queries { get; } = new ObservableCollection<QueryTabViewModel> { new QueryTabViewModel("Query1", ""), QueryTabViewModel.GetNewInstance() };
@@ -83,6 +82,7 @@ namespace FAManagementStudio.ViewModels
         public ICommand ShowPathSettings { get; private set; }
 
         public ICommand ProjectItemOpen { get; private set; }
+        public ICommand ProjectItemDrop { get; private set; }
 
         public ICommand PinedCommand { get; private set; }
 
@@ -122,11 +122,13 @@ namespace FAManagementStudio.ViewModels
             ExecuteQuery = new RelayCommand(async () =>
            {
                if (CurrentDatabase == null || !CurrentDatabase.CanExecute()) return;
+               if (TagSelectedValue.IsNewResult && 0 < Datasource[0].Result.Count) Datasource[0].Pined = true;
                var QueryResult = Datasource[0];
                QueryResult.Result.Clear();
                await TaskEx.Run(() =>
                {
-                   QueryResult.GetExecuteResult(_queryInf, CurrentDatabase.ConnectionString, TagSelectedValue.Query);
+                   var inf = new QueryInfo { ShowExecutePlan = TagSelectedValue.IsShowExecutionPlan };
+                   QueryResult.GetExecuteResult(inf, CurrentDatabase.ConnectionString, TagSelectedValue.Query);
                });
            });
 
@@ -164,12 +166,14 @@ namespace FAManagementStudio.ViewModels
 
             ChangeConfig = new RelayCommand(() =>
             {
-                var vm = new ConnectionSettingsViewModel(CurrentDatabase?.DbInfo);
+                if (CurrentDatabase == null) return;
+                var vm = new ConnectionSettingsViewModel(CurrentDatabase.DbInfo);
                 MessengerInstance.Send(new MessageBase(vm, "WindowOpen"));
             });
 
             ShowEntity = new RelayCommand(() =>
             {
+                if (CurrentDatabase == null) return;
                 var vm = new EntityRelationshipViewModel(CurrentDatabase);
                 MessengerInstance.Send(new MessageBase(vm, "EintityWindowOpen"));
             });
@@ -261,6 +265,11 @@ namespace FAManagementStudio.ViewModels
                     Queries[idx].Query = Queries[idx].FileLoad(item.FullPath, Encoding.UTF8);
                 }
                 catch (IOException) { }
+            });
+            ProjectItemDrop = new RelayCommand<string>((string path) =>
+            {
+                QueryProjects.Add(QueryProjectViewModel.GetData(path).First());
+                AppSettingsManager.QueryProjectBasePaths.Add(path);
             });
         }
 

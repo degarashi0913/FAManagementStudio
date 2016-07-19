@@ -9,6 +9,7 @@ namespace FAManagementStudio.Models
 {
     public class QueryInfo : BindableBase
     {
+        public bool ShowExecutePlan { private get; set; } = false;
         public IEnumerable<QueryResult> ExecuteQuery(string connectionString, string query)
         {
             if (string.IsNullOrEmpty(query?.Trim())) yield break;
@@ -31,7 +32,7 @@ namespace FAManagementStudio.Models
                 switch (item.Type)
                 {
                     case QueryType.Select:
-                        result = ExecuteReader(con, item.Query);
+                        result = ExecuteReader(con, item.Query, ShowExecutePlan);
                         break;
                     case QueryType.Update:
                         result = ExecuteUpdate(con, item.Query);
@@ -64,7 +65,7 @@ namespace FAManagementStudio.Models
             return table;
         }
 
-        private QueryResult ExecuteReader(FbConnection con, string query)
+        private QueryResult ExecuteReader(FbConnection con, string query, bool showExecutePlan)
         {
             using (var command = con.CreateCommand())
             {
@@ -92,8 +93,9 @@ namespace FAManagementStudio.Models
                     table.Rows.Add(row);
                 }
                 var executeTime = DateTime.Now - startTime;
+                var plan = showExecutePlan ? command.CommandPlan : "";
 
-                return new QueryResult(table, executeTime, query, table.Rows.Count);
+                return new QueryResult(table, executeTime, query, table.Rows.Count, plan);
             }
         }
 
@@ -147,6 +149,10 @@ namespace FAManagementStudio.Models
                 {
                     list.Add(new AnalyzedQuery() { Type = QueryType.Update, Query = query });
                 }
+                else if (Regex.Match(query, "execute[\\s\\n]+block[\\s\\n]+returns[\\s\\n(]+", RegexOptions.IgnoreCase).Success)
+                {
+                    list.Add(new AnalyzedQuery() { Type = QueryType.Select, Query = query });
+                }
                 else
                 {
                     list.Add(new AnalyzedQuery() { Type = QueryType.Othres, Query = query });
@@ -161,7 +167,7 @@ namespace FAManagementStudio.Models
             var inputStr = input;
             var lowerString = input.ToLower();
 
-            var key = "(create|alter)[\\s\\n]+(trigger|procedure)[\\s\\n]+";
+            var key = "((create|alter)[\\s\\n]+(trigger|procedure)[\\s\\n]+|(execute[\\s\\n]+block[\\s\\n]+))";
             var reg = Regex.Match(inputStr, key, RegexOptions.IgnoreCase);
             var idx = 0;
             if (reg.Success)
@@ -182,31 +188,9 @@ namespace FAManagementStudio.Models
                     while ((0 < nestedCount) && (chIdx < inputStr.Length))
                     {
                         chIdx++;
-                        if (chIdx + 6 < inputStr.Length)
-                        {
-                            if (((lowerString[chIdx] == ' ') || (lowerString[chIdx] == '\n') || (lowerString[chIdx] == ';')) &&
-                                (lowerString[chIdx + 1] == 'b') &&
-                                (lowerString[chIdx + 2] == 'e') &&
-                                (lowerString[chIdx + 3] == 'g') &&
-                                (lowerString[chIdx + 4] == 'i') &&
-                                (lowerString[chIdx + 5] == 'n') &&
-                                ((lowerString[chIdx + 6] == ' ') || (lowerString[chIdx + 6] == '\r')))
-                            {
-                                nestedCount++;
-                                chIdx += 7;
-                            }
-                        }
-                        if (chIdx + 3 < inputStr.Length)
-                        {
-                            if (((lowerString[chIdx] == ' ') || (lowerString[chIdx] == '\n') || (lowerString[chIdx] == ';')) &&
-                                (lowerString[chIdx + 1] == 'e') &&
-                                (lowerString[chIdx + 2] == 'n') &&
-                                (lowerString[chIdx + 3] == 'd'))
-                            {
-                                nestedCount--;
-                                chIdx += 4;
-                            }
-                        }
+                        var word = GetWord(ref inputStr, ref chIdx);
+                        if (word == "begin") nestedCount++;
+                        else if (word == "end") nestedCount--;
                     }
 
                     var query = reg.Index < chIdx ? inputStr.Substring(reg.Index, chIdx - reg.Index) : inputStr.Substring(reg.Index).Trim();
@@ -225,6 +209,44 @@ namespace FAManagementStudio.Models
             }
             return list.ToArray();
         }
+
+        private string GetWord(ref string statement, ref int startIdx)
+        {
+            var origin = startIdx;
+            var limit = statement.Length;
+            var length = 0;
+            var startFlg = false;
+            while (startIdx < limit)
+            {
+                var ch = statement[origin + length];
+                switch (ch)
+                {
+                    case ' ':
+                    case '\r':
+                    case '\n':
+                    case ';':
+                        if (startFlg)
+                        {
+                            goto end;
+                        }
+                        else
+                        {
+                            origin++;
+                        }
+                        break;
+                    default:
+                        startFlg = true;
+                        length++;
+                        break;
+                }
+            }
+            startIdx = statement.Length;
+            return statement.Substring(origin);
+            end:
+            startIdx = origin + length;
+            return statement.Substring(origin, length);
+        }
+
 
         private IEnumerable<string> GetWord(string stetmenet, int startIdx = 0, int length = 0)
         {

@@ -31,6 +31,7 @@ namespace FAManagementStudio.ViewModels
         {
             var properties = _inf.Builder.GetType()
                 .GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly)
+                .Where(x => x.Name != "ContextConnection")
                 .Select(x =>
                 {
                     object value = null;

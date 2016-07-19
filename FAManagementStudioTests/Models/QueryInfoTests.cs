@@ -111,7 +111,8 @@ before insert
 as begin
 new.a = gen_id(gen_foo, 1);
 end",
-@"select * from fuga where hoho = 'eeee'"});
+@"select * from fuga where hoho = 'eeee'"
+});
         }
 
         [TestMethod()]
@@ -125,6 +126,49 @@ select * from fuga where hoho = 'eeee' --comment2
 
             (inf.AsDynamic().GetStatement(input1) as string[]).IsStructuralEqual(new[] {
 @"select * from fuga where hoho = 'eeee'"});
+        }
+        [TestMethod()]
+        public void GetStatementTest4()
+        {
+            var inf = new QueryInfo();
+            var input =
+@"--ExecuteSample1
+execute block
+as
+declare i int = 0;
+begin
+  while (i < 128) do
+  begin
+    insert into AsciiTable values (:i, ascii_char(:i));
+    i = i + 1;
+  end end;
+
+--ExecuteSample2
+execute block (x double precision = ?, y double precision = ?)
+returns (gmean double precision)
+as
+begin
+  gmean = sqrt(x*y);
+  suspend;
+end;";
+            (inf.AsDynamic().GetStatement(input) as string[]).IsStructuralEqual(new[] {
+@"execute block
+as
+declare i int = 0;
+begin
+  while (i < 128) do
+  begin
+    insert into AsciiTable values (:i, ascii_char(:i));
+    i = i + 1;
+  end end",
+@"execute block (x double precision = ?, y double precision = ?)
+returns (gmean double precision)
+as
+begin
+  gmean = sqrt(x*y);
+  suspend;
+end"
+});
         }
 
 
