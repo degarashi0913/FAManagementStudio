@@ -141,8 +141,7 @@ begin
   begin
     insert into AsciiTable values (:i, ascii_char(:i));
     i = i + 1;
-  end
-end;
+  end end;
 
 --ExecuteSample2
 execute block (x double precision = ?, y double precision = ?)
@@ -161,8 +160,7 @@ begin
   begin
     insert into AsciiTable values (:i, ascii_char(:i));
     i = i + 1;
-  end
-end",
+  end end",
 @"execute block (x double precision = ?, y double precision = ?)
 returns (gmean double precision)
 as

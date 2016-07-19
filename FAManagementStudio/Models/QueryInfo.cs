@@ -188,31 +188,9 @@ namespace FAManagementStudio.Models
                     while ((0 < nestedCount) && (chIdx < inputStr.Length))
                     {
                         chIdx++;
-                        if (chIdx + 6 < inputStr.Length)
-                        {
-                            if (((lowerString[chIdx] == ' ') || (lowerString[chIdx] == '\n') || (lowerString[chIdx] == ';')) &&
-                                (lowerString[chIdx + 1] == 'b') &&
-                                (lowerString[chIdx + 2] == 'e') &&
-                                (lowerString[chIdx + 3] == 'g') &&
-                                (lowerString[chIdx + 4] == 'i') &&
-                                (lowerString[chIdx + 5] == 'n') &&
-                                ((lowerString[chIdx + 6] == ' ') || (lowerString[chIdx + 6] == '\r')))
-                            {
-                                nestedCount++;
-                                chIdx += 7;
-                            }
-                        }
-                        if (chIdx + 3 < inputStr.Length)
-                        {
-                            if (((lowerString[chIdx] == ' ') || (lowerString[chIdx] == '\n') || (lowerString[chIdx] == ';')) &&
-                                (lowerString[chIdx + 1] == 'e') &&
-                                (lowerString[chIdx + 2] == 'n') &&
-                                (lowerString[chIdx + 3] == 'd'))
-                            {
-                                nestedCount--;
-                                chIdx += 4;
-                            }
-                        }
+                        var word = GetWord(ref inputStr, ref chIdx);
+                        if (word == "begin") nestedCount++;
+                        else if (word == "end") nestedCount--;
                     }
 
                     var query = reg.Index < chIdx ? inputStr.Substring(reg.Index, chIdx - reg.Index) : inputStr.Substring(reg.Index).Trim();
@@ -231,6 +209,42 @@ namespace FAManagementStudio.Models
             }
             return list.ToArray();
         }
+
+        private string GetWord(ref string statement, ref int startIdx)
+        {
+            var origin = startIdx;
+            var limit = statement.Length;
+            var length = 0;
+            var startFlg = false;
+            while (startIdx < limit)
+            {
+                var ch = statement[origin + length];
+                switch (ch)
+                {
+                    case ' ':
+                    case '\r':
+                    case '\n':
+                    case ';':
+                        if (startFlg)
+                        {
+                            goto end;
+                        }
+                        else
+                        {
+                            origin++;
+                        }
+                        break;
+                    default:
+                        startFlg = true;
+                        length++;
+                        break;
+                }
+            }
+            end:
+            startIdx = origin + length;
+            return statement.Substring(origin, length);
+        }
+
 
         private IEnumerable<string> GetWord(string stetmenet, int startIdx = 0, int length = 0)
         {
