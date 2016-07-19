@@ -240,6 +240,8 @@ namespace FAManagementStudio.Models
                         break;
                 }
             }
+            startIdx = statement.Length;
+            return statement.Substring(origin);
             end:
             startIdx = origin + length;
             return statement.Substring(origin, length);
