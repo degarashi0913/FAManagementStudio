@@ -82,16 +82,11 @@ namespace FAManagementStudio.ViewModels
             LoadDatabase(path);
         }
 
-        private bool CanLoadDatabase(string path)
-        {
-            var info = new FirebirdInfo();
-            return info.IsTargetOdsDb(path);
-        }
-
         public bool LoadDatabase(string path)
         {
-            if (!CanLoadDatabase(path)) return false;
             _dbInfo.Path = path;
+            if (!_dbInfo.CanLoadDatabase) return false;
+            
             using (var con = new FbConnection(_dbInfo.ConnectionString))
             {
                 con.Open();

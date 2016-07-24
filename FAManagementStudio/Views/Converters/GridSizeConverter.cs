@@ -26,7 +26,7 @@ namespace FAManagementStudio.Views.Converters
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return (double)value - 35d;
+            return (double)value - 38d;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

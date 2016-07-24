@@ -11,10 +11,7 @@ namespace FAManagementStudio.Common
     /// </summary>
     public class CommandReference : Freezable, ICommand
     {
-        public CommandReference()
-        {
-            // Blank
-        }
+        public CommandReference() { }
 
         public static readonly DependencyProperty CommandProperty = DependencyProperty.Register("Command", typeof(ICommand), typeof(CommandReference), new PropertyMetadata(new PropertyChangedCallback(OnCommandChanged)));
 
@@ -28,9 +25,7 @@ namespace FAManagementStudio.Common
 
         public bool CanExecute(object parameter)
         {
-            if (Command != null)
-                return Command.CanExecute(parameter);
-            return false;
+            return Command?.CanExecute(parameter) ?? false;
         }
 
         public void Execute(object parameter)
@@ -42,9 +37,9 @@ namespace FAManagementStudio.Common
 
         private static void OnCommandChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            CommandReference commandReference = d as CommandReference;
-            ICommand oldCommand = e.OldValue as ICommand;
-            ICommand newCommand = e.NewValue as ICommand;
+            var commandReference = d as CommandReference;
+            var oldCommand = e.OldValue as ICommand;
+            var newCommand = e.NewValue as ICommand;
 
             if (oldCommand != null)
             {

@@ -7,17 +7,17 @@ namespace FAManagementStudio.Models
 {
     public class DatabaseInfo : BindableBase
     {
-        private string _path;
+
+        private FirebirdInfo _fbInfo = new FirebirdInfo();
         public string Path
         {
             get
             {
-                return _path;
+                return _fbInfo.Path;
             }
             set
             {
-                _path = value;
-                _builder.Database = value;
+                _fbInfo.Path = value;
             }
         }
         public string UserId { get; set; }
@@ -27,21 +27,13 @@ namespace FAManagementStudio.Models
         {
             get
             {
-                return _builder.ConnectionString;
+                return _fbInfo.Builder.ConnectionString;
             }
         }
 
-        private FbConnectionStringBuilder _builder = new FbConnectionStringBuilder()
-        {
-            DataSource = "localhost",
-            Charset = FbCharset.Utf8.ToString(),
-            UserID = "SYSDBA",
-            Password = "masterkey",
-            ServerType = FbServerType.Embedded,
-            Pooling = false
-        };
+        public bool CanLoadDatabase { get { return _fbInfo.IsTargetOdsVersion(); } }
 
-        public FbConnectionStringBuilder Builder { get { return _builder; } }
+        public FbConnectionStringBuilder Builder { get { return _fbInfo.Builder; } }
 
         public void CreateDatabase(FbConnection con)
         {
@@ -78,7 +70,7 @@ namespace FAManagementStudio.Models
                 command.CommandText =
                      $"select distinct f.rdb$field_type Type, f.rdb$field_sub_type SubType , f.rdb$character_length CharSize, f.rdb$field_name FieldName, f.rdb$field_precision FieldPrecision, f.rdb$field_scale FieldScale " +
                       "from rdb$fields f " +
-                     $"where f.rdb$FIELD_NAME not starting with 'RDB$' " +
+                     $"where f.rdb$FIELD_NAME not starting with 'RDB$' and f.rdb$FIELD_NAME not starting with 'MON$' and f.rdb$FIELD_NAME not starting with 'SEC$' " +
                       "order by f.rdb$field_name; ";
                 var reader = command.ExecuteReader();
                 while (reader.Read())
