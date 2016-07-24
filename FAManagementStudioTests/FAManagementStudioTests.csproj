@@ -82,6 +82,8 @@
   </Choose>
   <ItemGroup>
     <Compile Include="ChainingAssertion.MSTest.cs" />
+    <Compile Include="ConnectionTestFb3.cs" />
+    <Compile Include="ConnectionTestFb2.cs" />
     <Compile Include="Models\QueryInfoTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ViewModels\MainViewModelTest.cs" />
@@ -119,9 +121,9 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>if $(PlatformName) equ x64 (
-xcopy  /y $(SolutionDir)Assemblies\Firebird\x64_dll\*.* $(TargetDir)
+xcopy  /y /s $(SolutionDir)Assemblies\Firebird\x64_dll $(TargetDir)
 ) else (
-xcopy /y  $(SolutionDir)Assemblies\Firebird\x86_dll\*.* $(TargetDir)
+xcopy /y /s  $(SolutionDir)Assemblies\Firebird\x86_dll $(TargetDir)
 )
 </PostBuildEvent>
   </PropertyGroup>

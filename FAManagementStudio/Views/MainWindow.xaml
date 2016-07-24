@@ -126,7 +126,7 @@
                     <ListBox.ItemTemplate>
                         <DataTemplate>
                             <Canvas Height="70" Width="50" ToolTip="{Binding Path}">
-                                <Image Source="../Image/DbShape.png" Stretch="Uniform" Height="45" Width="45" Margin="0,3,0,0"/>
+                                <Image Source="../Image/DbShape.png" Stretch="Uniform" Height="50" Width="50" Margin="0,3,0,0"/>
                                 <TextBlock Text="{Binding DisplayDbName}" Canvas.Top="50" TextAlignment="Center" Margin="-15,2,0,0" Width="80" />
                             </Canvas>
                         </DataTemplate>
