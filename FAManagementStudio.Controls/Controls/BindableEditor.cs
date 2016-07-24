@@ -3,6 +3,7 @@ using ICSharpCode.AvalonEdit;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.AvalonEdit.Highlighting.Xshd;
+using ICSharpCode.AvalonEdit.Search;
 using System;
 using System.Diagnostics;
 using System.Windows;
@@ -27,6 +28,7 @@ namespace FAManagementStudio.Controls
             {
             }
             SetCommand();
+            SearchPanel.Install(this);
         }
         public new string Text
         {
