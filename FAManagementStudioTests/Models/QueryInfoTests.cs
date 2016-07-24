@@ -216,6 +216,7 @@ end"
             builder.UserID = "SYSDBA";
             builder.Password = "masterkey";
             builder.ServerType = FbServerType.Embedded;
+            builder.ClientLibrary = @"fb25\fbembed";
             builder.Pooling = false;
 
             return builder.ToString();

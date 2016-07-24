@@ -119,9 +119,9 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>if $(PlatformName) equ x64 (
-xcopy  /y $(SolutionDir)Assemblies\Firebird\x64_dll\*.* $(TargetDir)
+xcopy  /y /s $(SolutionDir)Assemblies\Firebird\x64_dll $(TargetDir)
 ) else (
-xcopy /y  $(SolutionDir)Assemblies\Firebird\x86_dll\*.* $(TargetDir)
+xcopy /y /s  $(SolutionDir)Assemblies\Firebird\x86_dll $(TargetDir)
 )
 </PostBuildEvent>
   </PropertyGroup>
