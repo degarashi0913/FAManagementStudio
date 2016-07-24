@@ -9,7 +9,8 @@ FireBird、特にEmbededを対象にしたGUIツールです。
 
 ## 動作環境  
 * Windows 7 以降  
-.NET Framework 3.5 で動作します。    
+.NET Framework 4.5 で動作します。    
+Windows 7 で使用する場合、インストールをお願いします。  
   
 ## Technologies    
 * C# + WPF  
