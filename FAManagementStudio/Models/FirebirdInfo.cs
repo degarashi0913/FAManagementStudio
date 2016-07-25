@@ -1,19 +1,20 @@
-﻿using FAManagementStudio.Models.Firebird;
+﻿using FAManagementStudio.Common;
+using FAManagementStudio.Models.Firebird;
 using FirebirdSql.Data.FirebirdClient;
 
 namespace FAManagementStudio.Models
 {
-    public class FirebirdInfo
+    public class FirebirdInfo : BindableBase
     {
         public FirebirdInfo(string path)
         {
             SetConnection(path);
         }
 
-        public FirebirdInfo(string path, int odsVer)
+        public FirebirdInfo(string path, FirebirdType fbType)
         {
             _builder.Database = path;
-            _builder.ClientLibrary = odsVer == _fb3Ods ? @"\fb3\fbclient" : @"fb25\fbembed";
+            _builder.ClientLibrary = fbType == FirebirdType.Fb3 ? @"\fb3\fbclient" : @"fb25\fbembed";
         }
 
         public string Path { get { return _builder.Database; } }

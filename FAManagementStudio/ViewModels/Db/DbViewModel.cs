@@ -72,9 +72,9 @@ namespace FAManagementStudio.ViewModels
             return !string.IsNullOrEmpty(_dbInfo.ConnectionString);
         }
 
-        public void CreateDatabase(string path)
+        public void CreateDatabase(string path, FirebirdType type)
         {
-            _dbInfo = new DatabaseInfo(new FirebirdInfo(path, 11));
+            _dbInfo = new DatabaseInfo(new FirebirdInfo(path, type));
             _dbInfo.CreateDatabase();
             LoadDatabase(path);
         }
