@@ -378,6 +378,37 @@
       <Word>WRITE</Word>
       <Word>YEAR</Word>
       <Word>YEARDAY</Word>
+      <Word>BOOLEAN</Word>
+      <Word>REGR_AVGX</Word>
+      <Word>SCROLL</Word>
+      <Word>CORR</Word>
+      <Word>REGR_AVGY</Word>
+      <Word>SQLSTATE</Word>
+      <Word>COVAR_POP</Word>
+      <Word>REGR_COUNT</Word>
+      <Word>STDDEV_POP</Word>
+      <Word>COVAR_SAMP</Word>
+      <Word>REGR_INTERCEPT</Word>
+      <Word>STDDEV_SAMP</Word>
+      <Word>DELETING</Word>
+      <Word>REGR_R2</Word>
+      <Word>TRUE</Word>
+      <Word>DETERMINISTIC</Word>
+      <Word>REGR_SLOPE</Word>
+      <Word>UNKNOWN</Word>
+      <Word>FALSE</Word>
+      <Word>REGR_SXX</Word>
+      <Word>UPDATING</Word>
+      <Word>INSERTING</Word>
+      <Word>REGR_SXY</Word>
+      <Word>VAR_POP</Word>
+      <Word>OFFSET</Word>
+      <Word>REGR_SYY</Word>
+      <Word>VAR_SAMP</Word>
+      <Word>OVER</Word>
+      <Word>RETURN</Word>
+      <Word>RDB$RECORD_VERSION</Word>
+      <Word>ROW</Word>
     </Keywords>
     <Rule color="ObjectReference">([\d\w]+)\.([\d\w$]+)</Rule>
     <Rule color="Punctuation">
