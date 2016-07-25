@@ -5,25 +5,24 @@ namespace FAManagementStudio.Models
 {
     public class FirebirdInfo
     {
-        private string _path;
-        public string Path
+        public FirebirdInfo(string path)
         {
-            get
-            {
-                return _path;
-            }
-            set
-            {
-                _path = value;
-                ChangeConnection(_path);
-            }
+            SetConnection(path);
         }
+
+        public FirebirdInfo(string path, int odsVer)
+        {
+            _builder.Database = path;
+            _builder.ClientLibrary = odsVer == _fb3Ods ? @"\fb3\fbclient" : @"fb25\fbembed";
+        }
+
+        public string Path { get { return _builder.Database; } }
 
         private const int _fb2Ods = 11;
         private const int _fb3Ods = 12;
         private int _odsVersion = -1;
 
-        private void ChangeConnection(string path)
+        private void SetConnection(string path)
         {
             _odsVersion = new FbUtility().GetOdsVersion(path);
             _builder.Database = path;
