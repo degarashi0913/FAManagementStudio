@@ -9,7 +9,7 @@
         xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
         xmlns:b="clr-namespace:FAManagementStudio.Views.Behaviors"
         mc:Ignorable="d"
-        Title="CreateNewDatabase" Height="110" Width="300">
+        Title="CreateNewDatabase" Icon="../Image/systemicon.ico" Height="120" Width="300">
     <Window.DataContext>
         <vm:NewDatabaseSettingsViewModel />
     </Window.DataContext>
@@ -22,8 +22,8 @@
         </b:MessageBaseTriger>
     </i:Interaction.Triggers>
     <StackPanel>
-        <DockPanel>
-            <Button DockPanel.Dock="Right" Width="15" Content=".." Command="{Binding OpenFileDialog}"/>
+        <DockPanel Margin="0,5,0,5">
+            <Button DockPanel.Dock="Right" Width="15" Content=".." Command="{Binding OpenFileDialog}" Margin="4,0,2,0"/>
             <TextBlock Text="Path:"/>
             <TextBox Text="{Binding Path}" Margin="5,0,0,0"/>
         </DockPanel>

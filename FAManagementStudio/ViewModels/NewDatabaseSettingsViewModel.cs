@@ -41,7 +41,7 @@ namespace FAManagementStudio.ViewModels
             {
                 using (var dialog = new SaveFileDialog())
                 {
-                    dialog.FileName = "NEW_DB.fdb";
+                    dialog.FileName = "NEWDB.FDB";
                     dialog.DefaultExt = "fdb";
                     dialog.Filter = "すべてのファイル(*.*)|*.*";
                     dialog.OverwritePrompt = false;
