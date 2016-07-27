@@ -24,6 +24,15 @@ namespace FAManagementStudio.Models
             FbConnection.CreateDatabase(_fbInfo.Builder.ConnectionString, false);
         }
 
+        public string GetDefaultCharSet(FbConnection con)
+        {
+            using (var command = con.CreateCommand())
+            {
+                command.CommandText = @"select RDB$CHARACTER_SET_NAME CharSet from RDB$DATABASE";
+                return command.ExecuteScalar() as string ?? "UTF8";
+            }
+        }
+
         public IEnumerable<TableInfo> GetTables(FbConnection con)
         {
             using (var command = con.CreateCommand())

@@ -1,4 +1,5 @@
 ﻿using FAManagementStudio.Common;
+using FirebirdSql.Data.FirebirdClient;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -19,9 +20,8 @@ namespace FAManagementStudio.ViewModels
         }
 
         public string Path { get; set; }
-        public FirebirdType Type {
-            get;
-            set; }
+        public FirebirdType Type { get; set; }
+        public FbCharset CharSet { get; set; } = FbCharset.Utf8;
 
         public ICommand OkCommand { get; private set; }
         public ICommand CancelCommand { get; private set; }

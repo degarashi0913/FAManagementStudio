@@ -8,13 +8,20 @@
         xmlns:converter="clr-namespace:FAManagementStudio.Views.Converters"
         xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
         xmlns:b="clr-namespace:FAManagementStudio.Views.Behaviors"
+        xmlns:fb="clr-namespace:FirebirdSql.Data.FirebirdClient;assembly=FirebirdSql.Data.FirebirdClient"
+        xmlns:system="clr-namespace:System;assembly=mscorlib"
         mc:Ignorable="d"
-        Title="CreateNewDatabase" Icon="../Image/systemicon.ico" Height="120" Width="300">
+        Title="CreateNewDatabase" Icon="../Image/systemicon.ico" Height="160" Width="300">
     <Window.DataContext>
         <vm:NewDatabaseSettingsViewModel />
     </Window.DataContext>
     <Window.Resources>
         <converter:RadioButtonConverter x:Key="EnumConverter" />
+        <ObjectDataProvider x:Key="FbCharSet" MethodName="GetValues" ObjectType="{x:Type fb:FbCharset}">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="fb:FbCharset" />
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
     </Window.Resources>
     <i:Interaction.Triggers>
         <b:MessageBaseTriger Target="WindowClose">
@@ -27,9 +34,9 @@
             <TextBlock Text="Path:"/>
             <TextBox Text="{Binding Path}" Margin="5,0,0,0"/>
         </DockPanel>
-
         <RadioButton GroupName="Fb" Content="FB2.5" IsChecked="{Binding Type, ConverterParameter=Fb25, Converter={StaticResource EnumConverter}}"/>
         <RadioButton GroupName="Fb" Content="FB3" IsChecked="{Binding Type, ConverterParameter=Fb3, Converter={StaticResource EnumConverter}}"/>
+        <ComboBox ItemsSource="{Binding Source={StaticResource FbCharSet}}" SelectedItem="{Binding CharSet}" Width="200" Margin="0,5,0,5" HorizontalAlignment="Left"/>
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
             <Button Content="OK" Width="50" Command="{Binding OkCommand}"/>
             <Button Content="Cancel" Width="50" Margin="10,0,0,0" Command="{Binding CancelCommand}"/>

@@ -99,7 +99,7 @@ namespace FAManagementStudio.ViewModels
                 if (string.IsNullOrEmpty(vm.Path)) return;
 
                 var db = new DbViewModel();
-                db.CreateDatabase(vm.Path, vm.Type);
+                db.CreateDatabase(vm.Path, vm.Type, vm.CharSet);
                 db.LoadDatabase(vm.Path);
                 Databases.Add(db);
                 _history.DataAdd(vm.Path);

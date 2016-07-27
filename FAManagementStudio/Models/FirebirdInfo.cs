@@ -11,10 +11,11 @@ namespace FAManagementStudio.Models
             SetConnection(path);
         }
 
-        public FirebirdInfo(string path, FirebirdType fbType)
+        public FirebirdInfo(string path, FirebirdType fbType, FbCharset charset)
         {
             _builder.Database = path;
             _builder.ClientLibrary = fbType == FirebirdType.Fb3 ? @"\fb3\fbclient" : @"fb25\fbembed";
+            _builder.Charset = new FbUtility().GetCharsetString(charset);
         }
 
         public string Path { get { return _builder.Database; } }
@@ -45,7 +46,7 @@ namespace FAManagementStudio.Models
         private FbConnectionStringBuilder _builder = new FbConnectionStringBuilder()
         {
             DataSource = "localhost",
-            Charset = FbCharset.Utf8.ToString(),
+            Charset = "UTF8",
             UserID = "SYSDBA",
             Password = "masterkey",
             ServerType = FbServerType.Embedded,
