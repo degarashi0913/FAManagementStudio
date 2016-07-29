@@ -61,7 +61,7 @@
                     return $"CHAR({cLength})";
                 case 16:
                     return GetFixedPointDataType("BIGINT", subType, precision, scale);
-                case 17:
+                case 23:
                     return "BOOLEAN";
                 case 27:
                     return "DOUBLE PRECISION";

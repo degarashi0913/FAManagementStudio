@@ -14,4 +14,5 @@ namespace FAManagementStudio.Common
     }
     public enum TableKind { Table, View }
     public enum SqlKind { Select, Insert, Update }
+    public enum FirebirdType { Fb25, Fb3 }
 }

@@ -22,7 +22,7 @@ namespace FAManagementStudio.ViewModels
             ReloadDatabase = new RelayCommand(() => Reload());
         }
 
-        private DatabaseInfo _dbInfo = new DatabaseInfo();
+        private DatabaseInfo _dbInfo;
         public DatabaseInfo DbInfo { get { return _dbInfo; } }
 
         public string DisplayDbName { get { return _dbInfo.Path.Substring(_dbInfo.Path.LastIndexOf('\\') + 1); } }
@@ -72,21 +72,18 @@ namespace FAManagementStudio.ViewModels
             return !string.IsNullOrEmpty(_dbInfo.ConnectionString);
         }
 
-        public void CreateDatabase(string path)
+        public void CreateDatabase(string path, FirebirdType type, FbCharset charset)
         {
-            _dbInfo.Path = path;
-            using (var con = new FbConnection(_dbInfo.ConnectionString))
-            {
-                _dbInfo.CreateDatabase(con);
-            }
+            _dbInfo = new DatabaseInfo(new FirebirdInfo(path, type, charset));
+            _dbInfo.CreateDatabase();
             LoadDatabase(path);
         }
 
         public bool LoadDatabase(string path)
         {
-            _dbInfo.Path = path;
+            _dbInfo = new DatabaseInfo(new FirebirdInfo(path));
             if (!_dbInfo.CanLoadDatabase) return false;
-            
+
             using (var con = new FbConnection(_dbInfo.ConnectionString))
             {
                 con.Open();
@@ -132,9 +129,8 @@ namespace FAManagementStudio.ViewModels
             Triggers.Clear();
             Indexes.Clear();
             _domains = null;
-            var path = _dbInfo.Path;
-            _dbInfo = new DatabaseInfo();
-            LoadDatabase(path);
+            _dbInfo = new DatabaseInfo(new FirebirdInfo(_dbInfo.Path));
+            LoadDatabase(_dbInfo.Path);
             AdditionalInfo.RefrechData(this);
             CollectionViewSource.GetDefaultView(this.Tables).Refresh();
         }

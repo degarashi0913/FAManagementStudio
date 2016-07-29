@@ -46,6 +46,9 @@
         <b:MessageBaseTriger Target="BasePathSettingsWindowOpen">
             <b:ShowWindowAction WindowType="{x:Type v:BasePathSettingsView}" IsDialog="True" />
         </b:MessageBaseTriger>
+        <b:MessageBaseTriger Target="NewDbSettingsWindowOpen">
+            <b:ShowWindowAction WindowType="{x:Type v:NewDatabaseSettings}" IsDialog="True" />
+        </b:MessageBaseTriger>
     </i:Interaction.Triggers>
     <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
         <Grid.RowDefinitions>
@@ -81,7 +84,7 @@
                         <TextBlock Text="実行" Margin="4,0"/>
                     </StackPanel>
                 </Button>
-                <TextBlock Margin="2,0,0,0" Text="{Binding CurrentDatabase.Path}" VerticalAlignment="Center" />
+                <TextBlock Margin="2,0,0,0" Text="{Binding ElementName=DbListBox, Path=SelectedValue.Path}" VerticalAlignment="Center" />
             </StackPanel>
         </DockPanel>
         <Grid Grid.Row="1" HorizontalAlignment="Stretch">

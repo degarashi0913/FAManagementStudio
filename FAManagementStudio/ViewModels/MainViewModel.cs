@@ -93,14 +93,16 @@ namespace FAManagementStudio.ViewModels
         {
             CreateDatabase = new RelayCommand(() =>
             {
-                if (string.IsNullOrEmpty(this.InputPath)) return;
-                if (File.Exists(this.InputPath)) return;
+                var vm = new NewDatabaseSettingsViewModel();
+                MessengerInstance.Send(new MessageBase(vm, "NewDbSettingsWindowOpen"));
+
+                if (string.IsNullOrEmpty(vm.Path)) return;
 
                 var db = new DbViewModel();
-                db.CreateDatabase(this.InputPath);
-                db.LoadDatabase(this.InputPath);
+                db.CreateDatabase(vm.Path, vm.Type, vm.CharSet);
+                db.LoadDatabase(vm.Path);
                 Databases.Add(db);
-                _history.DataAdd(this.InputPath);
+                _history.DataAdd(vm.Path);
             });
 
             LoadDatabase = new RelayCommand<string>(async (path) =>

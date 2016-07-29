@@ -153,6 +153,7 @@
     <Compile Include="ViewModels\Db\TableViewViewModel.cs" />
     <Compile Include="ViewModels\Db\TriggerViewModel.cs" />
     <Compile Include="ViewModels\EntityRelationshipViewModel.cs" />
+    <Compile Include="ViewModels\NewDatabaseSettingsViewModel.cs" />
     <Compile Include="ViewModels\QueryProjectViewModel.cs" />
     <Compile Include="ViewModels\QueryResultViewModel.cs" />
     <Compile Include="ViewModels\QueryTabViewModel.cs" />
@@ -181,11 +182,15 @@
     <Compile Include="Views\ConnectionSettingsView.xaml.cs">
       <DependentUpon>ConnectionSettingsView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\Converters\RadioButtonConverter.cs" />
     <Compile Include="Views\Converters\BoolConverter.cs" />
     <Compile Include="Views\Converters\ImageButtonConverter.cs" />
     <Compile Include="Views\Converters\TableIconConverter.cs" />
     <Compile Include="Views\Converters\ConstraintsKeyToIconConverter.cs" />
     <Compile Include="Views\Converters\GridSizeConverter.cs" />
+    <Compile Include="Views\NewDatabaseSettings.xaml.cs">
+      <DependentUpon>NewDatabaseSettings.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Selectors\ConnectionContentSelector.cs" />
     <Page Include="Views\BasePathSettingsView.xaml">
       <SubType>Designer</SubType>
@@ -214,6 +219,10 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="Views\NewDatabaseSettings.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Models\Db\DatabaseInfo.cs" />

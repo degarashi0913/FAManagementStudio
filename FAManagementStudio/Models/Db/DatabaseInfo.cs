@@ -7,38 +7,32 @@ namespace FAManagementStudio.Models
 {
     public class DatabaseInfo : BindableBase
     {
-
-        private FirebirdInfo _fbInfo = new FirebirdInfo();
-        public string Path
+        public DatabaseInfo(FirebirdInfo inf)
         {
-            get
-            {
-                return _fbInfo.Path;
-            }
-            set
-            {
-                _fbInfo.Path = value;
-            }
+            _fbInfo = inf;
         }
+        private FirebirdInfo _fbInfo;
+        public string Path { get { return _fbInfo.Path; } }
         public string UserId { get; set; }
         public string Password { get; set; }
+        internal string ConnectionString { get { return _fbInfo.Builder.ConnectionString; } }
+        public bool CanLoadDatabase { get { return _fbInfo.IsTargetOdsVersion(); } }
+        public FbConnectionStringBuilder Builder { get { return _fbInfo.Builder; } }
 
-        internal string ConnectionString
+        public void CreateDatabase()
         {
-            get
+            FbConnection.CreateDatabase(_fbInfo.Builder.ConnectionString, false);
+        }
+
+        public string GetDefaultCharSet(FbConnection con)
+        {
+            using (var command = con.CreateCommand())
             {
-                return _fbInfo.Builder.ConnectionString;
+                command.CommandText = @"select RDB$CHARACTER_SET_NAME CharSet from RDB$DATABASE";
+                return command.ExecuteScalar() as string ?? "UTF8";
             }
         }
 
-        public bool CanLoadDatabase { get { return _fbInfo.IsTargetOdsVersion(); } }
-
-        public FbConnectionStringBuilder Builder { get { return _fbInfo.Builder; } }
-
-        public void CreateDatabase(FbConnection con)
-        {
-            FbConnection.CreateDatabase(con.ConnectionString);
-        }
         public IEnumerable<TableInfo> GetTables(FbConnection con)
         {
             using (var command = con.CreateCommand())
