@@ -15,7 +15,7 @@ namespace FAManagementStudioTests
 
         private void SetupTestDbFb3()
         {
-            FbConnection.CreateDatabase(GetFb3ConnectionString(), 4096, true, true);
+            FbConnection.CreateDatabase(GetFb3ConnectionString(), true);
             CreateTestTablesFb3(GetFb3ConnectionString());
         }
 
@@ -65,7 +65,7 @@ namespace FAManagementStudioTests
         }
 
         [TestMethod]
-        public void ExecuteQueryTest()
+        public void ExecuteQueryTestFb3()
         {
             SetupTestDbFb3();
             var inf = new QueryInfo();
