@@ -161,7 +161,6 @@
       <DependentUpon>BasePathSettingsView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Behaviors\GetFocusWhenMovedTabKeyBehavior.cs" />
-    <Compile Include="Views\Behaviors\GridColumnGenerateBehavior.cs" />
     <Compile Include="Views\Behaviors\ImageButtonBehavior.cs" />
     <Compile Include="Views\Behaviors\TreeViewItemDobleClickBehavior.cs" />
     <Compile Include="Views\Commons\MessageTrigger.cs" />

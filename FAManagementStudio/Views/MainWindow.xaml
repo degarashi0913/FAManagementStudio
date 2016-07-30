@@ -423,9 +423,6 @@
                                                         </MenuItem>
                                                     </ContextMenu>
                                                 </DataGrid.ContextMenu>
-                                                <i:Interaction.Behaviors>
-                                                    <b:GridColumnGenerateBehavior />
-                                                </i:Interaction.Behaviors>
                                             </DataGrid>
                                             <TextBlock Text="{Binding AdditionalInfo}" TextDecorations="Underline" TextWrapping="Wrap" MaxWidth="{Binding MaxWidth, ElementName=ResultView}" Foreground="Gray" Margin="5,0,0,0"/>
                                         </StackPanel>
