@@ -53,7 +53,7 @@ namespace FAManagementStudioTests
             var builder = new FbConnectionStringBuilder();
             builder.DataSource = "localhost";
             builder.Database = @"TestFb2.fdb";
-            builder.Charset = FbCharset.Utf8.ToString();
+            builder.Charset = "UTF8";
             builder.UserID = "SYSDBA";
             builder.Password = "masterkey";
             builder.ServerType = FbServerType.Embedded;
