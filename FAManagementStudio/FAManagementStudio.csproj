@@ -287,6 +287,9 @@
     <Resource Include="Image\PinItem.png" />
     <Resource Include="Image\Folder.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Image\IntelliSenseKeyword.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>if $(PlatformName) equ x64 (
