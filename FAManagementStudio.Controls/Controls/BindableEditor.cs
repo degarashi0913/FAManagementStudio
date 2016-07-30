@@ -37,9 +37,12 @@ namespace FAManagementStudio.Controls
         }
 
         private CompletionWindow _completionWindow;
-        private FirebirdService _fb = new FirebirdService();
+        private FirebirdRecommender _fbRecommender = new FirebirdRecommender();
+
+        private string[] _marks = new string[] { ";" };
         private async void TextArea_TextEntered(object sender, TextCompositionEventArgs e)
         {
+            if (_marks.Contains(e.Text)) return;
             await ShowCompletionWindow();
         }
 
@@ -47,7 +50,7 @@ namespace FAManagementStudio.Controls
         {
             _completionWindow = new CompletionWindow(TextArea);
             var data = _completionWindow.CompletionList.CompletionData;
-            var list = await _fb.GetCompletionData(Text, TextArea.Caret.Offset - 1);
+            var list = await _fbRecommender.GetCompletionData(Text, TextArea.Caret.Offset - 1);
             foreach (var item in list)
             {
                 data.Add(item);
@@ -221,68 +224,6 @@ namespace FAManagementStudio.Controls
                 e.Handled = true;
                 await ShowCompletionWindow();
             }
-        }
-    }
-    public class CompletionData : ICompletionData
-    {
-        public CompletionData(string text)
-        {
-            this.Text = text;
-        }
-
-        public System.Windows.Media.ImageSource Image
-        {
-            get { return null; }
-        }
-
-        public string Text { get; private set; }
-
-        // Use this property if you want to show a fancy UIElement in the list.
-        public object Content
-        {
-            get { return this.Text; }
-        }
-
-        public object Description
-        {
-            get { return "Description for " + this.Text; }
-        }
-
-        public double Priority
-        {
-            get
-            {
-                return 0.0;
-            }
-        }
-
-        public void Complete(TextArea textArea, ISegment completionSegment, EventArgs insertionRequestEventArgs)
-        {
-            textArea.Document.Replace(CurrentWordSegment(completionSegment, textArea.Document.Text), this.Text);
-        }
-
-        private TextSegment CurrentWordSegment(ISegment seg, string text)
-        {
-            var marks = new[] { '\r', '\n', ' ', '.' };
-            var str = seg.Offset - 1;
-
-            if (text.Length < 1 || marks.Contains(text[str])) return new TextSegment { StartOffset = seg.Offset, EndOffset = seg.EndOffset };
-
-            while (0 < str)
-            {
-                var c = text[str - 1];
-                if (marks.Contains(c)) break;
-                str--;
-            }
-
-            var end = seg.EndOffset;
-            while (end < text.Length)
-            {
-                var c = text[end];
-                if (marks.Contains(c)) break;
-                end++;
-            }
-            return new TextSegment { StartOffset = str, EndOffset = end };
         }
     }
 }
