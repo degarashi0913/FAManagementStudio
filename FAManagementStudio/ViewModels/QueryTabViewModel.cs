@@ -48,6 +48,16 @@ namespace FAManagementStudio.ViewModels
                 RaisePropertyChanged(nameof(IsShowExecutionPlan));
             }
         }
+        private bool _IntelisenseEnabled = false;
+        public bool IntelisenseEnabled
+        {
+            get { return _IntelisenseEnabled; }
+            set
+            {
+                _IntelisenseEnabled = value;
+                RaisePropertyChanged(nameof(IntelisenseEnabled));
+            }
+        }
         public QueryTabViewModel(string header, string query)
         {
             _header = header;

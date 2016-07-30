@@ -357,9 +357,15 @@
                                         </i:Interaction.Behaviors>
                                         <Image Source="../Image/ExecutionPlan.png" Opacity="{Binding IsShowExecutionPlan,Converter={StaticResource OpacityConverter}}"/>
                                     </Button>
+                                    <Button Focusable="False" ToolTip="Enable Intelisense (beta)" Background="{Binding IntelisenseEnabled, Converter={StaticResource BackColorConverter}}">
+                                        <i:Interaction.Behaviors>
+                                            <b:ImageButtonBehavior ChangeEnable="{Binding IntelisenseEnabled, Mode=TwoWay}"/>
+                                        </i:Interaction.Behaviors>
+                                        <Image Source="../Image/IntelliSenseKeyword.png" Opacity="{Binding IntelisenseEnabled,Converter={StaticResource OpacityConverter}}"/>
+                                    </Button>
                                 </StackPanel>
                                 <controls:BindableEditor DockPanel.Dock="Top" AllowDrop="True" Text="{Binding Query, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalScrollBarVisibility="Disabled" Margin="0,2" Grid.RowSpan="2"  PreviewDragEnter="TextBox_PreviewDragEnter"
-            PreviewDragOver="TextBox_PreviewDragEnter" FontSize="14">
+            PreviewDragOver="TextBox_PreviewDragEnter" FontSize="14" IntelisenseEnabled="{Binding IntelisenseEnabled, Mode=TwoWay}">
                                     <controls:BindableEditor.Resources>
                                         <Common:CommandReference x:Key="OverwriteSave" Command="{Binding OverwriteSave}"/>
                                         <Common:CommandReference x:Key="DropFile" Command="{Binding DropFile}"/>

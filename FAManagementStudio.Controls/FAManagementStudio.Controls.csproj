@@ -71,6 +71,7 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Common\FirebirdService.cs" />
     <Compile Include="Common\RelayCommand.cs" />
     <Compile Include="Controls\BindableEditor.cs" />
     <Compile Include="Controls\PinButton.cs" />

@@ -1,13 +1,18 @@
 ﻿using FAManagementStudio.Controls.Common;
 using ICSharpCode.AvalonEdit;
+using ICSharpCode.AvalonEdit.CodeCompletion;
 using ICSharpCode.AvalonEdit.Document;
+using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.AvalonEdit.Highlighting.Xshd;
 using ICSharpCode.AvalonEdit.Search;
 using System;
 using System.Diagnostics;
+using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Media;
 using System.Xml;
 
 namespace FAManagementStudio.Controls
@@ -30,6 +35,41 @@ namespace FAManagementStudio.Controls
             SetCommand();
             SearchPanel.Install(this);
         }
+
+        private CompletionWindow _completionWindow;
+        private FirebirdService _fb = new FirebirdService();
+        private async void TextArea_TextEntered(object sender, TextCompositionEventArgs e)
+        {
+            await ShowCompletionWindow();
+        }
+
+        private async Task ShowCompletionWindow()
+        {
+            _completionWindow = new CompletionWindow(TextArea);
+            var data = _completionWindow.CompletionList.CompletionData;
+            var list = await _fb.GetCompletionData(Text, TextArea.Caret.Offset - 1);
+            foreach (var item in list)
+            {
+                data.Add(item);
+            }
+            _completionWindow.Show();
+            _completionWindow.Closed += delegate
+            {
+                _completionWindow = null;
+            };
+        }
+
+        private void TextArea_TextEntering(object sender, TextCompositionEventArgs e)
+        {
+            if (e.Text.Length > 0 && _completionWindow != null)
+            {
+                if (!char.IsLetterOrDigit(e.Text[0]))
+                {
+                    _completionWindow.CompletionList.RequestInsertion(e);
+                }
+            }
+        }
+
         public new string Text
         {
             get { return (string)GetValue(TextProperty); }
@@ -58,6 +98,30 @@ namespace FAManagementStudio.Controls
                 SetValue(TextProperty, baseText);
             }
             base.OnTextChanged(e);
+        }
+
+        public bool IntelisenseEnabled
+        {
+            get { return (bool)GetValue(IntelisenseEnabledProperty); }
+            set { SetValue(IntelisenseEnabledProperty, value); }
+        }
+
+        public static DependencyProperty IntelisenseEnabledProperty = DependencyProperty.Register(nameof(IntelisenseEnabled), typeof(bool), typeof(BindableEditor), new PropertyMetadata(false, OnEnablePropertyChanged));
+
+        private static void OnEnablePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var obj = d as BindableEditor;
+            if (obj == null) return;
+            if (obj.IntelisenseEnabled)
+            {
+                obj.TextArea.TextEntering += obj.TextArea_TextEntering;
+                obj.TextArea.TextEntered += obj.TextArea_TextEntered;
+            }
+            else
+            {
+                obj.TextArea.TextEntering -= obj.TextArea_TextEntering;
+                obj.TextArea.TextEntered -= obj.TextArea_TextEntered;
+            }
         }
 
         private bool donePre = false;
@@ -148,6 +212,77 @@ namespace FAManagementStudio.Controls
                 var idx = doc.Text.IndexOf(FbCommentString, line.Offset);
                 doc.Remove(idx, FbCommentString.Length);
             }
+        }
+        protected override async void OnKeyDown(KeyEventArgs e)
+        {
+            base.OnKeyDown(e);
+            if (IntelisenseEnabled && e.Key == Key.Space && e.KeyboardDevice.Modifiers.HasFlag(ModifierKeys.Control))
+            {
+                e.Handled = true;
+                await ShowCompletionWindow();
+            }
+        }
+    }
+    public class CompletionData : ICompletionData
+    {
+        public CompletionData(string text)
+        {
+            this.Text = text;
+        }
+
+        public System.Windows.Media.ImageSource Image
+        {
+            get { return null; }
+        }
+
+        public string Text { get; private set; }
+
+        // Use this property if you want to show a fancy UIElement in the list.
+        public object Content
+        {
+            get { return this.Text; }
+        }
+
+        public object Description
+        {
+            get { return "Description for " + this.Text; }
+        }
+
+        public double Priority
+        {
+            get
+            {
+                return 0.0;
+            }
+        }
+
+        public void Complete(TextArea textArea, ISegment completionSegment, EventArgs insertionRequestEventArgs)
+        {
+            textArea.Document.Replace(CurrentWordSegment(completionSegment, textArea.Document.Text), this.Text);
+        }
+
+        private TextSegment CurrentWordSegment(ISegment seg, string text)
+        {
+            var marks = new[] { '\r', '\n', ' ', '.' };
+            var str = seg.Offset - 1;
+
+            if (text.Length < 1 || marks.Contains(text[str])) return new TextSegment { StartOffset = seg.Offset, EndOffset = seg.EndOffset };
+
+            while (0 < str)
+            {
+                var c = text[str - 1];
+                if (marks.Contains(c)) break;
+                str--;
+            }
+
+            var end = seg.EndOffset;
+            while (end < text.Length)
+            {
+                var c = text[end];
+                if (marks.Contains(c)) break;
+                end++;
+            }
+            return new TextSegment { StartOffset = str, EndOffset = end };
         }
     }
 }
