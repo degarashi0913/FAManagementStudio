@@ -64,18 +64,18 @@ namespace FAManagementStudioTests
             return builder.ToString();
         }
 
-        [TestMethod]
-        public void ExecuteQueryTestFb3()
-        {
-            SetupTestDbFb3();
-            var inf = new QueryInfo();
-            var conStr = GetFb3ConnectionString();
-            inf.ExecuteQuery(conStr, "select * from test").ToList()[0].View.Rows.Count.Is(0);
+        //[TestMethod]
+        //public void ExecuteQueryTestFb3()
+        //{
+        //    SetupTestDbFb3();
+        //    var inf = new QueryInfo();
+        //    var conStr = GetFb3ConnectionString();
+        //    inf.ExecuteQuery(conStr, "select * from test").ToList()[0].View.Rows.Count.Is(0);
 
-            var result = inf.ExecuteQuery(conStr, "insert into test values (1, 123456789000, null, '12asd', '2016-07-24', 50000, 2.5, 2.5555, 4500, 10, '10:00:00', current_timestamp, 'asdfghjk', true);update test set varchar_test = 'testtesttesttest' where int_test = 1;select * from test").ToList();
-            result[0].View.Rows[0].Is(x => ((string)x[0]).Contains("実行しました。"));
-            result[1].View.Rows[0].Is(x => ((string)x[0]).Contains("更新しました。"));
-            result[2].View.Rows.Count.Is(1);
-        }
+        //    var result = inf.ExecuteQuery(conStr, "insert into test values (1, 123456789000, null, '12asd', '2016-07-24', 50000, 2.5, 2.5555, 4500, 10, '10:00:00', current_timestamp, 'asdfghjk', true);update test set varchar_test = 'testtesttesttest' where int_test = 1;select * from test").ToList();
+        //    result[0].View.Rows[0].Is(x => ((string)x[0]).Contains("実行しました。"));
+        //    result[1].View.Rows[0].Is(x => ((string)x[0]).Contains("更新しました。"));
+        //    result[2].View.Rows.Count.Is(1);
+        //}
     }
 }
