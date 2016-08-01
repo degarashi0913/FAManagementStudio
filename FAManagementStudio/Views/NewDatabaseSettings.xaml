@@ -11,7 +11,7 @@
         xmlns:fb="clr-namespace:FirebirdSql.Data.FirebirdClient;assembly=FirebirdSql.Data.FirebirdClient"
         xmlns:system="clr-namespace:System;assembly=mscorlib"
         mc:Ignorable="d"
-        Title="CreateNewDatabase" Icon="../Image/systemicon.ico" Height="160" Width="300">
+        Title="CreateNewDatabase" Icon="../Image/systemicon.ico" Height="160" Width="300" WindowStartupLocation="CenterOwner">
     <Window.DataContext>
         <vm:NewDatabaseSettingsViewModel />
     </Window.DataContext>
