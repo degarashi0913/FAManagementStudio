@@ -2,7 +2,6 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:toolkit="http://schemas.microsoft.com/wpf/2008/toolkit"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
         xmlns:local="clr-namespace:FAManagementStudio"
@@ -13,6 +12,7 @@
         xmlns:v="clr-namespace:FAManagementStudio.Views"
         xmlns:controls="clr-namespace:FAManagementStudio.Controls;assembly=FAManagementStudio.Controls"
         xmlns:core="clr-namespace:System;assembly=mscorlib"
+        xmlns:search="http://icsharpcode.net/sharpdevelop/avalonedit"
         mc:Ignorable="d"
         Title="FAManagementStudio" Height="700" Width="1000" Icon="../Image/systemicon.ico" Loaded="Window_Loaded">
     <Window.Resources>
@@ -30,9 +30,9 @@
             <Setter Property="ResizeDirection" Value="Rows"/>
         </Style>
     </Window.Resources>
-    <!--<Window.DataContext> Not Avoid Disigner Mode Error
+    <Window.DataContext>
         <StaticResourceExtension ResourceKey="viewModel" />
-    </Window.DataContext>-->
+    </Window.DataContext>
     <i:Interaction.Behaviors>
         <b:WindowBehavior LoadedCommand="{Binding LoadHistry}" ClosedCommand="{Binding SaveHistry}"/>
     </i:Interaction.Behaviors>
@@ -45,6 +45,9 @@
         </b:MessageBaseTriger>
         <b:MessageBaseTriger Target="BasePathSettingsWindowOpen">
             <b:ShowWindowAction WindowType="{x:Type v:BasePathSettingsView}" IsDialog="True" />
+        </b:MessageBaseTriger>
+        <b:MessageBaseTriger Target="NewDbSettingsWindowOpen">
+            <b:ShowWindowAction WindowType="{x:Type v:NewDatabaseSettings}" IsDialog="True" />
         </b:MessageBaseTriger>
     </i:Interaction.Triggers>
     <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
@@ -81,7 +84,7 @@
                         <TextBlock Text="実行" Margin="4,0"/>
                     </StackPanel>
                 </Button>
-                <TextBlock Margin="2,0,0,0" Text="{Binding CurrentDatabase.Path}" VerticalAlignment="Center" />
+                <TextBlock Margin="2,0,0,0" Text="{Binding ElementName=DbListBox, Path=SelectedValue.Path}" VerticalAlignment="Center" />
             </StackPanel>
         </DockPanel>
         <Grid Grid.Row="1" HorizontalAlignment="Stretch">
@@ -108,17 +111,12 @@
                             <MenuItem Header="再読み込み" Command="{Binding ReloadDatabase}"/>
                             <MenuItem Header="切断" Command="{StaticResource Shutdown}"/>
                             <MenuItem Header="編集" Command="{StaticResource ChangeConfig}"/>
-                            <Separator Margin="0,-4"/>
+                            <Separator />
                             <MenuItem Header="相関図" Command="{StaticResource ShowEntity}"/>
                         </ContextMenu>
                     </ListBox.Resources>
                     <ListBox.ItemContainerStyle>
                         <Style TargetType="{x:Type ListBoxItem}">
-                            <Style.Triggers>
-                                <Trigger Property="Selector.IsSelected" Value="True">
-                                    <Setter Property="TextElement.Foreground" Value="White"/>
-                                </Trigger>
-                            </Style.Triggers>
                             <Setter Property="ContextMenu" Value="{StaticResource DbListContextMenu}" />
                         </Style>
                     </ListBox.ItemContainerStyle>
@@ -132,7 +130,7 @@
                     <ListBox.ItemTemplate>
                         <DataTemplate>
                             <Canvas Height="70" Width="50" ToolTip="{Binding Path}">
-                                <Image Source="../Image/DbShape.png" Height="50" Width="50" Margin="0,3,0,0"/>
+                                <Image Source="../Image/DbShape.png" Stretch="Uniform" Height="50" Width="50" Margin="0,3,0,0"/>
                                 <TextBlock Text="{Binding DisplayDbName}" Canvas.Top="50" TextAlignment="Center" Margin="-15,2,0,0" Width="80" />
                             </Canvas>
                         </DataTemplate>
@@ -186,11 +184,11 @@
                         <ContextMenu x:Key="contextMenu">
                             <MenuItem Header="EXEC SELECT *" Command="{StaticResource ExecSqlTemplate}" CommandParameter="{x:Static Common:SqlKind.Select}" />
                             <MenuItem Header="EXEC SELECT FIRST(1000) *" Command="{StaticResource ExecLimitedSql}" CommandParameter="1000" />
-                            <Separator Margin="0,-4"/>
+                            <Separator />
                             <MenuItem Header="SELECT *" Command="{StaticResource SetSqlTemplate}" CommandParameter="{x:Static Common:SqlKind.Select}" />
                             <MenuItem Header="INSERT *" Command="{StaticResource SetSqlTemplate}" CommandParameter="{x:Static Common:SqlKind.Insert}" />
                             <MenuItem Header="UPDATE *" Command="{StaticResource SetSqlTemplate}" CommandParameter="{x:Static Common:SqlKind.Update}" />
-                            <Separator Margin="0,-4"/>
+                            <Separator />
                             <MenuItem Header="Reverse DB(開発中)">
                                 <MenuItem Header="CREATE(仮)" Command="{StaticResource SetSqlDataTemplate}" CommandParameter="table"/>
                                 <MenuItem Header="INSERT(仮)" Command="{StaticResource SetSqlDataTemplate}" CommandParameter="insert"/>
@@ -288,6 +286,44 @@
                         <Common:CommandReference x:Key="DeleteTabItem" Command="{Binding DataContext.DeleteTabItem, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}"/>
                         <c:ImageOpacityConverter x:Key="OpacityConverter"/>
                         <c:ImageButtonBackColorConverter x:Key="BackColorConverter"/>
+                        <Style TargetType="search:SearchPanel">
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="{x:Type search:SearchPanel}">
+                                        <Border Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}" BorderBrush="{DynamicResource {x:Static SystemColors.WindowTextBrushKey}}" BorderThickness="1" HorizontalAlignment="Right" VerticalAlignment="Top" Cursor="Arrow">
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBox Name="PART_searchTextBox" Focusable="True" Width="50" Height="24">
+                                                    <TextBox.Text>
+                                                        <Binding Path="SearchPattern" RelativeSource="{RelativeSource TemplatedParent}" UpdateSourceTrigger="PropertyChanged">
+                                                            <Binding.ValidationRules>
+                                                                <ExceptionValidationRule />
+                                                            </Binding.ValidationRules>
+                                                        </Binding>
+                                                    </TextBox.Text>
+                                                </TextBox>
+                                                <search:DropDownButton Height="20">
+                                                    <search:DropDownButton.DropDownContent>
+                                                        <Popup StaysOpen="False">
+                                                            <Border Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}" BorderBrush="{DynamicResource {x:Static SystemColors.WindowTextBrushKey}}" BorderThickness="1">
+                                                                <StackPanel Orientation="Vertical">
+                                                                    <CheckBox IsChecked="{Binding MatchCase, RelativeSource={RelativeSource TemplatedParent}}" Content="{Binding Localization.MatchCaseText, RelativeSource={RelativeSource TemplatedParent}}" />
+                                                                    <CheckBox IsChecked="{Binding WholeWords, RelativeSource={RelativeSource TemplatedParent}}" Content="{Binding Localization.MatchWholeWordsText, RelativeSource={RelativeSource TemplatedParent}}" />
+                                                                    <CheckBox IsChecked="{Binding UseRegex, RelativeSource={RelativeSource TemplatedParent}}" Content="{Binding Localization.UseRegexText, RelativeSource={RelativeSource TemplatedParent}}" />
+                                                                </StackPanel>
+                                                            </Border>
+                                                        </Popup>
+                                                    </search:DropDownButton.DropDownContent>
+                                                </search:DropDownButton>
+                                                <Button Height="12" Width="12" HorizontalAlignment="Right" VerticalAlignment="Top" Command="search:SearchCommands.CloseSearchPanel"
+							        VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Focusable="False">
+                                                    <Path Data="M 0,0 L 8,8 M 8,0 L 0,8" Stroke="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}" StrokeThickness="1" />
+                                                </Button>
+                                            </StackPanel>
+                                        </Border>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
                     </TabControl.Resources>
                     <TabControl.ItemTemplate>
                         <DataTemplate>
@@ -295,7 +331,7 @@
                                 <StackPanel.ContextMenu>
                                     <ContextMenu>
                                         <MenuItem Header="閉じる" Command="{StaticResource DeleteTabItem}"/>
-                                        <Separator Margin="0,-4" />
+                                        <Separator />
                                         <MenuItem Header="読み込み" Command="{Binding LoadQuery}"/>
                                         <MenuItem Header="名前を付けて保存" Command="{Binding GivingNameSave}"/>
                                         <MenuItem Header="上書き保存" Command="{Binding OverwriteSave}"/>
@@ -315,15 +351,21 @@
                                         </i:Interaction.Behaviors>
                                         <Image Source="../Image/PinItem.png" Opacity="{Binding IsNewResult, Converter={StaticResource OpacityConverter}}"/>
                                     </Button>
-                                    <Button Focusable="False" ToolTip="Show Execute Plan" Background="{Binding IsShowExecutionPlan, Converter={StaticResource BackColorConverter}}">
+                                    <Button Focusable="False" ToolTip="Show Execute Plan" Background="{Binding IsShowExecutionPlan, Converter={StaticResource BackColorConverter}}" Margin="2,0,0,0">
                                         <i:Interaction.Behaviors>
                                             <b:ImageButtonBehavior ChangeEnable="{Binding IsShowExecutionPlan, Mode=TwoWay}"/>
                                         </i:Interaction.Behaviors>
                                         <Image Source="../Image/ExecutionPlan.png" Opacity="{Binding IsShowExecutionPlan,Converter={StaticResource OpacityConverter}}"/>
                                     </Button>
+                                    <Button Focusable="False" ToolTip="Enable Intelisense (beta)" Background="{Binding IntelisenseEnabled, Converter={StaticResource BackColorConverter}}" Margin="2,0,0,0">
+                                        <i:Interaction.Behaviors>
+                                            <b:ImageButtonBehavior ChangeEnable="{Binding IntelisenseEnabled, Mode=TwoWay}"/>
+                                        </i:Interaction.Behaviors>
+                                        <Image Source="../Image/IntelliSenseKeyword.png" Opacity="{Binding IntelisenseEnabled,Converter={StaticResource OpacityConverter}}"/>
+                                    </Button>
                                 </StackPanel>
                                 <controls:BindableEditor DockPanel.Dock="Top" AllowDrop="True" Text="{Binding Query, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalScrollBarVisibility="Disabled" Margin="0,2" Grid.RowSpan="2"  PreviewDragEnter="TextBox_PreviewDragEnter"
-            PreviewDragOver="TextBox_PreviewDragEnter" FontSize="14">
+            PreviewDragOver="TextBox_PreviewDragEnter" FontSize="14" IntelisenseEnabled="{Binding IntelisenseEnabled, Mode=TwoWay}">
                                     <controls:BindableEditor.Resources>
                                         <Common:CommandReference x:Key="OverwriteSave" Command="{Binding OverwriteSave}"/>
                                         <Common:CommandReference x:Key="DropFile" Command="{Binding DropFile}"/>
@@ -365,7 +407,7 @@
                                 <ListBox.ItemTemplate>
                                     <DataTemplate>
                                         <StackPanel Orientation="Vertical" Margin="0,0,0,10">
-                                            <toolkit:DataGrid Name="ResultView" HorizontalAlignment="Stretch"
+                                            <DataGrid Name="ResultView" HorizontalAlignment="Stretch"
                                                 ItemsSource="{Binding View}" Margin="0,0,0,0" EnableColumnVirtualization="True" EnableRowVirtualization="True"
                                                 VirtualizingStackPanel.IsVirtualizing="True" VirtualizingStackPanel.VirtualizationMode="Recycling" 
                                                 CanUserAddRows="False" CanUserDeleteRows="False"
@@ -373,7 +415,7 @@
                                                 Width="{Binding MaxWidth, RelativeSource={RelativeSource Self}}"
                                                 MaxHeight="{Binding Path=ActualHeight, ElementName=ResultRow, Converter={StaticResource HeightConverter}}"
                                                 IsReadOnly="True" AutoGenerateColumns="True">
-                                                <toolkit:DataGrid.ContextMenu>
+                                                <DataGrid.ContextMenu>
                                                     <ContextMenu>
                                                         <MenuItem Header="結果を保存 CSV(ヘッダ含)" Command="{Binding OutputCsv}" >
                                                             <MenuItem.CommandParameter>
@@ -386,11 +428,8 @@
                                                             </MenuItem.CommandParameter>
                                                         </MenuItem>
                                                     </ContextMenu>
-                                                </toolkit:DataGrid.ContextMenu>
-                                                <i:Interaction.Behaviors>
-                                                    <b:GridColumnGenerateBehavior />
-                                                </i:Interaction.Behaviors>
-                                            </toolkit:DataGrid>
+                                                </DataGrid.ContextMenu>
+                                            </DataGrid>
                                             <TextBlock Text="{Binding AdditionalInfo}" TextDecorations="Underline" TextWrapping="Wrap" MaxWidth="{Binding MaxWidth, ElementName=ResultView}" Foreground="Gray" Margin="5,0,0,0"/>
                                         </StackPanel>
                                     </DataTemplate>

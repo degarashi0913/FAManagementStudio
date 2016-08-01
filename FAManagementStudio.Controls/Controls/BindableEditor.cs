@@ -1,12 +1,18 @@
 ﻿using FAManagementStudio.Controls.Common;
 using ICSharpCode.AvalonEdit;
+using ICSharpCode.AvalonEdit.CodeCompletion;
 using ICSharpCode.AvalonEdit.Document;
+using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.AvalonEdit.Highlighting.Xshd;
+using ICSharpCode.AvalonEdit.Search;
 using System;
 using System.Diagnostics;
+using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Media;
 using System.Xml;
 
 namespace FAManagementStudio.Controls
@@ -27,7 +33,46 @@ namespace FAManagementStudio.Controls
             {
             }
             SetCommand();
+            SearchPanel.Install(this);
         }
+
+        private CompletionWindow _completionWindow;
+        private FirebirdRecommender _fbRecommender = new FirebirdRecommender();
+
+        private string[] _marks = new string[] { ";" };
+        private async void TextArea_TextEntered(object sender, TextCompositionEventArgs e)
+        {
+            if (_marks.Contains(e.Text)) return;
+            await ShowCompletionWindow();
+        }
+
+        private async Task ShowCompletionWindow()
+        {
+            _completionWindow = new CompletionWindow(TextArea);
+            var data = _completionWindow.CompletionList.CompletionData;
+            var list = await _fbRecommender.GetCompletionData(Text, TextArea.Caret.Offset - 1);
+            foreach (var item in list)
+            {
+                data.Add(item);
+            }
+            _completionWindow.Show();
+            _completionWindow.Closed += delegate
+            {
+                _completionWindow = null;
+            };
+        }
+
+        private void TextArea_TextEntering(object sender, TextCompositionEventArgs e)
+        {
+            if (e.Text.Length > 0 && _completionWindow != null)
+            {
+                if (!char.IsLetterOrDigit(e.Text[0]))
+                {
+                    _completionWindow.CompletionList.RequestInsertion(e);
+                }
+            }
+        }
+
         public new string Text
         {
             get { return (string)GetValue(TextProperty); }
@@ -56,6 +101,30 @@ namespace FAManagementStudio.Controls
                 SetValue(TextProperty, baseText);
             }
             base.OnTextChanged(e);
+        }
+
+        public bool IntelisenseEnabled
+        {
+            get { return (bool)GetValue(IntelisenseEnabledProperty); }
+            set { SetValue(IntelisenseEnabledProperty, value); }
+        }
+
+        public static DependencyProperty IntelisenseEnabledProperty = DependencyProperty.Register(nameof(IntelisenseEnabled), typeof(bool), typeof(BindableEditor), new PropertyMetadata(false, OnEnablePropertyChanged));
+
+        private static void OnEnablePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var obj = d as BindableEditor;
+            if (obj == null) return;
+            if (obj.IntelisenseEnabled)
+            {
+                obj.TextArea.TextEntering += obj.TextArea_TextEntering;
+                obj.TextArea.TextEntered += obj.TextArea_TextEntered;
+            }
+            else
+            {
+                obj.TextArea.TextEntering -= obj.TextArea_TextEntering;
+                obj.TextArea.TextEntered -= obj.TextArea_TextEntered;
+            }
         }
 
         private bool donePre = false;
@@ -145,6 +214,15 @@ namespace FAManagementStudio.Controls
             {
                 var idx = doc.Text.IndexOf(FbCommentString, line.Offset);
                 doc.Remove(idx, FbCommentString.Length);
+            }
+        }
+        protected override async void OnKeyDown(KeyEventArgs e)
+        {
+            base.OnKeyDown(e);
+            if (IntelisenseEnabled && e.Key == Key.Space && e.KeyboardDevice.Modifiers.HasFlag(ModifierKeys.Control))
+            {
+                e.Handled = true;
+                await ShowCompletionWindow();
             }
         }
     }

@@ -24,7 +24,7 @@ namespace FAManagementStudio.Views.Converters
                 case ConstraintsKind.Primary | ConstraintsKind.Foreign:
                     return @"../Image/PFKey.png";
                 default:
-                    return "";
+                    return null;
             }
         }
 

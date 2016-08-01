@@ -7,46 +7,32 @@ namespace FAManagementStudio.Models
 {
     public class DatabaseInfo : BindableBase
     {
-        private string _path;
-        public string Path
+        public DatabaseInfo(FirebirdInfo inf)
         {
-            get
-            {
-                return _path;
-            }
-            set
-            {
-                _path = value;
-                _builder.Database = value;
-            }
+            _fbInfo = inf;
         }
+        private FirebirdInfo _fbInfo;
+        public string Path { get { return _fbInfo.Path; } }
         public string UserId { get; set; }
         public string Password { get; set; }
+        internal string ConnectionString { get { return _fbInfo.Builder.ConnectionString; } }
+        public bool CanLoadDatabase { get { return _fbInfo.IsTargetOdsVersion(); } }
+        public FbConnectionStringBuilder Builder { get { return _fbInfo.Builder; } }
 
-        internal string ConnectionString
+        public void CreateDatabase()
         {
-            get
+            FbConnection.CreateDatabase(_fbInfo.Builder.ConnectionString, false);
+        }
+
+        public string GetDefaultCharSet(FbConnection con)
+        {
+            using (var command = con.CreateCommand())
             {
-                return _builder.ConnectionString;
+                command.CommandText = @"select RDB$CHARACTER_SET_NAME CharSet from RDB$DATABASE";
+                return command.ExecuteScalar() as string ?? "UTF8";
             }
         }
 
-        private FbConnectionStringBuilder _builder = new FbConnectionStringBuilder()
-        {
-            DataSource = "localhost",
-            Charset = FbCharset.Utf8.ToString(),
-            UserID = "SYSDBA",
-            Password = "masterkey",
-            ServerType = FbServerType.Embedded,
-            Pooling = false
-        };
-
-        public FbConnectionStringBuilder Builder { get { return _builder; } }
-
-        public void CreateDatabase(FbConnection con)
-        {
-            FbConnection.CreateDatabase(con.ConnectionString);
-        }
         public IEnumerable<TableInfo> GetTables(FbConnection con)
         {
             using (var command = con.CreateCommand())
@@ -78,7 +64,7 @@ namespace FAManagementStudio.Models
                 command.CommandText =
                      $"select distinct f.rdb$field_type Type, f.rdb$field_sub_type SubType , f.rdb$character_length CharSize, f.rdb$field_name FieldName, f.rdb$field_precision FieldPrecision, f.rdb$field_scale FieldScale " +
                       "from rdb$fields f " +
-                     $"where f.rdb$FIELD_NAME not starting with 'RDB$' " +
+                     $"where f.rdb$FIELD_NAME not starting with 'RDB$' and f.rdb$FIELD_NAME not starting with 'MON$' and f.rdb$FIELD_NAME not starting with 'SEC$' " +
                       "order by f.rdb$field_name; ";
                 var reader = command.ExecuteReader();
                 while (reader.Read())
