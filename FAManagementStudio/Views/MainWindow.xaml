@@ -351,13 +351,13 @@
                                         </i:Interaction.Behaviors>
                                         <Image Source="../Image/PinItem.png" Opacity="{Binding IsNewResult, Converter={StaticResource OpacityConverter}}"/>
                                     </Button>
-                                    <Button Focusable="False" ToolTip="Show Execute Plan" Background="{Binding IsShowExecutionPlan, Converter={StaticResource BackColorConverter}}">
+                                    <Button Focusable="False" ToolTip="Show Execute Plan" Background="{Binding IsShowExecutionPlan, Converter={StaticResource BackColorConverter}}" Margin="2,0,0,0">
                                         <i:Interaction.Behaviors>
                                             <b:ImageButtonBehavior ChangeEnable="{Binding IsShowExecutionPlan, Mode=TwoWay}"/>
                                         </i:Interaction.Behaviors>
                                         <Image Source="../Image/ExecutionPlan.png" Opacity="{Binding IsShowExecutionPlan,Converter={StaticResource OpacityConverter}}"/>
                                     </Button>
-                                    <Button Focusable="False" ToolTip="Enable Intelisense (beta)" Background="{Binding IntelisenseEnabled, Converter={StaticResource BackColorConverter}}">
+                                    <Button Focusable="False" ToolTip="Enable Intelisense (beta)" Background="{Binding IntelisenseEnabled, Converter={StaticResource BackColorConverter}}" Margin="2,0,0,0">
                                         <i:Interaction.Behaviors>
                                             <b:ImageButtonBehavior ChangeEnable="{Binding IntelisenseEnabled, Mode=TwoWay}"/>
                                         </i:Interaction.Behaviors>

@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace FAManagementStudio.Controls.Common
 {
-    public class FirebirdService
+    public class FirebirdRecommender
     {
-        public FirebirdService()
+        public FirebirdRecommender()
         {
             foreach (var item in _keyList)
             {
@@ -26,7 +26,7 @@ namespace FAManagementStudio.Controls.Common
 
         private string CurrentWord(string input, int idx)
         {
-            var marks = new[] { '\r', '\n', ' ', '.' };
+            var marks = new[] { '\r', '\n', ' ', '.', '(', ';' };
 
             if (input.Length < 1 || idx < 0 || marks.Contains(input[idx])) return "";
 
