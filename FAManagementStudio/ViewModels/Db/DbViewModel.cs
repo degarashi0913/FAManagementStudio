@@ -74,15 +74,14 @@ namespace FAManagementStudio.ViewModels
 
         public void CreateDatabase(string path, FirebirdType type, FbCharset charset)
         {
-            _dbInfo = new DatabaseInfo(new FirebirdInfo(path, type, charset));
-            _dbInfo.CreateDatabase();
-            LoadDatabase(path);
+            var dbInfo = new DatabaseInfo(new FirebirdInfo(path, type, charset));
+            dbInfo.CreateDatabase();
+            LoadDatabase(dbInfo);
         }
 
-        public bool LoadDatabase(string path)
+        public void LoadDatabase(DatabaseInfo dbInf)
         {
-            _dbInfo = new DatabaseInfo(new FirebirdInfo(path));
-            if (!_dbInfo.CanLoadDatabase) return false;
+            _dbInfo = dbInf;
 
             using (var con = new FbConnection(_dbInfo.ConnectionString))
             {
@@ -119,7 +118,6 @@ namespace FAManagementStudio.ViewModels
                 RaisePropertyChanged(nameof(Triggers));
                 RaisePropertyChanged(nameof(Indexes));
             }
-            return true;
         }
 
         public ICommand ReloadDatabase { get; private set; }
@@ -129,8 +127,7 @@ namespace FAManagementStudio.ViewModels
             Triggers.Clear();
             Indexes.Clear();
             _domains = null;
-            _dbInfo = new DatabaseInfo(new FirebirdInfo(_dbInfo.Path));
-            LoadDatabase(_dbInfo.Path);
+            LoadDatabase(new DatabaseInfo(new FirebirdInfo(_dbInfo.Path)));
             AdditionalInfo.RefrechData(this);
             CollectionViewSource.GetDefaultView(this.Tables).Refresh();
         }

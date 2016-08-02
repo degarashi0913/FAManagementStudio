@@ -100,7 +100,6 @@ namespace FAManagementStudio.ViewModels
 
                 var db = new DbViewModel();
                 db.CreateDatabase(vm.Path, vm.Type, vm.CharSet);
-                db.LoadDatabase(vm.Path);
                 Databases.Add(db);
                 _history.DataAdd(vm.Path);
             });
@@ -109,16 +108,17 @@ namespace FAManagementStudio.ViewModels
             {
                 if (string.IsNullOrEmpty(path)) return;
                 if (!File.Exists(path)) return;
+
+                var dbInf = new DatabaseInfo(new FirebirdInfo(path));
+                if (!dbInf.CanLoadDatabase) return;
+
                 var db = new DbViewModel();
-                var isLoad = await Task.Run(() =>
+                Databases.Add(db);
+                await Task.Run(() =>
                 {
-                    return db.LoadDatabase(path);
+                    db.LoadDatabase(dbInf);
                 });
-                if (isLoad)
-                {
-                    Databases.Add(db);
-                    _history.DataAdd(path);
-                }
+                _history.DataAdd(path);
             });
 
             ExecuteQuery = new RelayCommand(async () =>
