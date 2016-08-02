@@ -415,6 +415,9 @@
                                                 Width="{Binding MaxWidth, RelativeSource={RelativeSource Self}}"
                                                 MaxHeight="{Binding Path=ActualHeight, ElementName=ResultRow, Converter={StaticResource HeightConverter}}"
                                                 IsReadOnly="True" AutoGenerateColumns="True">
+                                                <i:Interaction.Behaviors>
+                                                    <b:GridHeaderDisplayNameBehavior/>
+                                                </i:Interaction.Behaviors>
                                                 <DataGrid.ContextMenu>
                                                     <ContextMenu>
                                                         <MenuItem Header="結果を保存 CSV(ヘッダ含)" Command="{Binding OutputCsv}" >

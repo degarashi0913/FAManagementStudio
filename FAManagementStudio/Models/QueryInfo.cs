@@ -54,7 +54,8 @@ namespace FAManagementStudio.Models
             var table = new DataTable();
 
             var col = new DataColumn();
-            col.ColumnName = colName;
+            col.ColumnName = "0";
+            col.Caption = colName;
             col.DataType = typeof(string);
             table.Columns.Add(col);
 
@@ -78,7 +79,8 @@ namespace FAManagementStudio.Models
                 for (var i = 0; i < schema.Rows.Count; i++)
                 {
                     var col = new DataColumn();
-                    col.ColumnName = schema.Rows[i]["ColumnName"].ToString();
+                    col.ColumnName = i.ToString();
+                    col.Caption = schema.Rows[i]["ColumnName"].ToString();
                     col.DataType = Type.GetType(schema.Rows[i]["DataType"].ToString());
                     table.Columns.Add(col);
                 }

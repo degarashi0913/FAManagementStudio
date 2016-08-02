@@ -97,7 +97,7 @@ namespace FAManagementStudio.ViewModels
                 var sb = new StringBuilder();
                 if (needHeader)
                 {
-                    var header = View.Columns.Cast<DataColumn>().Select(x => $"\"{x.ColumnName}\"").ToArray();
+                    var header = View.Columns.Cast<DataColumn>().Select(x => $"\"{x.Caption}\"").ToArray();
                     sb.AppendLine(string.Join(",", header));
                 }
                 var rows = View.Rows.Cast<DataRow>().Select(x => string.Join(",", x.ItemArray.Select(y => $"\"{y}\"").ToArray()));
