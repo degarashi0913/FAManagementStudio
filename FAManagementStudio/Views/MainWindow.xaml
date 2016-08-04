@@ -230,6 +230,7 @@
                             </ControlTemplate>
                         </ItemsControl.Template>
                         <ItemsControl.Resources>
+                            <c:StringToVisibilityConverter x:Key="StringToVisibilityConverter" />
                             <DataTemplate DataType="{x:Type vm:AdditionalDbInfoViewModel}">
                                 <Button Command="{Binding  ElementName=AdditionalBox, Path=DataContext.ContentChange}"  CommandParameter="{Binding DisplayName}" Background="Transparent">
                                     <StackPanel Orientation="Horizontal">
@@ -257,9 +258,11 @@
                             </DataTemplate>
                             <DataTemplate DataType="{x:Type vm:DomainViewModel}">
                                 <Border BorderBrush="Silver" BorderThickness="1">
-                                    <StackPanel >
+                                    <StackPanel>
                                         <TextBlock Text="{Binding DomainName, StringFormat=Name: {0}}" />
                                         <TextBlock Text="{Binding DomainType, StringFormat=Type: {0}}"/>
+                                        <TextBlock Text="{Binding ValidationSource}" Visibility="{Binding ValidationSource, Converter={StaticResource StringToVisibilityConverter}}"/>
+                                        <TextBlock Text="{Binding DefaultSource}" Visibility="{Binding DefaultSource, Converter={StaticResource StringToVisibilityConverter}}"/>
                                     </StackPanel>
                                 </Border>
                             </DataTemplate>

@@ -188,6 +188,7 @@
     <Compile Include="Views\Converters\TableIconConverter.cs" />
     <Compile Include="Views\Converters\ConstraintsKeyToIconConverter.cs" />
     <Compile Include="Views\Converters\GridSizeConverter.cs" />
+    <Compile Include="Views\Converters\VisibilityConverter.cs" />
     <Compile Include="Views\NewDatabaseSettings.xaml.cs">
       <DependentUpon>NewDatabaseSettings.xaml</DependentUpon>
     </Compile>

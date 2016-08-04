@@ -62,21 +62,22 @@ namespace FAManagementStudio.Models
             using (var command = con.CreateCommand())
             {
                 command.CommandText =
-                     $"select distinct f.rdb$field_type Type, f.rdb$field_sub_type SubType , f.rdb$character_length CharSize, f.rdb$field_name FieldName, f.rdb$field_precision FieldPrecision, f.rdb$field_scale FieldScale " +
+                     $"select distinct f.rdb$field_type Type, f.rdb$field_sub_type SubType , f.rdb$character_length CharSize, trim(f.rdb$field_name) FieldName, f.rdb$field_precision FieldPrecision, f.rdb$field_scale FieldScale, coalesce(f.rdb$validation_source, '') ValidationSource, coalesce(f.rdb$default_source, '') DefaultSource " +
                       "from rdb$fields f " +
                      $"where f.rdb$FIELD_NAME not starting with 'RDB$' and f.rdb$FIELD_NAME not starting with 'MON$' and f.rdb$FIELD_NAME not starting with 'SEC$' " +
                       "order by f.rdb$field_name; ";
                 var reader = command.ExecuteReader();
                 while (reader.Read())
                 {
-                    var name = ((string)reader["FieldName"]).TrimEnd();
+                    var name = (string)reader["FieldName"];
                     var size = (reader["CharSize"] == DBNull.Value) ? null : (short?)reader["CharSize"];
                     var subType = (reader["SubType"] == DBNull.Value) ? null : (short?)reader["SubType"];
                     var precision = (reader["FieldPrecision"] == DBNull.Value) ? null : (short?)reader["FieldPrecision"];
                     var scale = (reader["FieldScale"] == DBNull.Value) ? null : (short?)reader["FieldScale"];
                     var type = new FieldType((short)reader["Type"], subType, size, precision, scale);
-
-                    yield return new DomainInfo(name, type);
+                    var validationSource = (string)reader["ValidationSource"];
+                    var defaultSource = (string)reader["DefaultSource"];
+                    yield return new DomainInfo(name, type, validationSource, defaultSource);
                 }
             }
         }

@@ -11,10 +11,8 @@ namespace FAManagementStudio.ViewModels
             _inf = inf;
         }
         public string DomainName { get { return _inf.DomainName; } }
-
-        public string DomainType
-        {
-            get { return _inf.DomainType.ToString(); }
-        }
+        public string DomainType { get { return _inf.DomainType.ToString(); } }
+        public string ValidationSource { get { return _inf.ValidationSource; } }
+        public string DefaultSource { get { return _inf.DefaultSource; } }
     }
 }
