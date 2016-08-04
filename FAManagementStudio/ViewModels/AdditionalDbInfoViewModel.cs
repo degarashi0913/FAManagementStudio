@@ -11,8 +11,8 @@ namespace FAManagementStudio.ViewModels
     {
         public AdditionalDbInfoViewModel() { }
         public string DisplayName { get; }
-        public List<IAddtionalDbInfo> Content { get; }
-        public AdditionalDbInfoViewModel(string name, List<IAddtionalDbInfo> content)
+        public IEnumerable<IAddtionalDbInfo> Content { get; }
+        public AdditionalDbInfoViewModel(string name, IEnumerable<IAddtionalDbInfo> content)
         {
             DisplayName = name;
             Content = content;
@@ -37,9 +37,9 @@ namespace FAManagementStudio.ViewModels
         {
             ContentList.Clear();
 
-            ContentList.Add(new AdditionalDbInfoViewModel("Trigger", db.Triggers.Cast<IAddtionalDbInfo>().ToList()));
-            ContentList.Add(new AdditionalDbInfoViewModel("Index", db.Indexes.Cast<IAddtionalDbInfo>().ToList()));
-            ContentList.Add(new AdditionalDbInfoViewModel("Domain", db.Domains.Cast<IAddtionalDbInfo>().ToList()));
+            ContentList.Add(new AdditionalDbInfoViewModel("Trigger", db.Triggers));
+            ContentList.Add(new AdditionalDbInfoViewModel("Index", db.Indexes));
+            ContentList.Add(new AdditionalDbInfoViewModel("Domain", db.Domains));
 
             CurrentContent = ContentList;
         }

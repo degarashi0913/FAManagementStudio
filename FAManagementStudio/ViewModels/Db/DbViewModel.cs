@@ -1,11 +1,8 @@
 ﻿using FAManagementStudio.Common;
 using FAManagementStudio.Models;
-using FAManagementStudio.ViewModels;
 using FirebirdSql.Data.FirebirdClient;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Windows.Data;
 using System.Windows.Input;
 
 namespace FAManagementStudio.ViewModels
@@ -27,9 +24,35 @@ namespace FAManagementStudio.ViewModels
 
         public string DisplayDbName { get { return _dbInfo.Path.Substring(_dbInfo.Path.LastIndexOf('\\') + 1); } }
 
-        public List<ITableViewModel> Tables { get; } = new List<ITableViewModel>();
-        public List<TriggerViewModel> Triggers { get; } = new List<TriggerViewModel>();
-        public List<IndexViewModel> Indexes { get; } = new List<IndexViewModel>();
+        public List<ITableViewModel> Tables { get; private set; }
+        private List<TriggerViewModel> _triggers;
+        public List<TriggerViewModel> Triggers
+        {
+            get
+            {
+                if (_triggers == null) _triggers = GetTriggers();
+                return _triggers;
+            }
+        }
+        private List<TriggerViewModel> GetTriggers()
+        {
+            return Tables.Where(x => x is TableViewModel).SelectMany(x => ((TableViewModel)x).Triggers).ToList();
+        }
+
+        private List<IndexViewModel> _indexes;
+        public List<IndexViewModel> Indexes
+        {
+            get
+            {
+                if (_indexes == null) _indexes = GetIndexes();
+                return _indexes;
+            }
+        }
+        private List<IndexViewModel> GetIndexes()
+        {
+            return Tables.Where(x => x is TableViewModel).SelectMany(x => ((TableViewModel)x).Indexs).ToList();
+        }
+
         private List<DomainViewModel> _domains;
         public List<DomainViewModel> Domains
         {
@@ -57,15 +80,7 @@ namespace FAManagementStudio.ViewModels
         public string ConnectionString { get { return _dbInfo.ConnectionString; } }
         public string Path { get { return _dbInfo.Path; } }
 
-        private AdditionalDbInfoControl _additionalInfo;
-        public AdditionalDbInfoControl AdditionalInfo
-        {
-            get
-            {
-                if (_additionalInfo == null) _additionalInfo = new AdditionalDbInfoControl(this);
-                return _additionalInfo;
-            }
-        }
+        public AdditionalDbInfoControl AdditionalInfo { get; private set; }
 
         public bool CanExecute()
         {
@@ -82,7 +97,7 @@ namespace FAManagementStudio.ViewModels
         public void LoadDatabase(DatabaseInfo dbInf)
         {
             _dbInfo = dbInf;
-
+            Tables = new List<ITableViewModel>();
             using (var con = new FbConnection(_dbInfo.ConnectionString))
             {
                 con.Open();
@@ -103,8 +118,7 @@ namespace FAManagementStudio.ViewModels
                     }
                     Tables.Add(vm);
                 }
-                Triggers.AddRange(Tables.SelectMany(x => ((TableViewModel)x).Triggers).ToArray());
-                Indexes.AddRange(Tables.SelectMany(x => ((TableViewModel)x).Indexs).ToArray());
+
                 foreach (var item in _dbInfo.GetViews(con))
                 {
                     var vm = new TableViewViewModel(item.ViewName, item.Source);
@@ -114,9 +128,9 @@ namespace FAManagementStudio.ViewModels
                     }
                     Tables.Add(vm);
                 }
+                AdditionalInfo = new AdditionalDbInfoControl(this);
                 RaisePropertyChanged(nameof(Tables));
-                RaisePropertyChanged(nameof(Triggers));
-                RaisePropertyChanged(nameof(Indexes));
+                RaisePropertyChanged(nameof(AdditionalInfo));
             }
         }
 
@@ -124,12 +138,10 @@ namespace FAManagementStudio.ViewModels
         public void Reload()
         {
             Tables.Clear();
-            Triggers.Clear();
-            Indexes.Clear();
+            _triggers = null;
+            _indexes = null;
             _domains = null;
             LoadDatabase(new DatabaseInfo(new FirebirdInfo(_dbInfo.Path)));
-            AdditionalInfo.RefrechData(this);
-            CollectionViewSource.GetDefaultView(this.Tables).Refresh();
         }
     }
 }
