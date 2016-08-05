@@ -137,8 +137,8 @@ namespace FAManagementStudio.ViewModels
                      }
                  }
              });
-            AdditionalInfo = new AdditionalDbInfoControl(this);
             Tables = table;
+            AdditionalInfo = new AdditionalDbInfoControl(this);
             RaisePropertyChanged(nameof(Tables));
             RaisePropertyChanged(nameof(AdditionalInfo));
         }

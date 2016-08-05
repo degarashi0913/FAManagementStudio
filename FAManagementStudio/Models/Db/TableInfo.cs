@@ -20,7 +20,7 @@ namespace FAManagementStudio.Models
             using (var command = con.CreateCommand())
             {
                 command.CommandText =
-                    $"select rf.rdb$field_name Name, f.rdb$field_type Type, f.rdb$field_sub_type SubType , f.rdb$character_length CharSize, rf.rdb$field_source FieldSource, rf.rdb$null_flag NullFlag, f.rdb$field_precision FieldPrecision, f.rdb$field_scale FieldScale " +
+                    $"select trim(rf.rdb$field_name) Name, f.rdb$field_type Type, f.rdb$field_sub_type SubType , f.rdb$character_length CharSize, rf.rdb$field_source FieldSource, rf.rdb$null_flag NullFlag, f.rdb$null_flag fieldNullFlag, f.rdb$field_precision FieldPrecision, f.rdb$field_scale FieldScale, coalesce(rf.rdb$default_source, '') DefaultSource " +
                         "from rdb$relation_fields rf " +
                         "join rdb$relations r on rf.rdb$relation_name = r.rdb$relation_name " +
                                             "and r.rdb$view_blr is null " +
@@ -31,13 +31,15 @@ namespace FAManagementStudio.Models
                 var reader = command.ExecuteReader();
                 while (reader.Read())
                 {
-                    var name = ((string)reader["Name"]).TrimEnd();
+                    var name = (string)reader["Name"];
                     var size = (reader["CharSize"] == DBNull.Value) ? null : (short?)reader["CharSize"];
                     var subType = (reader["SubType"] == DBNull.Value) ? null : (short?)reader["SubType"];
                     var nullFlag = reader["NullFlag"] == DBNull.Value;
+                    var fieldNullFlag = reader["FieldNullFlag"] == DBNull.Value;
                     var precision = (reader["FieldPrecision"] == DBNull.Value) ? null : (short?)reader["FieldPrecision"];
                     var scale = (reader["FieldScale"] == DBNull.Value) ? null : (short?)reader["FieldScale"];
                     var type = new FieldType((short)reader["Type"], subType, size, precision, scale);
+                    var defaultSource = (string)reader["DefaultSource"];
 
                     var constraintInfo = new ConstraintsInfo();
                     if (constraints.ContainsKey(name))
@@ -45,7 +47,7 @@ namespace FAManagementStudio.Models
                         constraintInfo = constraints[name];
                     }
 
-                    yield return new ColumInfo(name, type, constraintInfo, ((string)reader["FieldSource"]).TrimEnd(), nullFlag);
+                    yield return new ColumInfo(name, type, constraintInfo, ((string)reader["FieldSource"]).TrimEnd(), nullFlag, fieldNullFlag, defaultSource);
                 }
             }
         }

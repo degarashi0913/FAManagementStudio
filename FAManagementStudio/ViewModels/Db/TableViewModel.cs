@@ -25,9 +25,13 @@ namespace FAManagementStudio.ViewModels
                 var sql = $"{x.ColumName} {x.ColumType}";
                 if (!x.NullFlag)
                 {
-                    sql += " not null";
+                    sql += " NOT NULL";
                 }
-                return sql.ToUpper();
+                if (!x.IsDomainType && !string.IsNullOrEmpty(x.DefaultSource))
+                {
+                    sql += " " + x.DefaultSource;
+                }
+                return sql;
             });
 
             var index = Indexs
@@ -53,9 +57,21 @@ namespace FAManagementStudio.ViewModels
                     });
 
             var domain = Colums.Where(x => x.IsDomainType)
-                                .Select(x => new { x.ColumType, x.ColumDataType })
+                                .Select(x => new { x.ColumType, x.ColumDataType, x.FieldNullFlag, x.DefaultSource })
                                 .Distinct()
-                                .Select(x => $"CREATE DOMAIN {x.ColumType} AS {x.ColumDataType};\r\n");
+                                .Select(x =>
+                                {
+                                    var baseStr = $"CREATE DOMAIN {x.ColumType} AS {x.ColumDataType}";
+                                    if (!x.FieldNullFlag)
+                                    {
+                                        baseStr += " NOT NULL";
+                                    }
+                                    if (!string.IsNullOrEmpty(x.DefaultSource))
+                                    {
+                                        baseStr += " " + x.DefaultSource;
+                                    }
+                                    return baseStr + ";\r\n";
+                                });
             var domainStr = string.Join("", domain.ToArray());
             return domainStr + $"CREATE TABLE {TableName} ({Environment.NewLine}  { string.Join($",{Environment.NewLine}  ", colums.Union(index).ToArray()) + Environment.NewLine})";
         }

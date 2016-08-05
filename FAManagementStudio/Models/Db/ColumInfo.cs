@@ -8,15 +8,19 @@ namespace FAManagementStudio.Models
         public FieldType ColumType { get; set; }
         public string DomainName { get; set; }
         public bool NullFlag { get; set; }
+        public bool FieldNullFlag { get; set; }
         public ConstraintsInfo ConstraintsInf { get; set; }
+        public string DefaultSource { get; set; }
 
-        public ColumInfo(string name, FieldType type, ConstraintsInfo inf, string domainName, bool nullFlag)
+        public ColumInfo(string name, FieldType type, ConstraintsInfo inf, string domainName, bool nullFlag, bool fieldNullFlag, string defaltSource)
         {
             ColumName = name;
             ColumType = type;
             ConstraintsInf = inf;
             DomainName = domainName;
             NullFlag = nullFlag;
+            FieldNullFlag = fieldNullFlag;
+            DefaultSource = defaltSource;
         }
     }
     public class ConstraintsInfo

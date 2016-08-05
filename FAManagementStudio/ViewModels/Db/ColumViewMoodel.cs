@@ -17,7 +17,8 @@ namespace FAManagementStudio.ViewModels
             {
                 if (_inf.DomainName.StartsWith("RDB$"))
                 {
-                    return $"{_inf.ColumName} ({_inf.ColumType.ToString()})";
+                    var nullStr = _inf.NullFlag ? "" : ", NOT NULL";
+                    return $"{_inf.ColumName} ({_inf.ColumType.ToString()}{nullStr})";
                 }
                 else
                 {
@@ -39,7 +40,6 @@ namespace FAManagementStudio.ViewModels
                 }
             }
         }
-
         public string ColumDataType
         {
             get { return _inf.ColumType.ToString(); }
@@ -52,5 +52,8 @@ namespace FAManagementStudio.ViewModels
 
         public ConstraintsInfo ConstraintsInf { get { return _inf.ConstraintsInf; } }
         public bool NullFlag { get { return _inf.NullFlag; } }
+        public bool FieldNullFlag { get { return _inf.FieldNullFlag; } }
+        public string ToolTip { get { return _inf.DefaultSource; } }
+        public string DefaultSource { get { return _inf.DefaultSource; } }
     }
 }
