@@ -3,6 +3,7 @@ using FAManagementStudio.Models;
 using FirebirdSql.Data.FirebirdClient;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Input;
 
 namespace FAManagementStudio.ViewModels
@@ -16,7 +17,7 @@ namespace FAManagementStudio.ViewModels
 
         private void SetCommand()
         {
-            ReloadDatabase = new RelayCommand(() => Reload());
+            ReloadDatabase = new RelayCommand(async () => await Reload());
         }
 
         private DatabaseInfo _dbInfo;
@@ -24,7 +25,11 @@ namespace FAManagementStudio.ViewModels
 
         public string DisplayDbName { get { return _dbInfo.Path.Substring(_dbInfo.Path.LastIndexOf('\\') + 1); } }
 
-        public List<ITableViewModel> Tables { get; private set; }
+        public List<ITableViewModel> Tables { get; private set; } = new List<ITableViewModel>()
+        {
+            //暫定
+            new TableViewModel("Loading")
+        };
         private List<TriggerViewModel> _triggers;
         public List<TriggerViewModel> Triggers
         {
@@ -87,61 +92,64 @@ namespace FAManagementStudio.ViewModels
             return !string.IsNullOrEmpty(_dbInfo.ConnectionString);
         }
 
-        public void CreateDatabase(string path, FirebirdType type, FbCharset charset)
+        public async Task CreateDatabase(string path, FirebirdType type, FbCharset charset)
         {
             var dbInfo = new DatabaseInfo(new FirebirdInfo(path, type, charset));
             dbInfo.CreateDatabase();
-            LoadDatabase(dbInfo);
+            await LoadDatabase(dbInfo);
         }
 
-        public void LoadDatabase(DatabaseInfo dbInf)
+        public async Task LoadDatabase(DatabaseInfo dbInf)
         {
             _dbInfo = dbInf;
-            Tables = new List<ITableViewModel>();
-            using (var con = new FbConnection(_dbInfo.ConnectionString))
-            {
-                con.Open();
-                foreach (var item in _dbInfo.GetTables(con))
-                {
-                    var vm = new TableViewModel(item.TableName);
-                    foreach (var colums in item.GetColums(con))
-                    {
-                        vm.Colums.Add(new ColumViewMoodel(colums));
-                    }
-                    foreach (var trigger in item.GetTrigger(con))
-                    {
-                        vm.Triggers.Add(new TriggerViewModel(trigger));
-                    }
-                    foreach (var idx in item.GetIndex(con))
-                    {
-                        vm.Indexs.Add(new IndexViewModel(idx));
-                    }
-                    Tables.Add(vm);
-                }
+            var table = new List<ITableViewModel>();
+            await Task.Run(() =>
+             {
+                 using (var con = new FbConnection(_dbInfo.ConnectionString))
+                 {
+                     con.Open();
+                     foreach (var item in _dbInfo.GetTables(con))
+                     {
+                         var vm = new TableViewModel(item.TableName);
+                         foreach (var colums in item.GetColums(con))
+                         {
+                             vm.Colums.Add(new ColumViewMoodel(colums));
+                         }
+                         foreach (var trigger in item.GetTrigger(con))
+                         {
+                             vm.Triggers.Add(new TriggerViewModel(trigger));
+                         }
+                         foreach (var idx in item.GetIndex(con))
+                         {
+                             vm.Indexs.Add(new IndexViewModel(idx));
+                         }
+                         table.Add(vm);
+                     }
 
-                foreach (var item in _dbInfo.GetViews(con))
-                {
-                    var vm = new TableViewViewModel(item.ViewName, item.Source);
-                    foreach (var colums in item.GetColums(con))
-                    {
-                        vm.Colums.Add(new ColumViewMoodel(colums));
-                    }
-                    Tables.Add(vm);
-                }
-                AdditionalInfo = new AdditionalDbInfoControl(this);
-                RaisePropertyChanged(nameof(Tables));
-                RaisePropertyChanged(nameof(AdditionalInfo));
-            }
+                     foreach (var item in _dbInfo.GetViews(con))
+                     {
+                         var vm = new TableViewViewModel(item.ViewName, item.Source);
+                         foreach (var colums in item.GetColums(con))
+                         {
+                             vm.Colums.Add(new ColumViewMoodel(colums));
+                         }
+                         table.Add(vm);
+                     }
+                 }
+             });
+            AdditionalInfo = new AdditionalDbInfoControl(this);
+            Tables = table;
+            RaisePropertyChanged(nameof(Tables));
+            RaisePropertyChanged(nameof(AdditionalInfo));
         }
-
         public ICommand ReloadDatabase { get; private set; }
-        public void Reload()
+        public async Task Reload()
         {
             Tables.Clear();
             _triggers = null;
             _indexes = null;
             _domains = null;
-            LoadDatabase(new DatabaseInfo(new FirebirdInfo(_dbInfo.Path)));
+            await LoadDatabase(new DatabaseInfo(new FirebirdInfo(_dbInfo.Path)));
         }
     }
 }

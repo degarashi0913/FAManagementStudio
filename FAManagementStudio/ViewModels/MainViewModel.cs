@@ -31,8 +31,16 @@ namespace FAManagementStudio.ViewModels
         public ObservableCollection<QueryTabViewModel> Queries { get; } = new ObservableCollection<QueryTabViewModel> { new QueryTabViewModel("Query1", ""), QueryTabViewModel.GetNewInstance() };
         public int TagSelectedIndex { get; set; } = 0;
         public QueryTabViewModel TagSelectedValue { get; set; }
-
-        public DbViewModel CurrentDatabase { get; set; }
+        private DbViewModel _currentDatabase;
+        public DbViewModel CurrentDatabase
+        {
+            get { return _currentDatabase; }
+            set
+            {
+                _currentDatabase = value;
+                RaisePropertyChanged(nameof(CurrentDatabase));
+            }
+        }
 
         private Visibility _existNewVersion = Visibility.Collapsed;
         public Visibility ExistNewVersion
@@ -91,7 +99,7 @@ namespace FAManagementStudio.ViewModels
 
         public void SetCommand()
         {
-            CreateDatabase = new RelayCommand(() =>
+            CreateDatabase = new RelayCommand(async () =>
             {
                 var vm = new NewDatabaseSettingsViewModel();
                 MessengerInstance.Send(new MessageBase(vm, "NewDbSettingsWindowOpen"));
@@ -99,7 +107,7 @@ namespace FAManagementStudio.ViewModels
                 if (string.IsNullOrEmpty(vm.Path)) return;
 
                 var db = new DbViewModel();
-                db.CreateDatabase(vm.Path, vm.Type, vm.CharSet);
+                await db.CreateDatabase(vm.Path, vm.Type, vm.CharSet);
                 Databases.Add(db);
                 _history.DataAdd(vm.Path);
             });
@@ -114,10 +122,7 @@ namespace FAManagementStudio.ViewModels
 
                 var db = new DbViewModel();
                 Databases.Add(db);
-                await Task.Run(() =>
-                {
-                    db.LoadDatabase(dbInf);
-                });
+                await db.LoadDatabase(dbInf);
                 _history.DataAdd(path);
             });
 

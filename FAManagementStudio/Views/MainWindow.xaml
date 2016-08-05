@@ -174,7 +174,7 @@
                     <Common:CommandReference x:Key="SetSqlTemplate" Command="{Binding DataContext.SetSqlTemplate, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}"/>
                     <Common:CommandReference x:Key="SetSqlDataTemplate" Command="{Binding DataContext.SetSqlDataTemplate, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}"/>
                 </Grid.Resources>
-                <TreeView Grid.Row="0" MinWidth="170" ItemsSource="{Binding SelectedValue.Tables, ElementName=DbListBox}">
+                <TreeView Grid.Row="0" MinWidth="170" ItemsSource="{Binding CurrentDatabase.Tables, Mode=OneWay}">
                     <i:Interaction.Behaviors>
                         <b:TreeViewSelectedItemBehavior SelectedItem="{Binding SelectedTableItem, Mode=TwoWay}" />
                     </i:Interaction.Behaviors>
