@@ -37,11 +37,11 @@ namespace FAManagementStudio.Models
         {
             using (var command = con.CreateCommand())
             {
-                command.CommandText = @"select rdb$relation_name AS Name from rdb$relations where rdb$relation_type = 0 and rdb$system_flag = 0 order by rdb$relation_name asc";
+                command.CommandText = @"select trim(rdb$relation_name) AS Name from rdb$relations where rdb$relation_type = 0 and rdb$system_flag = 0 order by rdb$relation_name asc";
                 var reader = command.ExecuteReader();
                 while (reader.Read())
                 {
-                    yield return new TableInfo(((string)reader["Name"]).TrimEnd());
+                    yield return new TableInfo((string)reader["Name"]);
                 }
             }
         }
@@ -49,11 +49,11 @@ namespace FAManagementStudio.Models
         {
             using (var command = con.CreateCommand())
             {
-                command.CommandText = @"select rdb$relation_name AS Name, rdb$view_source Source from rdb$relations where rdb$relation_type = 1 and rdb$system_flag = 0 order by rdb$relation_name asc";
+                command.CommandText = @"select trim(rdb$relation_name) AS Name, rdb$view_source Source from rdb$relations where rdb$relation_type = 1 and rdb$system_flag = 0 order by rdb$relation_name asc";
                 var reader = command.ExecuteReader();
                 while (reader.Read())
                 {
-                    yield return new ViewInfo(((string)reader["Name"]).TrimEnd(), ((string)reader["Source"]).Trim(' ', '\r', '\n'));
+                    yield return new ViewInfo((string)reader["Name"], ((string)reader["Source"]).Trim(' ', '\r', '\n'));
                 }
             }
         }
