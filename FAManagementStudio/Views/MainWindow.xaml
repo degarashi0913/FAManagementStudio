@@ -270,6 +270,13 @@
                                     </StackPanel>
                                 </Border>
                             </DataTemplate>
+                            <DataTemplate DataType="{x:Type vm:ProcedureViewModel}">
+                                <Border BorderBrush="Silver" BorderThickness="1">
+                                    <StackPanel ToolTip="{Binding Source}">
+                                        <TextBlock Text="{Binding ProcedureName, StringFormat=Name: {0}}" />
+                                    </StackPanel>
+                                </Border>
+                            </DataTemplate>
                         </ItemsControl.Resources>
                     </ItemsControl>
                 </DockPanel>

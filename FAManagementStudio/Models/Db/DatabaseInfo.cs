@@ -81,5 +81,23 @@ namespace FAManagementStudio.Models
                 }
             }
         }
+
+        internal IEnumerable<ProcedureInfo> GetProcedures(FbConnection con)
+        {
+            using (var command = con.CreateCommand())
+            {
+                command.CommandText =
+                     $"select rdb$procedure_name Name, rdb$procedure_source Source " +
+                      "from rdb$procedures " +
+                      "where rdb$procedure_source is not null ";
+                var reader = command.ExecuteReader();
+                while (reader.Read())
+                {
+                    var name = (string)reader["Name"];
+                    var source = (string)reader["Source"];
+                    yield return new ProcedureInfo(name, source);
+                }
+            }
+        }
     }
 }

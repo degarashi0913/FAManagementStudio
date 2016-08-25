@@ -40,6 +40,7 @@ namespace FAManagementStudio.ViewModels
             ContentList.Add(new AdditionalDbInfoViewModel("Trigger", db.Triggers));
             ContentList.Add(new AdditionalDbInfoViewModel("Index", db.Indexes));
             ContentList.Add(new AdditionalDbInfoViewModel("Domain", db.Domains));
+            ContentList.Add(new AdditionalDbInfoViewModel("Procedures", db.Procedures));
 
             CurrentContent = ContentList;
         }

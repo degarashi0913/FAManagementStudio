@@ -82,6 +82,29 @@ namespace FAManagementStudio.ViewModels
             return list;
         }
 
+        private List<ProcedureViewModel> _procedures;
+        public List<ProcedureViewModel> Procedures
+        {
+            get
+            {
+                if (_procedures == null) _procedures = GetProcedures();
+                return _procedures;
+            }
+        }
+
+        private List<ProcedureViewModel> GetProcedures() {
+            var list = new List<ProcedureViewModel>();
+            using (var con = new FbConnection(_dbInfo.ConnectionString))
+            {
+                con.Open();
+                foreach (var item in _dbInfo.GetProcedures(con))
+                {
+                    list.Add(new ProcedureViewModel(item));
+                }
+            }
+            return list;
+        }
+
         public string ConnectionString { get { return _dbInfo.ConnectionString; } }
         public string Path { get { return _dbInfo.Path; } }
 
