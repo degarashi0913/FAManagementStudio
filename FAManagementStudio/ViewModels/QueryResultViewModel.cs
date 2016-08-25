@@ -64,7 +64,7 @@ namespace FAManagementStudio.ViewModels
                 {
                     var vm = new ResultDetailViewModel();
                     var table = new DataTable("Exception");
-                    table.Columns.Add("Message");
+                    table.Columns.Add(new DataColumn { ColumnName = "0", Caption = "Message", DataType = typeof(string) });
                     table.Rows.Add(e.Message);
                     vm.View = table;
                     Result.Add(vm);
