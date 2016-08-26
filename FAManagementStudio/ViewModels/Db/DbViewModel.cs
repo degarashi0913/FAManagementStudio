@@ -81,7 +81,6 @@ namespace FAManagementStudio.ViewModels
             }
             return list;
         }
-
         private List<ProcedureViewModel> _procedures;
         public List<ProcedureViewModel> Procedures
         {
@@ -100,6 +99,29 @@ namespace FAManagementStudio.ViewModels
                 foreach (var item in _dbInfo.GetProcedures(con))
                 {
                     list.Add(new ProcedureViewModel(item));
+                }
+            }
+            return list;
+        }
+        private List<GeneratorViewModel> _generators;
+        public List<GeneratorViewModel> Generators
+        {
+            get
+            {
+                if (_generators == null) _generators = GetGenerators();
+                return _generators;
+            }
+        }
+
+        private List<GeneratorViewModel> GetGenerators()
+        {
+            var list = new List<GeneratorViewModel>();
+            using (var con = new FbConnection(_dbInfo.ConnectionString))
+            {
+                con.Open();
+                foreach (var item in _dbInfo.GetGenerators(con))
+                {
+                    list.Add(new GeneratorViewModel(item));
                 }
             }
             return list;

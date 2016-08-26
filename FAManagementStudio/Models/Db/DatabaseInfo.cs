@@ -82,7 +82,6 @@ namespace FAManagementStudio.Models
                 }
             }
         }
-
         public IEnumerable<ProcedureInfo> GetProcedures(FbConnection con)
         {
             using (var command = con.CreateCommand())
@@ -97,6 +96,30 @@ namespace FAManagementStudio.Models
                     var name = (string)reader["Name"];
                     var source = (string)reader["Source"];
                     yield return new ProcedureInfo(name, source);
+                }
+            }
+        }
+        public IEnumerable<GeneratorInfo> GetGenerators(FbConnection con)
+        {
+            using (var command = con.CreateCommand())
+            {
+                command.CommandText =
+                     "execute block " +
+                     "returns(GeneratorName char(31), CurrentValue bigint) " +
+                     "as " +
+                     "begin " +
+                     "for select rdb$generator_name from rdb$generators where rdb$system_flag = 0 into GeneratorName do " +
+                     "begin " +
+                       "execute statement 'select gen_id(' || GeneratorName || ', 0) from rdb$database' into CurrentValue; " +
+                     "suspend; " +
+                     "end " +
+                     "end; ";
+                var reader = command.ExecuteReader();
+                while (reader.Read())
+                {
+                    var name = (string)reader["GeneratorName"];
+                    var value = (long)reader["CurrentValue"];
+                    yield return new GeneratorInfo(name, value);
                 }
             }
         }

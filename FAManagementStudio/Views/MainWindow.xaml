@@ -253,7 +253,7 @@
                             </DataTemplate>
                             <DataTemplate DataType="{x:Type vm:IndexViewModel}">
                                 <Border BorderBrush="Silver" BorderThickness="1">
-                                    <StackPanel >
+                                    <StackPanel>
                                         <TextBlock Text="{Binding IndexName, StringFormat=Name: {0}}" />
                                         <TextBlock Text="{Binding TableName, StringFormat=Table: {0}}" />
                                         <TextBlock Text="{Binding Kind, StringFormat=Kind: {0}}" />
@@ -274,6 +274,14 @@
                                 <Border BorderBrush="Silver" BorderThickness="1">
                                     <StackPanel ToolTip="{Binding Source}">
                                         <TextBlock Text="{Binding ProcedureName, StringFormat=Name: {0}}" />
+                                    </StackPanel>
+                                </Border>
+                            </DataTemplate>
+                            <DataTemplate DataType="{x:Type vm:GeneratorViewModel}">
+                                <Border BorderBrush="Silver" BorderThickness="1">
+                                    <StackPanel>
+                                        <TextBlock Text="{Binding Name, StringFormat=Name: {0}}" />
+                                        <TextBlock Text="{Binding CurrentValue, StringFormat=Current: {0}}"/>
                                     </StackPanel>
                                 </Border>
                             </DataTemplate>
