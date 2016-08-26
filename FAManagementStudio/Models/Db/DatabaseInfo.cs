@@ -62,7 +62,7 @@ namespace FAManagementStudio.Models
             using (var command = con.CreateCommand())
             {
                 command.CommandText =
-                     $"select distinct f.rdb$field_type Type, f.rdb$field_sub_type SubType , f.rdb$character_length CharSize, trim(f.rdb$field_name) FieldName, f.rdb$field_precision FieldPrecision, f.rdb$field_scale FieldScale, coalesce(f.rdb$validation_source, '') ValidationSource, coalesce(f.rdb$default_source, '') DefaultSource " +
+                     $"select distinct f.rdb$field_type Type, f.rdb$field_sub_type SubType , f.rdb$character_length CharSize, trim(f.rdb$field_name) FieldName, f.rdb$field_precision FieldPrecision, f.rdb$field_scale FieldScale, coalesce(f.rdb$validation_source, '') ValidationSource, coalesce(f.rdb$default_source, '') DefaultSource, f.rdb$null_flag NullFlag " +
                       "from rdb$fields f " +
                      $"where f.rdb$FIELD_NAME not starting with 'RDB$' and f.rdb$FIELD_NAME not starting with 'MON$' and f.rdb$FIELD_NAME not starting with 'SEC$' " +
                       "order by f.rdb$field_name; ";
@@ -77,7 +77,8 @@ namespace FAManagementStudio.Models
                     var type = new FieldType((short)reader["Type"], subType, size, precision, scale);
                     var validationSource = (string)reader["ValidationSource"];
                     var defaultSource = (string)reader["DefaultSource"];
-                    yield return new DomainInfo(name, type, validationSource, defaultSource);
+                    var nullFlag = reader["NullFlag"] == DBNull.Value;
+                    yield return new DomainInfo(name, type, validationSource, defaultSource, nullFlag);
                 }
             }
         }
