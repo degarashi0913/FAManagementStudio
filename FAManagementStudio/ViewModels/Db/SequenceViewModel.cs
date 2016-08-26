@@ -3,10 +3,10 @@ using FAManagementStudio.Models;
 
 namespace FAManagementStudio.ViewModels
 {
-    public class GeneratorViewModel : BindableBase, IAddtionalDbInfo
+    public class SequenceViewModel : BindableBase, IAddtionalDbInfo
     {
-        private GeneratorInfo _inf;
-        public GeneratorViewModel(GeneratorInfo inf)
+        private SequenceInfo _inf;
+        public SequenceViewModel(SequenceInfo inf)
         {
             _inf = inf;
         }

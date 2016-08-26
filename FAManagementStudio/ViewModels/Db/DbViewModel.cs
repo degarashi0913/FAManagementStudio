@@ -103,25 +103,25 @@ namespace FAManagementStudio.ViewModels
             }
             return list;
         }
-        private List<GeneratorViewModel> _generators;
-        public List<GeneratorViewModel> Generators
+        private List<SequenceViewModel> _sequences;
+        public List<SequenceViewModel> Sequences
         {
             get
             {
-                if (_generators == null) _generators = GetGenerators();
-                return _generators;
+                if (_sequences == null) _sequences = GetSequences();
+                return _sequences;
             }
         }
 
-        private List<GeneratorViewModel> GetGenerators()
+        private List<SequenceViewModel> GetSequences()
         {
-            var list = new List<GeneratorViewModel>();
+            var list = new List<SequenceViewModel>();
             using (var con = new FbConnection(_dbInfo.ConnectionString))
             {
                 con.Open();
-                foreach (var item in _dbInfo.GetGenerators(con))
+                foreach (var item in _dbInfo.GetSequences(con))
                 {
-                    list.Add(new GeneratorViewModel(item));
+                    list.Add(new SequenceViewModel(item));
                 }
             }
             return list;

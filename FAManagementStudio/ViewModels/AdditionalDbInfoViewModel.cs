@@ -23,7 +23,7 @@ namespace FAManagementStudio.ViewModels
         public List<AdditionalDbInfoViewModel> ContentList { get; } = new List<AdditionalDbInfoViewModel> {
             new AdditionalDbInfoViewModel("Triggers") ,new AdditionalDbInfoViewModel("Indexs"),
             new AdditionalDbInfoViewModel("Domains"), new AdditionalDbInfoViewModel("Procedures"),
-            new AdditionalDbInfoViewModel("Generators")};
+            new AdditionalDbInfoViewModel("Sequences")};
         public ICommand ContentChange { get; }
         private DbViewModel _db;
         public AdditionalDbInfoControl(DbViewModel db)
@@ -56,9 +56,9 @@ namespace FAManagementStudio.ViewModels
             {
                 CurrentContent = _db.Procedures;
             }
-            else if (target == "Generators")
+            else if (target == "Sequences")
             {
-                CurrentContent = _db.Generators;
+                CurrentContent = _db.Sequences;
             }
             RaisePropertyChanged(nameof(CurrentContent));
         }

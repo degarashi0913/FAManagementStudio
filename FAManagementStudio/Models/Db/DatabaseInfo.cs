@@ -99,7 +99,7 @@ namespace FAManagementStudio.Models
                 }
             }
         }
-        public IEnumerable<GeneratorInfo> GetGenerators(FbConnection con)
+        public IEnumerable<SequenceInfo> GetSequences(FbConnection con)
         {
             using (var command = con.CreateCommand())
             {
@@ -119,7 +119,7 @@ namespace FAManagementStudio.Models
                 {
                     var name = (string)reader["GeneratorName"];
                     var value = (long)reader["CurrentValue"];
-                    yield return new GeneratorInfo(name, value);
+                    yield return new SequenceInfo(name, value);
                 }
             }
         }
