@@ -82,7 +82,7 @@ namespace FAManagementStudio.Models
             }
         }
 
-        internal IEnumerable<ProcedureInfo> GetProcedures(FbConnection con)
+        public IEnumerable<ProcedureInfo> GetProcedures(FbConnection con)
         {
             using (var command = con.CreateCommand())
             {
