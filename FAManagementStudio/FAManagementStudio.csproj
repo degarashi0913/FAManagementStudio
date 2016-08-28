@@ -132,6 +132,7 @@
     <Compile Include="Common\Messenger.cs" />
     <Compile Include="Models\AppSettings.cs" />
     <Compile Include="Models\Commons\FieldType.cs" />
+    <Compile Include="Models\Commons\FirebirdRecommender .cs" />
     <Compile Include="Models\Db\ColumInfo.cs" />
     <Compile Include="Models\Db\SequenceInfo.cs" />
     <Compile Include="Models\Db\ProcedureInfo.cs" />

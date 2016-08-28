@@ -407,5 +407,7 @@ namespace FAManagementStudio.ViewModels
                 }
             });
         }
+
+        public FirebirdRecommender Recommender { get; } = new FirebirdRecommender();
     }
 }

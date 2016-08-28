@@ -37,7 +37,14 @@ namespace FAManagementStudio.Controls
         }
 
         private CompletionWindow _completionWindow;
-        private FirebirdRecommender _fbRecommender = new FirebirdRecommender();
+
+        public static DependencyProperty RecommendProperty = DependencyProperty.Register(nameof(Recommender), typeof(IRecommender), typeof(BindableEditor), null);
+
+        public IRecommender Recommender
+        {
+            get { return (IRecommender)GetValue(RecommendProperty); }
+            set { SetValue(RecommendProperty, value); }
+        }
 
         private string[] _marks = new string[] { ";" };
         private async void TextArea_TextEntered(object sender, TextCompositionEventArgs e)
@@ -48,9 +55,10 @@ namespace FAManagementStudio.Controls
 
         private async Task ShowCompletionWindow()
         {
+            if (Recommender == null) return;
             _completionWindow = new CompletionWindow(TextArea);
             var data = _completionWindow.CompletionList.CompletionData;
-            var list = await _fbRecommender.GetCompletionData(Text, TextArea.Caret.Offset - 1);
+            var list = await Recommender.GetCompletionData(Text, TextArea.Caret.Offset - 1);
             foreach (var item in list)
             {
                 data.Add(item);
@@ -61,13 +69,6 @@ namespace FAManagementStudio.Controls
 
         private void TextArea_TextEntering(object sender, TextCompositionEventArgs e)
         {
-            if (e.Text.Length > 0 && _completionWindow != null)
-            {
-                if (!char.IsLetterOrDigit(e.Text[0]))
-                {
-                    _completionWindow.CompletionList.RequestInsertion(e);
-                }
-            }
         }
 
         public new string Text
