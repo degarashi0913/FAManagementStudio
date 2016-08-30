@@ -192,12 +192,12 @@ namespace Tests
             var fpIdxVm1 = new IndexViewModel(fpIdx1);
 
             dbVm.Indexes.Add(fpIdxVm1);
-            table.Indexs.Add(fpIdxVm1);
 
             var idx1 = new IndexInfo();
             idx1.Name = "RDB$FOREIGNKEY1";
             idx1.TableName = table.TableName;
             idx1.Kind = ConstraintsKind.Foreign;
+            idx1.ForigenKeyName = "RDB$PRIMARYKEY2";
             idx1.FieldNames.Add(col2.ColumName);
             var idxVm1 = new IndexViewModel(idx1);
 
@@ -212,12 +212,12 @@ namespace Tests
             var fpIdxVm2 = new IndexViewModel(fpIdx2);
 
             dbVm.Indexes.Add(fpIdxVm2);
-            table.Indexs.Add(fpIdxVm2);
 
             var idx2 = new IndexInfo();
             idx2.Name = "C_FOREIGNKEY";
             idx2.TableName = table.TableName;
             idx2.Kind = ConstraintsKind.Foreign;
+            idx2.ForigenKeyName = "RDB$PRIMARYKEY3";
             idx2.FieldNames.Add(col3.ColumName);
             var idxVm2 = new IndexViewModel(idx2);
 
@@ -230,8 +230,8 @@ namespace Tests
 "  COL1 INTEGER NOT NULL," + Environment.NewLine +
 "  COL2 VARCHAR(100) NOT NULL," + Environment.NewLine +
 "  COL3 TIMESTAMP NOT NULL," + Environment.NewLine +
-"  PRIMARY KEY (COL1)" + Environment.NewLine +
-"  FOREIGN KEY (COL2) REFERENCES MASTER (M_COL1)" + Environment.NewLine +
+"  PRIMARY KEY (COL1)," + Environment.NewLine +
+"  FOREIGN KEY (COL2) REFERENCES MASTER (M_COL1)," + Environment.NewLine +
 "  CONSTRAINT C_FOREIGNKEY FOREIGN KEY (COL3) REFERENCES MASTER (M_COL2)" + Environment.NewLine +
 ")");
         }
