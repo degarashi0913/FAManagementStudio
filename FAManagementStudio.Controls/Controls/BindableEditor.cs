@@ -63,8 +63,15 @@ namespace FAManagementStudio.Controls
             {
                 data.Add(item);
             }
-            _completionWindow.Show();
-            _completionWindow.Closed += (obj, e) => _completionWindow = null;
+            if (0 < data.Count)
+            {
+                _completionWindow.Show();
+                _completionWindow.Closed += (obj, e) => _completionWindow = null;
+            }
+            else
+            {
+                _completionWindow = null;
+            }
         }
 
         private void TextArea_TextEntering(object sender, TextCompositionEventArgs e)

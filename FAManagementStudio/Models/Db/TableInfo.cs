@@ -135,7 +135,7 @@ namespace FAManagementStudio.Models
             using (var command = con.CreateCommand())
             {
                 command.CommandText =
-                    $"select trim(idx.rdb$index_name) Name, trim(seg.rdb$field_name) FiledName, constrain.rdb$constraint_type ConstraintType, rdb$foreign_key ForeignKey from rdb$indices idx " +
+                    $"select trim(idx.rdb$index_name) Name, trim(seg.rdb$field_name) FiledName, constrain.rdb$constraint_type ConstraintType, trim(rdb$foreign_key) ForeignKey from rdb$indices idx " +
                     $"left outer join rdb$index_segments seg on idx.rdb$index_name = seg.rdb$index_name " +
                     $"left outer join rdb$relation_constraints constrain on idx.rdb$index_name = constrain.rdb$index_name " +
                     $"where idx.rdb$relation_name = '{this.TableName}' and idx.rdb$system_flag = 0 order by seg.rdb$field_position";

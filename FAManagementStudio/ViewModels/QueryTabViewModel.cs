@@ -6,7 +6,7 @@ using System.Windows.Input;
 
 namespace FAManagementStudio.ViewModels
 {
-    public class QueryTabViewModel : BindableBase
+    public class QueryTabViewModel : ViewModelBase
     {
         private string _header;
         public string Header
