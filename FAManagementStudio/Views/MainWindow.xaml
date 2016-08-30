@@ -303,6 +303,9 @@
                     <TabControl.Resources>
                         <Style TargetType="{x:Type TabItem}">
                             <EventSetter Event="TabItem.MouseRightButtonDown" Handler="TabItem_MouseRightButtonDown"/>
+                            <Setter Property="AllowDrop" Value="True"/>
+                            <EventSetter Event="MouseMove" Handler="TabItem_Drag" />
+                            <EventSetter Event="Drop" Handler="TabItem_Drop" />
                         </Style>
                         <Common:CommandReference x:Key="Execute" Command="{Binding ExecuteQuery}"/>
                         <Common:CommandReference x:Key="DeleteTabItem" Command="{Binding DataContext.DeleteTabItem, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}"/>
