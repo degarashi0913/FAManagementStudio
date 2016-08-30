@@ -160,6 +160,80 @@ namespace Tests
 "CREATE VIEW SNOW_LINE (CITY, STATE, SNOW_ALTITUDE) AS" + Environment.NewLine +
 "SELECT CITY, STATE, ALTITUDE FROM CITIES WHERE ALTITUDE > 5000");
         }
+        [TestMethod()]
+        public void GetDdlTest_ForignKey1()
+        {
+            var dbVm = new DbViewModel();
+            var table = new TableViewModel("TEST");
+            dbVm.Tables.Add(table);
 
+            var col1 = new ColumInfo("COL1", new FieldType(8, null, null, null, null), new ConstraintsInfo(ConstraintsKind.Primary), "RDB$1", false, true, "");
+            table.Colums.Add(new ColumViewMoodel(col1));
+            var col2 = new ColumInfo("COL2", new FieldType(37, null, 100, null, null), new ConstraintsInfo(ConstraintsKind.Foreign), "RDB$2", false, true, "");
+            table.Colums.Add(new ColumViewMoodel(col2));
+            var col3 = new ColumInfo("COL3", new FieldType(35, null, null, null, null), new ConstraintsInfo(ConstraintsKind.Foreign), "RDB$3", false, true, "");
+            table.Colums.Add(new ColumViewMoodel(col3));
+
+            var idx = new IndexInfo();
+            idx.Name = "RDB$PRIMARYKEY1";
+            idx.TableName = table.TableName;
+            idx.Kind = ConstraintsKind.Primary;
+            idx.FieldNames.Add(col1.ColumName);
+            var idxVm = new IndexViewModel(idx);
+
+            dbVm.Indexes.Add(idxVm);
+            table.Indexs.Add(idxVm);
+
+            var fpIdx1 = new IndexInfo();
+            fpIdx1.Name = "RDB$PRIMARYKEY2";
+            fpIdx1.TableName = "MASTER";
+            fpIdx1.Kind = ConstraintsKind.Primary;
+            fpIdx1.FieldNames.Add("M_COL1");
+            var fpIdxVm1 = new IndexViewModel(fpIdx1);
+
+            dbVm.Indexes.Add(fpIdxVm1);
+            table.Indexs.Add(fpIdxVm1);
+
+            var idx1 = new IndexInfo();
+            idx1.Name = "RDB$FOREIGNKEY1";
+            idx1.TableName = table.TableName;
+            idx1.Kind = ConstraintsKind.Foreign;
+            idx1.FieldNames.Add(col2.ColumName);
+            var idxVm1 = new IndexViewModel(idx1);
+
+            dbVm.Indexes.Add(idxVm1);
+            table.Indexs.Add(idxVm1);
+
+            var fpIdx2 = new IndexInfo();
+            fpIdx2.Name = "RDB$PRIMARYKEY3";
+            fpIdx2.TableName = "MASTER";
+            fpIdx2.Kind = ConstraintsKind.Primary;
+            fpIdx2.FieldNames.Add("M_COL2");
+            var fpIdxVm2 = new IndexViewModel(fpIdx2);
+
+            dbVm.Indexes.Add(fpIdxVm2);
+            table.Indexs.Add(fpIdxVm2);
+
+            var idx2 = new IndexInfo();
+            idx2.Name = "C_FOREIGNKEY";
+            idx2.TableName = table.TableName;
+            idx2.Kind = ConstraintsKind.Foreign;
+            idx2.FieldNames.Add(col3.ColumName);
+            var idxVm2 = new IndexViewModel(idx2);
+
+            dbVm.Indexes.Add(idxVm2);
+            table.Indexs.Add(idxVm2);
+
+
+            table.GetDdl(dbVm).Is(
+"CREATE TABLE TEST (" + Environment.NewLine +
+"  COL1 INTEGER NOT NULL," + Environment.NewLine +
+"  COL2 VARCHAR(100) NOT NULL," + Environment.NewLine +
+"  COL3 TIMESTAMP NOT NULL," + Environment.NewLine +
+"  PRIMARY KEY (COL1)" + Environment.NewLine +
+"  FOREIGN KEY (COL2) REFERENCES MASTER (M_COL1)" + Environment.NewLine +
+"  CONSTRAINT C_FOREIGNKEY FOREIGN KEY (COL3) REFERENCES MASTER (M_COL2)" + Environment.NewLine +
+")");
+        }
     }
 }

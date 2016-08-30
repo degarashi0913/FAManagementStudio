@@ -44,7 +44,7 @@ namespace FAManagementStudio.ViewModels
                                 sql += $"PRIMARY KEY ({string.Join(", ", x.FieldNames.ToArray())})";
                                 break;
                             case ConstraintsKind.Foreign:
-                                var idx = dbVm.Indexes.Where(dbIdx => dbIdx.IndexName == x.IndexName).First();
+                                var idx = dbVm.Indexes.Where(dbIdx => dbIdx.IndexName == x.ForignKeyName).First();
                                 sql += $"FOREIGN KEY({string.Join(", ", x.FieldNames.ToArray())}) REFERENCES {idx.TableName} ({string.Join(", ", idx.FieldNames.ToArray())})";
                                 break;
                             case ConstraintsKind.Unique:
