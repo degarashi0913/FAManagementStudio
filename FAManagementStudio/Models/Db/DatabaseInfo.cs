@@ -45,6 +45,20 @@ namespace FAManagementStudio.Models
                 }
             }
         }
+
+        public IEnumerable<TableInfo> GetSystemTables(FbConnection con)
+        {
+            using (var command = con.CreateCommand())
+            {
+                command.CommandText = @"select trim(rdb$relation_name) AS Name from rdb$relations where rdb$relation_type = 0 and rdb$system_flag = 1 order by rdb$relation_name asc";
+                var reader = command.ExecuteReader();
+                while (reader.Read())
+                {
+                    yield return new TableInfo((string)reader["Name"], 1);
+                }
+            }
+        }
+
         public IEnumerable<ViewInfo> GetViews(FbConnection con)
         {
             using (var command = con.CreateCommand())
@@ -62,7 +76,7 @@ namespace FAManagementStudio.Models
             using (var command = con.CreateCommand())
             {
                 command.CommandText =
-                     $"select distinct f.rdb$field_type Type, f.rdb$field_sub_type SubType , f.rdb$character_length CharSize, trim(f.rdb$field_name) FieldName, f.rdb$field_precision FieldPrecision, f.rdb$field_scale FieldScale, coalesce(f.rdb$validation_source, '') ValidationSource, coalesce(f.rdb$default_source, '') DefaultSource, f.rdb$null_flag NullFlag " +
+                     $"select distinct f.rdb$field_type Type, f.rdb$field_sub_type SubType , f.rdb$character_length CharSize, trim(f.rdb$field_name) FieldName, f.rdb$field_precision FieldPrecision, f.rdb$field_scale FieldScale, f.rdb$field_length FieldLength, coalesce(f.rdb$validation_source, '') ValidationSource, coalesce(f.rdb$default_source, '') DefaultSource, f.rdb$null_flag NullFlag " +
                       "from rdb$fields f " +
                      $"where f.rdb$FIELD_NAME not starting with 'RDB$' and f.rdb$FIELD_NAME not starting with 'MON$' and f.rdb$FIELD_NAME not starting with 'SEC$' " +
                       "order by f.rdb$field_name; ";
@@ -74,7 +88,8 @@ namespace FAManagementStudio.Models
                     var subType = (reader["SubType"] == DBNull.Value) ? null : (short?)reader["SubType"];
                     var precision = (reader["FieldPrecision"] == DBNull.Value) ? null : (short?)reader["FieldPrecision"];
                     var scale = (reader["FieldScale"] == DBNull.Value) ? null : (short?)reader["FieldScale"];
-                    var type = new FieldType((short)reader["Type"], subType, size, precision, scale);
+                    var fieldLength = (reader["FieldLength"] == DBNull.Value) ? null : (short?)reader["FieldLength"];
+                    var type = new FieldType((short)reader["Type"], subType, size, precision, scale, fieldLength);
                     var validationSource = (string)reader["ValidationSource"];
                     var defaultSource = (string)reader["DefaultSource"];
                     var nullFlag = reader["NullFlag"] == DBNull.Value;

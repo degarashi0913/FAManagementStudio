@@ -8,11 +8,13 @@ namespace FAManagementStudio.ViewModels
     public class TableViewModel : ViewModelBase, ITableViewModel
     {
         private string _name;
-        public TableViewModel(string name)
+        public TableViewModel(string name, bool isSystemTable = false)
         {
             _name = name;
+            IsSystemTable = isSystemTable;
         }
         public string TableName { get { return _name; } }
+        public bool IsSystemTable { get; }
         public List<ColumViewMoodel> Colums { get; } = new List<ColumViewMoodel>();
         public TableKind Kind { get; } = TableKind.Table;
         public List<TriggerViewModel> Triggers { get; } = new List<TriggerViewModel>();
