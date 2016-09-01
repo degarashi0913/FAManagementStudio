@@ -50,7 +50,7 @@ namespace FAManagementStudio.ViewModels
             get { return !_inf.DomainName.StartsWith("RDB$"); }
         }
 
-        public ConstraintsInfo ConstraintsInf { get { return _inf.ConstraintsInf; } }
+        public ColumConstraintsInfo ConstraintsInf { get { return _inf.ConstraintsInf; } }
         public bool NullFlag { get { return _inf.NullFlag; } }
         public bool FieldNullFlag { get { return _inf.FieldNullFlag; } }
         public string ToolTip { get { return _inf.DefaultSource; } }
