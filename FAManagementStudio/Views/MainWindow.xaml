@@ -240,8 +240,8 @@
                             <DataTemplate DataType="{x:Type vm:AdditionalDbInfoViewModel}">
                                 <Button Command="{Binding  ElementName=AdditionalBox, Path=DataContext.ContentChange}"  CommandParameter="{Binding DisplayName}" Background="Transparent">
                                     <StackPanel Orientation="Horizontal">
-                                        <Image Width="15" Height="15" Source="../Image/DatabaseItem.png" />
-                                        <Label Content="{Binding DisplayName}" />
+                                        <Image Width="13" Height="13" Source="../Image/DatabaseItem.png" />
+                                        <Label Height="22" FontSize="9" Content="{Binding DisplayName}" />
                                     </StackPanel>
                                 </Button>
                             </DataTemplate>
