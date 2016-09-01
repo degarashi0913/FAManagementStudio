@@ -41,7 +41,7 @@ namespace FAManagementStudio.Models
                     var type = new FieldType((short)reader["Type"], subType, size, precision, scale);
                     var defaultSource = (string)reader["DefaultSource"];
 
-                    var constraintInfo = new ConstraintsInfo();
+                    var constraintInfo = new ColumConstraintsInfo();
                     if (constraints.ContainsKey(name))
                     {
                         constraintInfo = constraints[name];
@@ -52,31 +52,29 @@ namespace FAManagementStudio.Models
             }
         }
 
-        private Dictionary<string, ConstraintsInfo> GetConstrains(FbConnection con)
+        private Dictionary<string, ColumConstraintsInfo> GetConstrains(FbConnection con)
         {
-            var dic = new Dictionary<string, ConstraintsInfo>();
+            var dic = new Dictionary<string, ColumConstraintsInfo>();
             using (var command = con.CreateCommand())
             {
                 command.CommandText =
-                    "select trim(seg.rdb$field_name) Name, rel.rdb$constraint_type Type, trim(idx.foreign_key_table) ForeignKeyTable " +
+                    "select trim(seg.rdb$field_name) FieldName, rel.rdb$constraint_type Type, trim(idx.foreign_key_table) ForeignKeyTable " +
                     "from rdb$relation_constraints rel " +
                     "left outer join( " +
-                    "  select idx.rdb$index_name, idx.rdb$relation_name, idx2.rdb$relation_name foreign_key_table " +
-                    "    from( " +
-                    "    select idx.rdb$index_name, idx.rdb$relation_name, idx.rdb$foreign_key  from rdb$indices idx " +
-                    "    ) idx " +
-                    "    left outer join rdb$indices idx2 on idx.rdb$foreign_key = idx2.rdb$index_name " +
-                    ") idx on  rel.rdb$index_name = idx.rdb$index_name " +
+                    "select idx.rdb$index_name, idx.rdb$relation_name, idx2.rdb$relation_name foreign_key_table " +
+                    "from rdb$indices idx " +
+                    "left outer join rdb$indices idx2 on idx.rdb$foreign_key = idx2.rdb$index_name) idx " +
+                    "on  rel.rdb$index_name = idx.rdb$index_name " +
                     "left outer join rdb$index_segments seg on idx.rdb$index_name  = seg.rdb$index_name " +
                    $"where rel.rdb$relation_name = '{this.TableName}' and seg.rdb$field_name != '' ";
                 var reader = command.ExecuteReader();
                 while (reader.Read())
                 {
-                    var name = (string)reader["Name"];
-                    ConstraintsInfo inf;
+                    var name = (string)reader["FieldName"];
+                    ColumConstraintsInfo inf;
                     if (!dic.TryGetValue(name, out inf))
                     {
-                        inf = new ConstraintsInfo();
+                        inf = new ColumConstraintsInfo();
                         dic.Add(name, inf);
                     }
                     var type = GetConstraintType((string)reader["Type"]);
@@ -135,9 +133,11 @@ namespace FAManagementStudio.Models
             using (var command = con.CreateCommand())
             {
                 command.CommandText =
-                    $"select trim(idx.rdb$index_name) Name, trim(seg.rdb$field_name) FiledName, constrain.rdb$constraint_type ConstraintType, trim(rdb$foreign_key) ForeignKey from rdb$indices idx " +
-                    $"left outer join rdb$index_segments seg on idx.rdb$index_name = seg.rdb$index_name " +
-                    $"left outer join rdb$relation_constraints constrain on idx.rdb$index_name = constrain.rdb$index_name " +
+                    "select trim(idx.rdb$index_name) Name, trim(seg.rdb$field_name) FiledName, rel.rdb$constraint_type ConstraintType, trim(rdb$foreign_key) ForeignKey, trim(ref.rdb$update_rule) UpdateRule, trim(ref.rdb$delete_rule) DeleteRule " +
+                    "from rdb$indices idx " +
+                    "left outer join rdb$index_segments seg on idx.rdb$index_name = seg.rdb$index_name " +
+                    "left outer join rdb$relation_constraints rel on idx.rdb$index_name = rel.rdb$index_name " +
+                    "left outer join rdb$ref_constraints ref on ref.rdb$constraint_name = rel.rdb$constraint_name " +
                     $"where idx.rdb$relation_name = '{this.TableName}' and idx.rdb$system_flag = 0 order by seg.rdb$field_position";
                 var reader = command.ExecuteReader();
                 var tmpName = "";
@@ -160,8 +160,13 @@ namespace FAManagementStudio.Models
                         tmpInf.Name = tmpName;
                         var constraintType = reader["ConstraintType"] == DBNull.Value ? "" : (string)(reader["ConstraintType"]);
                         tmpInf.Kind = GetConstraintType(constraintType);
-                        tmpInf.ForigenKeyName = tmpInf.Kind == ConstraintsKind.Foreign ? (string)reader["ForeignKey"] : "";
                         tmpInf.TableName = this.TableName;
+                        if (tmpInf.Kind == ConstraintsKind.Foreign)
+                        {
+                            tmpInf.ForigenKeyName = (string)reader["ForeignKey"];
+                            tmpInf.UpdateRule = (string)reader["UpdateRule"] == "RESTRICT" ? "" : (string)reader["UpdateRule"];
+                            tmpInf.DeleteRule = (string)reader["DeleteRule"] == "RESTRICT" ? "" : (string)reader["DeleteRule"];
+                        }
                         tmpInf.FieldNames.Add((string)reader["FiledName"]);
                     }
                 }
