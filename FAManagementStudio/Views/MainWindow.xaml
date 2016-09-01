@@ -113,6 +113,8 @@
                             <MenuItem Header="編集" Command="{StaticResource ChangeConfig}"/>
                             <Separator />
                             <MenuItem Header="相関図" Command="{StaticResource ShowEntity}"/>
+                            <Separator />
+                            <MenuItem Header="System Tables" Command="{Binding ChangeSystemTables}" IsChecked="{Binding IsSystemTableChecked}" IsCheckable="True" CommandParameter="{Binding IsChecked, RelativeSource={RelativeSource Self}}"/>
                         </ContextMenu>
                     </ListBox.Resources>
                     <ListBox.ItemContainerStyle>

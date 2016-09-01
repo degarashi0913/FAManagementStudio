@@ -4,6 +4,7 @@ using FirebirdSql.Data.FirebirdClient;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows.Data;
 using System.Windows.Input;
 
 namespace FAManagementStudio.ViewModels
@@ -18,6 +19,22 @@ namespace FAManagementStudio.ViewModels
         private void SetCommand()
         {
             ReloadDatabase = new RelayCommand(async () => await Reload());
+            ChangeSystemTables = new RelayCommand<bool>(async (b) =>
+            {
+                if (b)
+                {
+                    await LoadSystemTables(DbInfo);
+                }
+                else
+                {
+                    foreach (var table in Tables.Where(x => (x is TableViewModel) && ((TableViewModel)x).IsSystemTable).ToArray())
+                    {
+                        Tables.Remove(table);
+                    }
+                    CollectionViewSource.GetDefaultView(Tables).Refresh();
+                    RaisePropertyChanged(nameof(Tables));
+                }
+            });
         }
 
         private DatabaseInfo _dbInfo;
@@ -91,7 +108,8 @@ namespace FAManagementStudio.ViewModels
             }
         }
 
-        private List<ProcedureViewModel> GetProcedures() {
+        private List<ProcedureViewModel> GetProcedures()
+        {
             var list = new List<ProcedureViewModel>();
             using (var con = new FbConnection(_dbInfo.ConnectionString))
             {
@@ -187,6 +205,32 @@ namespace FAManagementStudio.ViewModels
             RaisePropertyChanged(nameof(Tables));
             RaisePropertyChanged(nameof(AdditionalInfo));
         }
+
+        public async Task LoadSystemTables(DatabaseInfo dbInf)
+        {
+            _dbInfo = dbInf;
+            var table = new List<ITableViewModel>();
+            await Task.Run(() =>
+            {
+                using (var con = new FbConnection(_dbInfo.ConnectionString))
+                {
+                    con.Open();
+                    foreach (var item in _dbInfo.GetSystemTables(con))
+                    {
+                        var vm = new TableViewModel(item.TableName, true);
+                        foreach (var colums in item.GetColums(con))
+                        {
+                            vm.Colums.Add(new ColumViewMoodel(colums));
+                        }
+                        table.Add(vm);
+                    }
+                }
+            });
+            Tables.AddRange(table);
+            CollectionViewSource.GetDefaultView(Tables).Refresh();
+            RaisePropertyChanged(nameof(Tables));
+        }
+
         public ICommand ReloadDatabase { get; private set; }
         public async Task Reload()
         {
@@ -196,5 +240,7 @@ namespace FAManagementStudio.ViewModels
             _domains = null;
             await LoadDatabase(new DatabaseInfo(new FirebirdInfo(_dbInfo.Path)));
         }
+        public bool IsSystemTableChecked { get; set; }
+        public ICommand ChangeSystemTables { get; private set; }
     }
 }

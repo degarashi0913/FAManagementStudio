@@ -7,11 +7,13 @@ namespace FAManagementStudio.Models
 {
     public class TableInfo
     {
-        public TableInfo(string name)
+        public TableInfo(string name, int systemFlag = 0)
         {
-            this.TableName = name;
+            TableName = name;
+            SystemFlag = systemFlag;
         }
-        public string TableName { get; set; }
+        public string TableName { get; }
+        public int SystemFlag { get; }
 
         public IEnumerable<ColumInfo> GetColums(FbConnection con)
         {
@@ -20,11 +22,11 @@ namespace FAManagementStudio.Models
             using (var command = con.CreateCommand())
             {
                 command.CommandText =
-                    $"select trim(rf.rdb$field_name) Name, f.rdb$field_type Type, f.rdb$field_sub_type SubType , f.rdb$character_length CharSize, trim(rf.rdb$field_source) FieldSource, rf.rdb$null_flag NullFlag, f.rdb$null_flag fieldNullFlag, f.rdb$field_precision FieldPrecision, f.rdb$field_scale FieldScale, coalesce(rf.rdb$default_source, '') DefaultSource " +
+                    $"select trim(rf.rdb$field_name) Name, f.rdb$field_type Type, f.rdb$field_sub_type SubType , f.rdb$character_length CharSize, trim(rf.rdb$field_source) FieldSource, rf.rdb$null_flag NullFlag, f.rdb$null_flag fieldNullFlag, f.rdb$field_precision FieldPrecision, f.rdb$field_scale FieldScale, f.rdb$field_length FieldLength, coalesce(rf.rdb$default_source, '') DefaultSource " +
                         "from rdb$relation_fields rf " +
                         "join rdb$relations r on rf.rdb$relation_name = r.rdb$relation_name " +
                                             "and r.rdb$view_blr is null " +
-                                            "and r.rdb$relation_type = 0 and r.rdb$system_flag = 0 " +
+                                            $"and r.rdb$relation_type = 0 and r.rdb$system_flag = {SystemFlag} " +
                         "join rdb$fields f on f.rdb$field_name = rf.rdb$field_source " +
                     $"where rf.rdb$relation_name = '{this.TableName}' " +
                      "order by rf.rdb$field_position; ";
@@ -38,7 +40,8 @@ namespace FAManagementStudio.Models
                     var fieldNullFlag = reader["FieldNullFlag"] == DBNull.Value;
                     var precision = (reader["FieldPrecision"] == DBNull.Value) ? null : (short?)reader["FieldPrecision"];
                     var scale = (reader["FieldScale"] == DBNull.Value) ? null : (short?)reader["FieldScale"];
-                    var type = new FieldType((short)reader["Type"], subType, size, precision, scale);
+                    var fieldLength = (reader["FieldLength"] == DBNull.Value) ? null : (short?)reader["FieldLength"];
+                    var type = new FieldType((short)reader["Type"], subType, size, precision, scale, fieldLength);
                     var defaultSource = (string)reader["DefaultSource"];
 
                     var constraintInfo = new ConstraintsInfo();
