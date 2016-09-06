@@ -240,8 +240,8 @@
                             <DataTemplate DataType="{x:Type vm:AdditionalDbInfoViewModel}">
                                 <Button Command="{Binding  ElementName=AdditionalBox, Path=DataContext.ContentChange}"  CommandParameter="{Binding DisplayName}" Background="Transparent">
                                     <StackPanel Orientation="Horizontal">
-                                        <Image Width="15" Height="15" Source="../Image/DatabaseItem.png" />
-                                        <Label Content="{Binding DisplayName}" />
+                                        <Image Width="13" Height="13" Source="../Image/DatabaseItem.png" />
+                                        <Label Height="22" FontSize="9" Content="{Binding DisplayName}" />
                                     </StackPanel>
                                 </Button>
                             </DataTemplate>
@@ -421,7 +421,7 @@
                     </TabControl.ItemTemplate>
                     <TabControl.ContentTemplate>
                         <DataTemplate>
-                            <ListBox ItemsSource="{Binding Result}" ScrollViewer.VerticalScrollBarVisibility="Visible" ScrollViewer.CanContentScroll="False">
+                            <ListBox ItemsSource="{Binding Result}" ScrollViewer.VerticalScrollBarVisibility="Visible" ScrollViewer.CanContentScroll="False" HorizontalContentAlignment="Stretch">
                                 <ListBox.Resources>
                                     <c:GridHightSizeConverter x:Key="HeightConverter"/>
                                     <c:GridWidthSizeConverter x:Key="WidthConverter"/>
@@ -439,7 +439,6 @@
                                                 VirtualizingStackPanel.IsVirtualizing="True" VirtualizingStackPanel.VirtualizationMode="Recycling" 
                                                 CanUserAddRows="False" CanUserDeleteRows="False"
                                                 MaxWidth="{Binding Path=ActualWidth, ElementName=ResultGrid, Converter={StaticResource WidthConverter}}"
-                                                Width="{Binding MaxWidth, RelativeSource={RelativeSource Self}}"
                                                 MaxHeight="{Binding Path=ActualHeight, ElementName=ResultRow, Converter={StaticResource HeightConverter}}"
                                                 IsReadOnly="True" AutoGenerateColumns="True">
                                                 <i:Interaction.Behaviors>
