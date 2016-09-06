@@ -421,7 +421,7 @@
                     </TabControl.ItemTemplate>
                     <TabControl.ContentTemplate>
                         <DataTemplate>
-                            <ListBox ItemsSource="{Binding Result}" ScrollViewer.VerticalScrollBarVisibility="Visible" ScrollViewer.CanContentScroll="False">
+                            <ListBox ItemsSource="{Binding Result}" ScrollViewer.VerticalScrollBarVisibility="Visible" ScrollViewer.CanContentScroll="False" HorizontalContentAlignment="Stretch">
                                 <ListBox.Resources>
                                     <c:GridHightSizeConverter x:Key="HeightConverter"/>
                                     <c:GridWidthSizeConverter x:Key="WidthConverter"/>
@@ -439,7 +439,6 @@
                                                 VirtualizingStackPanel.IsVirtualizing="True" VirtualizingStackPanel.VirtualizationMode="Recycling" 
                                                 CanUserAddRows="False" CanUserDeleteRows="False"
                                                 MaxWidth="{Binding Path=ActualWidth, ElementName=ResultGrid, Converter={StaticResource WidthConverter}}"
-                                                Width="{Binding MaxWidth, RelativeSource={RelativeSource Self}}"
                                                 MaxHeight="{Binding Path=ActualHeight, ElementName=ResultRow, Converter={StaticResource HeightConverter}}"
                                                 IsReadOnly="True" AutoGenerateColumns="True">
                                                 <i:Interaction.Behaviors>
