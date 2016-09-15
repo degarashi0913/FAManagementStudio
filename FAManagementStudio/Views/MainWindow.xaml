@@ -113,6 +113,8 @@
                             <MenuItem Header="編集" Command="{StaticResource ChangeConfig}"/>
                             <Separator />
                             <MenuItem Header="相関図" Command="{StaticResource ShowEntity}"/>
+                            <Separator />
+                            <MenuItem Header="System Tables" Command="{Binding ChangeSystemTables}" IsChecked="{Binding IsSystemTableChecked}" IsCheckable="True" CommandParameter="{Binding IsChecked, RelativeSource={RelativeSource Self}}"/>
                         </ContextMenu>
                     </ListBox.Resources>
                     <ListBox.ItemContainerStyle>
@@ -174,13 +176,14 @@
                     <Common:CommandReference x:Key="SetSqlTemplate" Command="{Binding DataContext.SetSqlTemplate, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}"/>
                     <Common:CommandReference x:Key="SetSqlDataTemplate" Command="{Binding DataContext.SetSqlDataTemplate, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}"/>
                 </Grid.Resources>
-                <TreeView Grid.Row="0" MinWidth="170" ItemsSource="{Binding SelectedValue.Tables, ElementName=DbListBox}">
+                <TreeView Grid.Row="0" MinWidth="170" ItemsSource="{Binding CurrentDatabase.Tables, Mode=OneWay}">
                     <i:Interaction.Behaviors>
                         <b:TreeViewSelectedItemBehavior SelectedItem="{Binding SelectedTableItem, Mode=TwoWay}" />
                     </i:Interaction.Behaviors>
                     <TreeView.Resources>
                         <c:ConstraintsKeyToIconConverter x:Key="KeyConverter"/>
                         <c:TableIconConverter x:Key="TableIconConverter" />
+                        <c:StringToVisibilityConverter x:Key="StringToVisibityConverter" />
                         <ContextMenu x:Key="contextMenu">
                             <MenuItem Header="EXEC SELECT *" Command="{StaticResource ExecSqlTemplate}" CommandParameter="{x:Static Common:SqlKind.Select}" />
                             <MenuItem Header="EXEC SELECT FIRST(1000) *" Command="{StaticResource ExecLimitedSql}" CommandParameter="1000" />
@@ -210,6 +213,9 @@
                             <HierarchicalDataTemplate.ItemTemplate>
                                 <HierarchicalDataTemplate >
                                     <StackPanel Orientation="Horizontal" Margin="-11,0,0,0">
+                                        <ToolTipService.ToolTip>
+                                            <ToolTip Visibility="{Binding ToolTip, Converter={StaticResource StringToVisibityConverter}}" Content="{Binding ToolTip}" />
+                                        </ToolTipService.ToolTip>
                                         <Image Source="{Binding ConstraintsInf.Kind, Converter={StaticResource KeyConverter}}" Width="11" Stretch="Uniform"/>
                                         <TextBlock Text="{Binding Path=DisplayName}" />
                                     </StackPanel>
@@ -230,11 +236,12 @@
                             </ControlTemplate>
                         </ItemsControl.Template>
                         <ItemsControl.Resources>
+                            <c:StringToVisibilityConverter x:Key="StringToVisibilityConverter" />
                             <DataTemplate DataType="{x:Type vm:AdditionalDbInfoViewModel}">
                                 <Button Command="{Binding  ElementName=AdditionalBox, Path=DataContext.ContentChange}"  CommandParameter="{Binding DisplayName}" Background="Transparent">
                                     <StackPanel Orientation="Horizontal">
-                                        <Image Width="15" Height="15" Source="../Image/DatabaseItem.png" />
-                                        <Label Content="{Binding DisplayName}" />
+                                        <Image Width="13" Height="13" Source="../Image/DatabaseItem.png" />
+                                        <Label Height="22" FontSize="9" Content="{Binding DisplayName}" />
                                     </StackPanel>
                                 </Button>
                             </DataTemplate>
@@ -248,7 +255,7 @@
                             </DataTemplate>
                             <DataTemplate DataType="{x:Type vm:IndexViewModel}">
                                 <Border BorderBrush="Silver" BorderThickness="1">
-                                    <StackPanel >
+                                    <StackPanel>
                                         <TextBlock Text="{Binding IndexName, StringFormat=Name: {0}}" />
                                         <TextBlock Text="{Binding TableName, StringFormat=Table: {0}}" />
                                         <TextBlock Text="{Binding Kind, StringFormat=Kind: {0}}" />
@@ -257,9 +264,26 @@
                             </DataTemplate>
                             <DataTemplate DataType="{x:Type vm:DomainViewModel}">
                                 <Border BorderBrush="Silver" BorderThickness="1">
-                                    <StackPanel >
+                                    <StackPanel>
                                         <TextBlock Text="{Binding DomainName, StringFormat=Name: {0}}" />
                                         <TextBlock Text="{Binding DomainType, StringFormat=Type: {0}}"/>
+                                        <TextBlock Text="{Binding ValidationSource}" Visibility="{Binding ValidationSource, Converter={StaticResource StringToVisibilityConverter}}"/>
+                                        <TextBlock Text="{Binding DefaultSource}" Visibility="{Binding DefaultSource, Converter={StaticResource StringToVisibilityConverter}}"/>
+                                    </StackPanel>
+                                </Border>
+                            </DataTemplate>
+                            <DataTemplate DataType="{x:Type vm:ProcedureViewModel}">
+                                <Border BorderBrush="Silver" BorderThickness="1">
+                                    <StackPanel ToolTip="{Binding Source}">
+                                        <TextBlock Text="{Binding ProcedureName, StringFormat=Name: {0}}" />
+                                    </StackPanel>
+                                </Border>
+                            </DataTemplate>
+                            <DataTemplate DataType="{x:Type vm:SequenceViewModel}">
+                                <Border BorderBrush="Silver" BorderThickness="1">
+                                    <StackPanel>
+                                        <TextBlock Text="{Binding Name, StringFormat=Name: {0}}" />
+                                        <TextBlock Text="{Binding CurrentValue, StringFormat=Current: {0}}"/>
                                     </StackPanel>
                                 </Border>
                             </DataTemplate>
@@ -281,6 +305,9 @@
                     <TabControl.Resources>
                         <Style TargetType="{x:Type TabItem}">
                             <EventSetter Event="TabItem.MouseRightButtonDown" Handler="TabItem_MouseRightButtonDown"/>
+                            <Setter Property="AllowDrop" Value="True"/>
+                            <EventSetter Event="MouseMove" Handler="TabItem_Drag" />
+                            <EventSetter Event="Drop" Handler="TabItem_Drop" />
                         </Style>
                         <Common:CommandReference x:Key="Execute" Command="{Binding ExecuteQuery}"/>
                         <Common:CommandReference x:Key="DeleteTabItem" Command="{Binding DataContext.DeleteTabItem, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}"/>
@@ -365,7 +392,7 @@
                                     </Button>
                                 </StackPanel>
                                 <controls:BindableEditor DockPanel.Dock="Top" AllowDrop="True" Text="{Binding Query, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalScrollBarVisibility="Disabled" Margin="0,2" Grid.RowSpan="2"  PreviewDragEnter="TextBox_PreviewDragEnter"
-            PreviewDragOver="TextBox_PreviewDragEnter" FontSize="14" IntelisenseEnabled="{Binding IntelisenseEnabled, Mode=TwoWay}">
+            PreviewDragOver="TextBox_PreviewDragEnter" FontSize="14" IntelisenseEnabled="{Binding IntelisenseEnabled, Mode=TwoWay}" Recommender="{Binding DataContext.Recommender, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}">
                                     <controls:BindableEditor.Resources>
                                         <Common:CommandReference x:Key="OverwriteSave" Command="{Binding OverwriteSave}"/>
                                         <Common:CommandReference x:Key="DropFile" Command="{Binding DropFile}"/>
@@ -394,7 +421,7 @@
                     </TabControl.ItemTemplate>
                     <TabControl.ContentTemplate>
                         <DataTemplate>
-                            <ListBox ItemsSource="{Binding Result}" ScrollViewer.VerticalScrollBarVisibility="Visible" ScrollViewer.CanContentScroll="False">
+                            <ListBox ItemsSource="{Binding Result}" ScrollViewer.VerticalScrollBarVisibility="Visible" ScrollViewer.CanContentScroll="False" HorizontalContentAlignment="Stretch">
                                 <ListBox.Resources>
                                     <c:GridHightSizeConverter x:Key="HeightConverter"/>
                                     <c:GridWidthSizeConverter x:Key="WidthConverter"/>
@@ -412,9 +439,11 @@
                                                 VirtualizingStackPanel.IsVirtualizing="True" VirtualizingStackPanel.VirtualizationMode="Recycling" 
                                                 CanUserAddRows="False" CanUserDeleteRows="False"
                                                 MaxWidth="{Binding Path=ActualWidth, ElementName=ResultGrid, Converter={StaticResource WidthConverter}}"
-                                                Width="{Binding MaxWidth, RelativeSource={RelativeSource Self}}"
                                                 MaxHeight="{Binding Path=ActualHeight, ElementName=ResultRow, Converter={StaticResource HeightConverter}}"
                                                 IsReadOnly="True" AutoGenerateColumns="True">
+                                                <i:Interaction.Behaviors>
+                                                    <b:GridHeaderDisplayNameBehavior/>
+                                                </i:Interaction.Behaviors>
                                                 <DataGrid.ContextMenu>
                                                     <ContextMenu>
                                                         <MenuItem Header="結果を保存 CSV(ヘッダ含)" Command="{Binding OutputCsv}" >

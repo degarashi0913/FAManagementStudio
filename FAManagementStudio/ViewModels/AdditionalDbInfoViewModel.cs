@@ -11,49 +11,54 @@ namespace FAManagementStudio.ViewModels
     {
         public AdditionalDbInfoViewModel() { }
         public string DisplayName { get; }
-        public List<IAddtionalDbInfo> Content { get; }
-        public AdditionalDbInfoViewModel(string name, List<IAddtionalDbInfo> content)
+        public AdditionalDbInfoViewModel(string name)
         {
             DisplayName = name;
-            Content = content;
         }
     }
 
     public class AdditionalDbInfoControl : ViewModelBase
     {
         public object CurrentContent { get; private set; }
-        public List<AdditionalDbInfoViewModel> ContentList { get; } = new List<AdditionalDbInfoViewModel>();
+        public List<AdditionalDbInfoViewModel> ContentList { get; } = new List<AdditionalDbInfoViewModel> {
+            new AdditionalDbInfoViewModel("Triggers") ,new AdditionalDbInfoViewModel("Indexs"),
+            new AdditionalDbInfoViewModel("Domains"), new AdditionalDbInfoViewModel("Procedures"),
+            new AdditionalDbInfoViewModel("Sequences")};
         public ICommand ContentChange { get; }
+        private DbViewModel _db;
         public AdditionalDbInfoControl(DbViewModel db)
         {
             ContentChange = new RelayCommand<string>(x => ChangeContent(x));
-
-            RefrechData(db);
-
-            RaisePropertyChanged(nameof(CurrentContent));
-        }
-
-        public void RefrechData(DbViewModel db)
-        {
-            ContentList.Clear();
-
-            ContentList.Add(new AdditionalDbInfoViewModel("Trigger", db.Triggers.Cast<IAddtionalDbInfo>().ToList()));
-            ContentList.Add(new AdditionalDbInfoViewModel("Index", db.Indexes.Cast<IAddtionalDbInfo>().ToList()));
-            ContentList.Add(new AdditionalDbInfoViewModel("Domain", db.Domains.Cast<IAddtionalDbInfo>().ToList()));
-
+            _db = db;
             CurrentContent = ContentList;
+            RaisePropertyChanged(nameof(CurrentContent));
         }
 
         public void ChangeContent(string target)
         {
-            var item = ContentList.Find(x => x.DisplayName == target);
-            if (item == null)
+            if (string.IsNullOrEmpty(target))
             {
                 CurrentContent = ContentList;
             }
-            else
+            else if (target == "Triggers")
             {
-                CurrentContent = item.Content;
+                CurrentContent = _db.Triggers;
+            }
+            else if (target == "Indexs")
+            {
+                CurrentContent = _db.Indexes;
+            }
+            else if (target == "Domains")
+            {
+                CurrentContent = _db.Domains;
+            }
+            else if (target == "Procedures")
+            {
+                CurrentContent = _db.Procedures;
+            }
+            else if (target == "Sequences")
+            {
+                CurrentContent = _db.Sequences;
             }
             RaisePropertyChanged(nameof(CurrentContent));
         }

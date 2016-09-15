@@ -54,7 +54,8 @@ namespace FAManagementStudio.Models
             var table = new DataTable();
 
             var col = new DataColumn();
-            col.ColumnName = colName;
+            col.ColumnName = "0";
+            col.Caption = colName;
             col.DataType = typeof(string);
             table.Columns.Add(col);
 
@@ -78,7 +79,8 @@ namespace FAManagementStudio.Models
                 for (var i = 0; i < schema.Rows.Count; i++)
                 {
                     var col = new DataColumn();
-                    col.ColumnName = schema.Rows[i]["ColumnName"].ToString();
+                    col.ColumnName = i.ToString();
+                    col.Caption = schema.Rows[i]["ColumnName"].ToString();
                     col.DataType = Type.GetType(schema.Rows[i]["DataType"].ToString());
                     table.Columns.Add(col);
                 }
@@ -167,7 +169,7 @@ namespace FAManagementStudio.Models
             var inputStr = input;
             var lowerString = input.ToLower();
 
-            var key = "((create|alter)[\\s\\n]+(trigger|procedure)[\\s\\n]+|(execute[\\s\\n]+block[\\s\\n]+))";
+            var key = "(((re|)create|alter)[\\s\\n]+(trigger|procedure)[\\s\\n]+|(execute[\\s\\n]+block[\\s\\n]+))";
             var reg = Regex.Match(inputStr, key, RegexOptions.IgnoreCase);
             var idx = 0;
             if (reg.Success)
@@ -213,10 +215,9 @@ namespace FAManagementStudio.Models
         private string GetWord(ref string statement, ref int startIdx)
         {
             var origin = startIdx;
-            var limit = statement.Length;
             var length = 0;
             var startFlg = false;
-            while (startIdx < limit)
+            while (origin + length < statement.Length)
             {
                 var ch = statement[origin + length];
                 switch (ch)

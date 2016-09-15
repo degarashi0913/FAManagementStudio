@@ -8,11 +8,13 @@ namespace FAManagementStudio.ViewModels
     public class TableViewModel : ViewModelBase, ITableViewModel
     {
         private string _name;
-        public TableViewModel(string name)
+        public TableViewModel(string name, bool isSystemTable = false)
         {
             _name = name;
+            IsSystemTable = isSystemTable;
         }
         public string TableName { get { return _name; } }
+        public bool IsSystemTable { get; }
         public List<ColumViewMoodel> Colums { get; } = new List<ColumViewMoodel>();
         public TableKind Kind { get; } = TableKind.Table;
         public List<TriggerViewModel> Triggers { get; } = new List<TriggerViewModel>();
@@ -25,9 +27,13 @@ namespace FAManagementStudio.ViewModels
                 var sql = $"{x.ColumName} {x.ColumType}";
                 if (!x.NullFlag)
                 {
-                    sql += " not null";
+                    sql += " NOT NULL";
                 }
-                return sql.ToUpper();
+                if (!x.IsDomainType && !string.IsNullOrEmpty(x.DefaultSource))
+                {
+                    sql += " " + x.DefaultSource;
+                }
+                return sql;
             });
 
             var index = Indexs
@@ -40,8 +46,10 @@ namespace FAManagementStudio.ViewModels
                                 sql += $"PRIMARY KEY ({string.Join(", ", x.FieldNames.ToArray())})";
                                 break;
                             case ConstraintsKind.Foreign:
-                                var idx = dbVm.Indexes.Where(dbIdx => dbIdx.IndexName == x.IndexName).First();
-                                sql += $"FOREIGN KEY({string.Join(", ", x.FieldNames.ToArray())}) REFERENCES {idx.TableName} ({string.Join(", ", idx.FieldNames.ToArray())})";
+                                var targetPrimaryIdx = dbVm.Indexes.Where(dbIdx => dbIdx.IndexName == x.ForignKeyName).First();
+                                sql += $"FOREIGN KEY ({string.Join(", ", x.FieldNames.ToArray())}) REFERENCES {targetPrimaryIdx.TableName} ({string.Join(", ", targetPrimaryIdx.FieldNames.ToArray())})";
+                                if (!string.IsNullOrEmpty(x.DeleteRule)) sql += $" ON DELETE {x.DeleteRule}";
+                                if (!string.IsNullOrEmpty(x.UpdateRule)) sql += $" ON UPDATE {x.UpdateRule}";
                                 break;
                             case ConstraintsKind.Unique:
                                 sql += $"UNIQUE ({string.Join(", ", x.FieldNames.ToArray())})";
@@ -53,9 +61,21 @@ namespace FAManagementStudio.ViewModels
                     });
 
             var domain = Colums.Where(x => x.IsDomainType)
-                                .Select(x => new { x.ColumType, x.ColumDataType })
+                                .Select(x => new { x.ColumType, x.ColumDataType, x.FieldNullFlag, x.DefaultSource })
                                 .Distinct()
-                                .Select(x => $"CREATE DOMAIN {x.ColumType} AS {x.ColumDataType};\r\n");
+                                .Select(x =>
+                                {
+                                    var baseStr = $"CREATE DOMAIN {x.ColumType} AS {x.ColumDataType}";
+                                    if (!x.FieldNullFlag)
+                                    {
+                                        baseStr += " NOT NULL";
+                                    }
+                                    if (!string.IsNullOrEmpty(x.DefaultSource))
+                                    {
+                                        baseStr += " " + x.DefaultSource;
+                                    }
+                                    return baseStr + ";\r\n";
+                                });
             var domainStr = string.Join("", domain.ToArray());
             return domainStr + $"CREATE TABLE {TableName} ({Environment.NewLine}  { string.Join($",{Environment.NewLine}  ", colums.Union(index).ToArray()) + Environment.NewLine})";
         }

@@ -64,7 +64,7 @@ namespace FAManagementStudio.ViewModels
                 {
                     var vm = new ResultDetailViewModel();
                     var table = new DataTable("Exception");
-                    table.Columns.Add("Message");
+                    table.Columns.Add(new DataColumn { ColumnName = "0", Caption = "Message", DataType = typeof(string) });
                     table.Rows.Add(e.Message);
                     vm.View = table;
                     Result.Add(vm);
@@ -97,7 +97,7 @@ namespace FAManagementStudio.ViewModels
                 var sb = new StringBuilder();
                 if (needHeader)
                 {
-                    var header = View.Columns.Cast<DataColumn>().Select(x => $"\"{x.ColumnName}\"").ToArray();
+                    var header = View.Columns.Cast<DataColumn>().Select(x => $"\"{x.Caption}\"").ToArray();
                     sb.AppendLine(string.Join(",", header));
                 }
                 var rows = View.Rows.Cast<DataRow>().Select(x => string.Join(",", x.ItemArray.Select(y => $"\"{y}\"").ToArray()));

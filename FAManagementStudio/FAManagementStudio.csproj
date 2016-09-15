@@ -132,7 +132,10 @@
     <Compile Include="Common\Messenger.cs" />
     <Compile Include="Models\AppSettings.cs" />
     <Compile Include="Models\Commons\FieldType.cs" />
+    <Compile Include="Models\Commons\FirebirdRecommender .cs" />
     <Compile Include="Models\Db\ColumInfo.cs" />
+    <Compile Include="Models\Db\SequenceInfo.cs" />
+    <Compile Include="Models\Db\ProcedureInfo.cs" />
     <Compile Include="Models\Db\DomainInfo.cs" />
     <Compile Include="Models\Db\IndexInfo.cs" />
     <Compile Include="Models\Db\TableInfo.cs" />
@@ -147,6 +150,8 @@
     <Compile Include="ViewModels\ConnectionSettingsViewModel.cs" />
     <Compile Include="ViewModels\Db\ColumViewMoodel.cs" />
     <Compile Include="ViewModels\Db\DbViewModel.cs" />
+    <Compile Include="ViewModels\Db\SequenceViewModel.cs" />
+    <Compile Include="ViewModels\Db\ProcedureViewModel.cs" />
     <Compile Include="ViewModels\Db\DomainViewModel.cs" />
     <Compile Include="ViewModels\Db\IndexViewModel.cs" />
     <Compile Include="ViewModels\Db\TableViewModel.cs" />
@@ -161,6 +166,7 @@
       <DependentUpon>BasePathSettingsView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Behaviors\GetFocusWhenMovedTabKeyBehavior.cs" />
+    <Compile Include="Views\Behaviors\GridHeaderDisplayNameBehavior.cs" />
     <Compile Include="Views\Behaviors\ImageButtonBehavior.cs" />
     <Compile Include="Views\Behaviors\TreeViewItemDobleClickBehavior.cs" />
     <Compile Include="Views\Commons\MessageTrigger.cs" />
@@ -187,6 +193,7 @@
     <Compile Include="Views\Converters\TableIconConverter.cs" />
     <Compile Include="Views\Converters\ConstraintsKeyToIconConverter.cs" />
     <Compile Include="Views\Converters\GridSizeConverter.cs" />
+    <Compile Include="Views\Converters\VisibilityConverter.cs" />
     <Compile Include="Views\NewDatabaseSettings.xaml.cs">
       <DependentUpon>NewDatabaseSettings.xaml</DependentUpon>
     </Compile>

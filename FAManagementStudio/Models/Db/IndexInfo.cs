@@ -11,5 +11,9 @@ namespace FAManagementStudio.Models
         public string ForigenKeyName { get; set; }
         public List<string> FieldNames { get; } = new List<string>();
         public string TableName { get; set; }
+        //only ForeignKey
+        public string UpdateRule { get; set; }
+        //only ForeignKey
+        public string DeleteRule { get; set; }
     }
 }

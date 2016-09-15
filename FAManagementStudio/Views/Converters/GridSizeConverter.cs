@@ -12,7 +12,8 @@ namespace FAManagementStudio.Views.Converters
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return (double)value - 58d;
+            var tmp = (double)value - 58d;
+            return tmp < 20 ? 20 : tmp;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
@@ -26,7 +27,8 @@ namespace FAManagementStudio.Views.Converters
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return (double)value - 38d;
+            var tmp = (double)value - 38d;
+            return tmp < 40 ? 40 : tmp;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

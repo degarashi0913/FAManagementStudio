@@ -17,6 +17,8 @@ namespace FAManagementStudio.ViewModels
         public ConstraintsKind Kind { get { return _index.Kind; } }
 
         public string ForignKeyName { get { return _index.ForigenKeyName; } }
+        public string UpdateRule { get { return _index.UpdateRule; } }
+        public string DeleteRule { get { return _index.DeleteRule; } }
 
         public string TableName { get { return _index.TableName; } }
 

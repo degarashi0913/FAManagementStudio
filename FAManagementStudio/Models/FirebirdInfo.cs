@@ -14,7 +14,7 @@ namespace FAManagementStudio.Models
         public FirebirdInfo(string path, FirebirdType fbType, FbCharset charset)
         {
             _builder.Database = path;
-            _builder.ClientLibrary = fbType == FirebirdType.Fb3 ? @"\fb3\fbclient" : @"fb25\fbembed";
+            _builder.ClientLibrary = fbType == FirebirdType.Fb3 ? @"fb3\fbclient" : @"fb25\fbembed";
             _builder.Charset = new FbUtility().GetCharsetString(charset);
         }
 
@@ -28,7 +28,7 @@ namespace FAManagementStudio.Models
         {
             _odsVersion = new FbUtility().GetOdsVersion(path);
             _builder.Database = path;
-            _builder.ClientLibrary = _odsVersion == _fb3Ods ? @"\fb3\fbclient" : @"fb25\fbembed";
+            _builder.ClientLibrary = _odsVersion == _fb3Ods ? @"fb3\fbclient" : @"fb25\fbembed";
         }
 
         public bool IsTargetOdsVersion()

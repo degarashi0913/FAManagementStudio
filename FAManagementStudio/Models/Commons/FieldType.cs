@@ -7,19 +7,21 @@
         public short? CharactorLength { get; set; }
         public short? FieldPrecision { get; set; }
         public short? FieldScale { get; set; }
+        public short? FieldLength { get; set; }
 
-        public FieldType(short type, short? subType, short? cLength, short? precision, short? scale)
+        public FieldType(short type, short? subType, short? cLength, short? precision, short? scale, short? fieldLength)
         {
             Type = type;
             FieldSubType = subType;
             CharactorLength = cLength;
             FieldPrecision = precision;
             FieldScale = scale;
+            FieldLength = fieldLength;
         }
 
         public override string ToString()
         {
-            return GetTypeFromFirebirdType(Type, FieldSubType, CharactorLength, FieldPrecision, FieldScale);
+            return GetTypeFromFirebirdType(Type, FieldSubType, CharactorLength, FieldPrecision, FieldScale, FieldLength);
         }
 
         private string GetFixedPointDataType(string typeName, short? subType, short? precision, short? scale)
@@ -39,7 +41,7 @@
             return typeName;
         }
 
-        private string GetTypeFromFirebirdType(short type, short? subType, short? cLength, short? precision, short? scale)
+        private string GetTypeFromFirebirdType(short type, short? subType, short? cLength, short? precision, short? scale, short? fieldLength)
         {
             switch (type)
             {
@@ -58,7 +60,7 @@
                 case 13:
                     return "TIME";
                 case 14:
-                    return $"CHAR({cLength})";
+                    return $"CHAR({cLength ?? FieldLength})";
                 case 16:
                     return GetFixedPointDataType("BIGINT", subType, precision, scale);
                 case 23:
@@ -68,7 +70,7 @@
                 case 35:
                     return "TIMESTAMP";
                 case 37:
-                    return $"VARCHAR({cLength})";
+                    return $"VARCHAR({cLength ?? FieldLength})";
                 case 40:
                     return "CSTRING";
                 case 45:

@@ -1,12 +1,14 @@
-﻿using System;
+﻿using FAManagementStudio.Controls.Common;
+using FAManagementStudio.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FAManagementStudio.Controls.Common
+namespace FAManagementStudio.Models
 {
-    public class FirebirdRecommender
+    public class FirebirdRecommender : IRecommender
     {
         public FirebirdRecommender()
         {
@@ -15,6 +17,7 @@ namespace FAManagementStudio.Controls.Common
                 _normalList.Add(new CompletionData(item));
             }
         }
+
         public Task<List<CompletionData>> GetCompletionData(string inputString, int index)
         {
             return Task.Run(() =>
