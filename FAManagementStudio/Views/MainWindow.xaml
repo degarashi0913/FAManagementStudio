@@ -458,6 +458,17 @@
                                                         </MenuItem>
                                                     </ContextMenu>
                                                 </DataGrid.ContextMenu>
+                                                <DataGrid.ColumnHeaderStyle>
+                                                    <Style TargetType="{x:Type DataGridColumnHeader}">
+                                                        <Setter Property="ContentTemplate">
+                                                            <Setter.Value>
+                                                                <DataTemplate>
+                                                                    <TextBlock Text="{TemplateBinding Content}" HorizontalAlignment="Center" />
+                                                                </DataTemplate>
+                                                            </Setter.Value>
+                                                        </Setter>
+                                                    </Style>
+                                                </DataGrid.ColumnHeaderStyle>
                                             </DataGrid>
                                             <TextBlock Text="{Binding AdditionalInfo}" TextDecorations="Underline" TextWrapping="Wrap" MaxWidth="{Binding MaxWidth, ElementName=ResultView}" Foreground="Gray" Margin="5,0,0,0"/>
                                         </StackPanel>

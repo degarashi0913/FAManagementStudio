@@ -89,13 +89,15 @@ namespace FAManagementStudio.ViewModels
 
         private void LoadQueryMethod()
         {
+            var path = "";
             using (var dialog = new OpenFileDialog())
             {
                 dialog.DefaultExt = "fmq";
                 dialog.Filter = "FamQuery (*.fmq)|*.fmq|txt files (*.txt)|*.txt|すべてのファイル(*.*)|*.*";
                 if (dialog.ShowDialog() != DialogResult.OK) return;
+                path = dialog.FileName;
             }
-            Query = FileLoad(_loadPath, _fileEncoding);
+            Query = FileLoad(path, _fileEncoding);
         }
 
         public string FileLoad(string path, Encoding enc)
