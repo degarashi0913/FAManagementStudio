@@ -144,6 +144,7 @@
     <Compile Include="Models\FirebirdInfo.cs" />
     <Compile Include="Models\Firebird\HeaderPage.cs" />
     <Compile Include="Models\Firebird\FbUtility.cs" />
+    <Compile Include="Models\QueryAnalyzer.cs" />
     <Compile Include="Models\QueryResult.cs" />
     <Compile Include="ViewModels\AdditionalDbInfoViewModel.cs" />
     <Compile Include="ViewModels\BasePathSettingsViewModel.cs" />
