@@ -244,7 +244,15 @@ namespace FAManagementStudio.ViewModels
                     foreach (DataRow row in res.View.Rows)
                     {
                         sb.Append(insertTemplate + " values(");
-                        sb.Append(string.Join(", ", row.ItemArray.Select(x => x.GetType() == typeof(string) ? $"\'{x}\'" : $"{x}").ToArray()));
+                        sb.Append(string.Join(", ", row.ItemArray
+                                                        .Select(x =>
+                                                                    {
+                                                                        var type = x.GetType();
+                                                                        if (type == typeof(DBNull)) return "Null";
+                                                                        if (type == typeof(string)) return $"\'{x}\'";
+                                                                        return $"{x}";
+                                                                    })
+                                                        .ToArray()));
                         sb.AppendLine(");");
                     }
                     result = sb.ToString();
