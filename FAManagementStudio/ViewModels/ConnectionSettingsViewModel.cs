@@ -72,7 +72,8 @@ namespace FAManagementStudio.ViewModels
             {"DbCachePages","cache pages"},
             {"NoDatabaseTriggers","no db triggers"},
             {"NoGarbageCollect","no garbage collect"},
-            {"ContextConnection"," contextconnection" }
+            {"ContextConnection"," contextconnection" },
+            {"Compression","Compression" }
         };
     }
 
