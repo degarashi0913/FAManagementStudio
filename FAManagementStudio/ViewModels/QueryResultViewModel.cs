@@ -34,12 +34,7 @@ namespace FAManagementStudio.ViewModels
                 RaisePropertyChanged(nameof(Pined));
             }
         }
-
-        private ObservableCollection<ResultDetailViewModel> _result = new ObservableCollection<ResultDetailViewModel>();
-        public ObservableCollection<ResultDetailViewModel> Result
-        {
-            get { return _result; }
-        }
+        public ObservableCollection<ResultDetailViewModel> Result { get; } = new ObservableCollection<ResultDetailViewModel>();
 
         public QueryResultViewModel(string header)
         {

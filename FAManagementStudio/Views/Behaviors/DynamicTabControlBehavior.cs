@@ -9,15 +9,16 @@ namespace FAManagementStudio.Views.Behaviors
     {
         public ICommand AddTabCommand
         {
-            get { return (ICommand)GetValue(AddTabCommandProperty); }
-            set { SetValue(AddTabCommandProperty, value); }
+            get => (ICommand)GetValue(AddTabCommandProperty);
+            set => SetValue(AddTabCommandProperty, value);
         }
+
         public static readonly DependencyProperty AddTabCommandProperty = DependencyProperty.Register(nameof(AddTabCommand), typeof(ICommand), typeof(DynamicTabControlBehavior), new PropertyMetadata(null));
 
         protected override void OnAttached()
         {
             base.OnAttached();
-            this.AssociatedObject.SelectionChanged += AssociatedObject_SelectionChanged;
+            AssociatedObject.SelectionChanged += AssociatedObject_SelectionChanged;
         }
 
         private void AssociatedObject_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -30,7 +31,7 @@ namespace FAManagementStudio.Views.Behaviors
 
         protected override void OnDetaching()
         {
-            this.AssociatedObject.SelectionChanged -= AssociatedObject_SelectionChanged;
+            AssociatedObject.SelectionChanged -= AssociatedObject_SelectionChanged;
             base.OnDetaching();
         }
     }

@@ -67,7 +67,7 @@ namespace FAManagementStudioTests
         public void ExecuteQueryTest()
         {
             SetupTestDbFb2();
-            var inf = new QueryInfo();
+            var inf = new QueryInfo(false);
             inf.ExecuteQuery(GetFb2ConnectionString(), "select * from test").ToList()[0].View.Rows.Count.Is(0);
 
             var result = inf.ExecuteQuery(GetFb2ConnectionString(), "insert into test(int_test, char_test) values (1, 'aaaaaaaaaa');update test set varchar_test = 'testtesttesttest' where int_test = 1;select * from test").ToList();

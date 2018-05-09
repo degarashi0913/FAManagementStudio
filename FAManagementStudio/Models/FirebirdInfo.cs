@@ -13,12 +13,12 @@ namespace FAManagementStudio.Models
 
         public FirebirdInfo(string path, FirebirdType fbType, FbCharset charset)
         {
-            _builder.Database = path;
-            _builder.ClientLibrary = fbType == FirebirdType.Fb3 ? @"fb3\fbclient" : @"fb25\fbembed";
-            _builder.Charset = new FbUtility().GetCharsetString(charset);
+            Builder.Database = path;
+            Builder.ClientLibrary = fbType == FirebirdType.Fb3 ? @"fb3\fbclient" : @"fb25\fbembed";
+            Builder.Charset = new FbUtility().GetCharsetString(charset);
         }
 
-        public string Path { get { return _builder.Database; } }
+        public string Path { get { return Builder.Database; } }
 
         private const int _fb2Ods = 11;
         private const int _fb3Ods = 12;
@@ -27,32 +27,21 @@ namespace FAManagementStudio.Models
         private void SetConnection(string path)
         {
             _odsVersion = new FbUtility().GetOdsVersion(path);
-            _builder.Database = path;
-            _builder.ClientLibrary = _odsVersion == _fb3Ods ? @"fb3\fbclient" : @"fb25\fbembed";
+            Builder.Database = path;
+            Builder.ClientLibrary = _odsVersion == _fb3Ods ? @"fb3\fbclient" : @"fb25\fbembed";
         }
 
-        public bool IsTargetOdsVersion()
-        {
-            try
-            {
-                return _odsVersion == _fb2Ods || _odsVersion == _fb3Ods;
-            }
-            catch
-            {
-                return false;
-            }
-        }
+        public bool IsTargetOdsVersion() => _odsVersion == _fb2Ods || _odsVersion == _fb3Ods;
 
-        private FbConnectionStringBuilder _builder = new FbConnectionStringBuilder()
-        {
-            DataSource = "localhost",
-            Charset = "UTF8",
-            UserID = "SYSDBA",
-            Password = "masterkey",
-            ServerType = FbServerType.Embedded,
-            Pooling = false
-        };
-
-        public FbConnectionStringBuilder Builder { get { return _builder; } }
+        public FbConnectionStringBuilder Builder { get; }
+            = new FbConnectionStringBuilder()
+            {
+                DataSource = "localhost",
+                Charset = "UTF8",
+                UserID = "SYSDBA",
+                Password = "masterkey",
+                ServerType = FbServerType.Embedded,
+                Pooling = false
+            };
     }
 }

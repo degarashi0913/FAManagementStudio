@@ -101,7 +101,7 @@
                     <RowDefinition Height="2"/>
                     <RowDefinition Height="150"/>
                 </Grid.RowDefinitions>
-                <ListBox x:Name="DbListBox" Grid.Row="0" HorizontalAlignment="Stretch" MinWidth="80" ItemsSource="{Binding Databases}" HorizontalContentAlignment="Center" SelectedItem="{Binding CurrentDatabase, Mode=TwoWay}" AllowDrop="True" ToolTip="データベースファイルをドロップ" >
+                <ListBox x:Name="DbListBox" Grid.Row="0" HorizontalAlignment="Stretch" MinWidth="80" ItemsSource="{Binding Databases}" HorizontalContentAlignment="Center" SelectedItem="{Binding CurrentDatabase, Mode=TwoWay}" AllowDrop="True" ToolTip="データベースファイルをドロップ" Background="#fafbfc">
                     <ListBox.Resources>
                         <SolidColorBrush x:Key="{x:Static SystemColors.ControlBrushKey}" Color="{DynamicResource {x:Static SystemColors.HighlightColorKey}}" />
                         <Common:CommandReference x:Key="Shutdown" Command="{Binding DataContext.ShutdownDatabase, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}"/>
@@ -141,7 +141,7 @@
                 <GridSplitter Grid.Row="1" Style="{StaticResource HorizontalSpliterStyle}" />
                 <DockPanel Grid.Row="2">
                     <Button DockPanel.Dock="Bottom" Content="BasePathSettings" Background="Transparent" Command="{Binding ShowPathSettings}" Focusable="False" />
-                    <TreeView ItemsSource="{Binding QueryProjects}" AllowDrop="True">
+                    <TreeView ItemsSource="{Binding QueryProjects}" AllowDrop="True" Background="#fafbfc">
                         <i:Interaction.Behaviors>
                             <b:TreeViewItemDobleClickBehavior ClickCommand="{Binding ProjectItemOpen}" />
                             <b:FileDropBehavior DropedCommand="{Binding ProjectItemDrop}" FetchMode="Once"/>
@@ -176,7 +176,7 @@
                     <Common:CommandReference x:Key="SetSqlTemplate" Command="{Binding DataContext.SetSqlTemplate, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}"/>
                     <Common:CommandReference x:Key="SetSqlDataTemplate" Command="{Binding DataContext.SetSqlDataTemplate, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}"/>
                 </Grid.Resources>
-                <TreeView Grid.Row="0" MinWidth="170" ItemsSource="{Binding CurrentDatabase.Tables, Mode=OneWay}">
+                <TreeView Grid.Row="0" MinWidth="170" ItemsSource="{Binding CurrentDatabase.Tables, Mode=OneWay}" Background="#fafbfc">
                     <i:Interaction.Behaviors>
                         <b:TreeViewSelectedItemBehavior SelectedItem="{Binding SelectedTableItem, Mode=TwoWay}" />
                     </i:Interaction.Behaviors>
@@ -225,7 +225,7 @@
                     </TreeView.ItemTemplate>
                 </TreeView>
                 <GridSplitter Grid.Row="1" Style="{StaticResource HorizontalSpliterStyle}" />
-                <DockPanel Grid.Row="2">
+                <DockPanel Grid.Row="2" Background="#fafbfc">
                     <Button DockPanel.Dock="Bottom" Content="Other Info" Background="Transparent" Command="{Binding  ElementName=AdditionalBox, Path=DataContext.ContentChange}" Focusable="False" />
                     <ItemsControl DockPanel.Dock="Bottom" Name="AdditionalBox"  DataContext="{Binding SelectedValue.AdditionalInfo, ElementName=DbListBox}" ItemsSource="{Binding DataContext.CurrentContent, RelativeSource={RelativeSource Self}}">
                         <ItemsControl.Template>
@@ -371,26 +371,28 @@
                     <TabControl.ContentTemplate>
                         <DataTemplate>
                             <DockPanel>
-                                <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Height="15">
-                                    <Button Focusable="False" ToolTip="Create New Result Tab" Background="{Binding IsNewResult, Converter={StaticResource BackColorConverter}}">
-                                        <i:Interaction.Behaviors>
-                                            <b:ImageButtonBehavior ChangeEnable="{Binding IsNewResult, Mode=TwoWay}"/>
-                                        </i:Interaction.Behaviors>
-                                        <Image Source="../Image/PinItem.png" Opacity="{Binding IsNewResult, Converter={StaticResource OpacityConverter}}"/>
-                                    </Button>
-                                    <Button Focusable="False" ToolTip="Show Execute Plan" Background="{Binding IsShowExecutionPlan, Converter={StaticResource BackColorConverter}}" Margin="2,0,0,0">
-                                        <i:Interaction.Behaviors>
-                                            <b:ImageButtonBehavior ChangeEnable="{Binding IsShowExecutionPlan, Mode=TwoWay}"/>
-                                        </i:Interaction.Behaviors>
-                                        <Image Source="../Image/ExecutionPlan.png" Opacity="{Binding IsShowExecutionPlan,Converter={StaticResource OpacityConverter}}"/>
-                                    </Button>
-                                    <Button Focusable="False" ToolTip="Enable Intelisense (beta)" Background="{Binding IntelisenseEnabled, Converter={StaticResource BackColorConverter}}" Margin="2,0,0,0">
-                                        <i:Interaction.Behaviors>
-                                            <b:ImageButtonBehavior ChangeEnable="{Binding IntelisenseEnabled, Mode=TwoWay}"/>
-                                        </i:Interaction.Behaviors>
-                                        <Image Source="../Image/IntelliSenseKeyword.png" Opacity="{Binding IntelisenseEnabled,Converter={StaticResource OpacityConverter}}"/>
-                                    </Button>
-                                </StackPanel>
+                                <Border DockPanel.Dock="Top" BorderThickness="0.5" VerticalAlignment="Bottom" Margin="0">
+                                    <StackPanel Orientation="Horizontal" Height="15" Background="#fafbfc">
+                                        <Button Focusable="False" ToolTip="Create New Result Tab" Background="{Binding IsNewResult, Converter={StaticResource BackColorConverter}}">
+                                            <i:Interaction.Behaviors>
+                                                <b:ImageButtonBehavior ChangeEnable="{Binding IsNewResult, Mode=TwoWay}"/>
+                                            </i:Interaction.Behaviors>
+                                            <Image Source="../Image/PinItem.png" Opacity="{Binding IsNewResult, Converter={StaticResource OpacityConverter}}"/>
+                                        </Button>
+                                        <Button Focusable="False" ToolTip="Show Execute Plan" Background="{Binding IsShowExecutionPlan, Converter={StaticResource BackColorConverter}}" Margin="2,0,0,0">
+                                            <i:Interaction.Behaviors>
+                                                <b:ImageButtonBehavior ChangeEnable="{Binding IsShowExecutionPlan, Mode=TwoWay}"/>
+                                            </i:Interaction.Behaviors>
+                                            <Image Source="../Image/ExecutionPlan.png" Opacity="{Binding IsShowExecutionPlan,Converter={StaticResource OpacityConverter}}"/>
+                                        </Button>
+                                        <Button Focusable="False" ToolTip="Enable Intelisense (beta)" Background="{Binding IntelisenseEnabled, Converter={StaticResource BackColorConverter}}" Margin="2,0,0,0">
+                                            <i:Interaction.Behaviors>
+                                                <b:ImageButtonBehavior ChangeEnable="{Binding IntelisenseEnabled, Mode=TwoWay}"/>
+                                            </i:Interaction.Behaviors>
+                                            <Image Source="../Image/IntelliSenseKeyword.png" Opacity="{Binding IntelisenseEnabled,Converter={StaticResource OpacityConverter}}"/>
+                                        </Button>
+                                    </StackPanel>
+                                </Border>
                                 <controls:BindableEditor DockPanel.Dock="Top" AllowDrop="True" Text="{Binding Query, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalScrollBarVisibility="Disabled" Margin="0,2" Grid.RowSpan="2"  PreviewDragEnter="TextBox_PreviewDragEnter"
             PreviewDragOver="TextBox_PreviewDragEnter" FontSize="14" IntelisenseEnabled="{Binding IntelisenseEnabled, Mode=TwoWay}" Recommender="{Binding DataContext.Recommender, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}">
                                     <controls:BindableEditor.Resources>

@@ -7,13 +7,12 @@ namespace FAManagementStudio.ViewModels
 {
     public class TableViewModel : ViewModelBase, ITableViewModel
     {
-        private string _name;
         public TableViewModel(string name, bool isSystemTable = false)
         {
-            _name = name;
+            TableName = name;
             IsSystemTable = isSystemTable;
         }
-        public string TableName { get { return _name; } }
+        public string TableName { get; }
         public bool IsSystemTable { get; }
         public List<ColumViewMoodel> Colums { get; } = new List<ColumViewMoodel>();
         public TableKind Kind { get; } = TableKind.Table;
@@ -74,7 +73,7 @@ namespace FAManagementStudio.ViewModels
                                     {
                                         baseStr += " " + x.DefaultSource;
                                     }
-                                    return baseStr + ";\r\n";
+                                    return baseStr + ";" + Environment.NewLine;
                                 });
             var domainStr = string.Join("", domain.ToArray());
             return domainStr + $"CREATE TABLE {TableName} ({Environment.NewLine}  { string.Join($",{Environment.NewLine}  ", colums.Union(index).ToArray()) + Environment.NewLine})";
