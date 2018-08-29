@@ -28,7 +28,7 @@
             <b:WindowCloseAction />
         </b:MessageBaseTriger>
     </i:Interaction.Triggers>
-    <StackPanel>
+    <StackPanel Background="#fafbfc">
         <DockPanel Margin="0,5,0,5">
             <Button DockPanel.Dock="Right" Width="15" Content=".." Command="{Binding OpenFileDialog}" Margin="4,0,2,0"/>
             <TextBlock Text="Path:"/>
