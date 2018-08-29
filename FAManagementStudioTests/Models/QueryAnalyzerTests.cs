@@ -1,10 +1,5 @@
-﻿using FirebirdSql.Data.FirebirdClient;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Data;
-using System.Text;
 
 namespace FAManagementStudio.Models.Tests
 {
