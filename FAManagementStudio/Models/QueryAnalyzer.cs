@@ -76,8 +76,8 @@ namespace FAManagementStudio.Models
                         }
                     // statement	
                     case '\'':
-                        endIdx = statement.IndexOf('\'', endIdx + 1);
-                        if (endIdx < startIdx) throw new ArgumentException("おかしいよ");
+                        endIdx = statement.IndexOf('\'', endIdx + 1) + 1;
+                        if (endIdx < startIdx) throw new ArgumentException("SQL Parse Fail: Single Quotation End is Missiong");
                         goto end;
                     // marks
                     case ',':
