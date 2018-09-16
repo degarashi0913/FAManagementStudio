@@ -9,7 +9,13 @@ namespace FAManagementStudio.Models
 {
     public class QueryInfo : BindableBase
     {
-        public bool ShowExecutePlan { private get; set; } = false;
+        private bool _showExecutePlan;
+
+        public QueryInfo(bool showExecutePlan)
+        {
+            _showExecutePlan = showExecutePlan;
+        }
+
         public IEnumerable<QueryResult> ExecuteQuery(string connectionString, string query)
         {
             if (string.IsNullOrEmpty(query?.Trim())) yield break;
@@ -32,7 +38,7 @@ namespace FAManagementStudio.Models
                 switch (item.Type)
                 {
                     case QueryType.Select:
-                        result = ExecuteReader(con, item.Query, ShowExecutePlan);
+                        result = ExecuteReader(con, item.Query, _showExecutePlan);
                         break;
                     case QueryType.Update:
                         result = ExecuteUpdate(con, item.Query);

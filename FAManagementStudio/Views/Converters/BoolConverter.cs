@@ -12,14 +12,11 @@ namespace FAManagementStudio.Views.Converters
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value is bool b) return b.ToString();
             if (value == null) return "";
+            if (value is bool b) return b.ToString();
             return (string)value == "True";
         }
 
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            return value;
-        }
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) => value;
     }
 }

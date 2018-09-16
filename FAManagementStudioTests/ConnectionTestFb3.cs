@@ -68,7 +68,7 @@ namespace FAManagementStudioTests
         public void ExecuteQueryTestFb3()
         {
             SetupTestDbFb3();
-            var inf = new QueryInfo();
+            var inf = new QueryInfo(false);
             var conStr = GetFb3ConnectionString();
             inf.ExecuteQuery(conStr, "select * from test").ToList()[0].View.Rows.Count.Is(0);
 

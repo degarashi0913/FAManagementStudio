@@ -134,7 +134,7 @@ namespace FAManagementStudio.ViewModels
                QueryResult.Result.Clear();
                await Task.Run(() =>
                {
-                   var inf = new QueryInfo { ShowExecutePlan = TagSelectedValue.IsShowExecutionPlan };
+                   var inf = new QueryInfo(TagSelectedValue.IsShowExecutionPlan);
                    QueryResult.GetExecuteResult(inf, CurrentDatabase.ConnectionString, TagSelectedValue.Query);
                });
            });
@@ -236,7 +236,7 @@ namespace FAManagementStudio.ViewModels
 
                     var insertTemplate = $"insert into {table.TableName} ({escapedColumsStr})";
 
-                    var qry = new QueryInfo();
+                    var qry = new QueryInfo(false);
                     var res = qry.ExecuteQuery(CurrentDatabase.ConnectionString, CreateSelectStatement(table.TableName, colums, 0)).First();
 
                     var sb = new StringBuilder();
@@ -294,7 +294,6 @@ namespace FAManagementStudio.ViewModels
 
             if (table == null)
             {
-
                 return db.Tables.Where(x => 0 < x.Colums.Count(c => c == (ColumViewMoodel)treeitem)).First();
             }
             return table;
