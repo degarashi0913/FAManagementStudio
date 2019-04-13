@@ -77,8 +77,7 @@ namespace FAManagementStudio.Models
             using (var command = con.CreateCommand())
             {
                 command.CommandText = query;
-                var res = command.BeginExecuteReader(null, null);
-                var reader = command.EndExecuteReader(res);
+                var reader = command.ExecuteReader();
 
                 var schema = reader.GetSchemaTable();
                 var table = new DataTable();
@@ -113,8 +112,7 @@ namespace FAManagementStudio.Models
             {
                 command.CommandText = query;
                 var startTime = DateTime.Now;
-                var res = command.BeginExecuteNonQuery(null, null);
-                var num = command.EndExecuteNonQuery(res);
+                var num = command.ExecuteNonQuery();
 
                 var executeTime = DateTime.Now - startTime;
 
@@ -128,8 +126,7 @@ namespace FAManagementStudio.Models
             {
                 command.CommandText = query;
                 var startTime = DateTime.Now;
-                var res = command.BeginExecuteNonQuery(null, null);
-                var num = command.EndExecuteNonQuery(res);
+                var res = command.ExecuteNonQuery();
 
                 var executeTime = DateTime.Now - startTime;
 

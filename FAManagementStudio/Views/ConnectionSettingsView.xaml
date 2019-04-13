@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:FAManagementStudio.Views"
         mc:Ignorable="d"
         xmlns:vm="clr-namespace:FAManagementStudio.ViewModels"
-        xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+        xmlns:Behaviors="http://schemas.microsoft.com/xaml/behaviors"
         xmlns:b="clr-namespace:FAManagementStudio.Views.Behaviors"
         xmlns:core="clr-namespace:System;assembly=mscorlib"
         xmlns:s="clr-namespace:FAManagementStudio.Views.Selectors"
@@ -15,11 +15,11 @@
     <Window.DataContext>
         <vm:ConnectionSettingsViewModel/>
     </Window.DataContext>
-    <i:Interaction.Triggers>
+    <Behaviors:Interaction.Triggers>
         <b:MessageBaseTriger Target="WindowClose">
             <b:WindowCloseAction />
         </b:MessageBaseTriger>
-    </i:Interaction.Triggers>
+    </Behaviors:Interaction.Triggers>
     <DockPanel>
         <DockPanel.Resources>
             <c:BoolConverter x:Key="bConverter" />
@@ -43,11 +43,11 @@
             </StackPanel.Resources>
             <Button Content="OK" Margin="0,0,5,0" Style="{StaticResource ButtonStyle}" Command="{Binding OkCommand}" />
             <Button Content="Cancel" Style="{StaticResource ButtonStyle}">
-                <i:Interaction.Triggers>
-                    <i:EventTrigger EventName="Click">
+                <Behaviors:Interaction.Triggers>
+                    <Behaviors:EventTrigger EventName="Click">
                         <b:WindowCloseAction />
-                    </i:EventTrigger>
-                </i:Interaction.Triggers>
+                    </Behaviors:EventTrigger>
+                </Behaviors:Interaction.Triggers>
             </Button>
         </StackPanel>
         <Expander DockPanel.Dock="Bottom" ExpandDirection="Down">
