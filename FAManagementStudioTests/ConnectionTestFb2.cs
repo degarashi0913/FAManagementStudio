@@ -4,6 +4,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -57,7 +58,7 @@ namespace FAManagementStudioTests
             builder.UserID = "SYSDBA";
             builder.Password = "masterkey";
             builder.ServerType = FbServerType.Embedded;
-            builder.ClientLibrary = @"fb25\fbembed";
+            builder.ClientLibrary = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(Assembly.GetEntryAssembly().Location),@"fb25\fbembed");
             builder.Pooling = false;
 
             return builder.ToString();
