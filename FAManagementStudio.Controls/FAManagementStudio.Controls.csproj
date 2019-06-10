@@ -20,7 +20,7 @@
     <Resource Include="Images\PinnedItem.png" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="AvalonEdit" Version="5.0.3" />
+    <PackageReference Include="AvalonEdit" Version="6.0.0-netcore3p4alpha1" />
     <PackageReference Include="FirebirdSql.Data.FirebirdClient" Version="6.6.0" />
   </ItemGroup>
   <ItemGroup>
