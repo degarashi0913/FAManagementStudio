@@ -11,7 +11,7 @@
         xmlns:vm="clr-namespace:FAManagementStudio.ViewModels"
         xmlns:v="clr-namespace:FAManagementStudio.Views"
         xmlns:controls="clr-namespace:FAManagementStudio.Controls;assembly=FAManagementStudio.Controls"
-        xmlns:core="clr-namespace:System;assembly=mscorlib"
+        xmlns:core="clr-namespace:System;assembly=System.Runtime"
         xmlns:search="http://icsharpcode.net/sharpdevelop/avalonedit"
         mc:Ignorable="d"
         Title="FAManagementStudio" Height="700" Width="1000" Icon="../Image/systemicon.ico" Loaded="Window_Loaded">

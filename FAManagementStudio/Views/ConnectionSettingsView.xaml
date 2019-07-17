@@ -8,7 +8,7 @@
         xmlns:vm="clr-namespace:FAManagementStudio.ViewModels"
         xmlns:Behaviors="http://schemas.microsoft.com/xaml/behaviors"
         xmlns:b="clr-namespace:FAManagementStudio.Views.Behaviors"
-        xmlns:core="clr-namespace:System;assembly=mscorlib"
+        xmlns:core="clr-namespace:System;assembly=System.Runtime"
         xmlns:s="clr-namespace:FAManagementStudio.Views.Selectors"
         xmlns:c="clr-namespace:FAManagementStudio.Views.Converters"
         Title="接続情報" Height="300" Width="400" Icon="../Image/systemicon.ico" WindowStartupLocation="CenterOwner">
