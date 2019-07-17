@@ -59,9 +59,6 @@
     <PackageReference Include="AvalonEdit" Version="6.0.0-netcore3p4alpha1" />
     <PackageReference Include="FirebirdSql.Data.FirebirdClient" Version="6.6.0" />
     <PackageReference Include="GraphSharp" Version="1.1.0.0" />
-    <PackageReference Include="Microsoft.Bcl" Version="1.1.10" />
-    <PackageReference Include="Microsoft.Bcl.Async" Version="1.0.168" />
-    <PackageReference Include="Microsoft.Bcl.Build" Version="1.0.21" />
     <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.0.1" />
     <PackageReference Include="QuickGraph" Version="3.6.61119.7" />
     <PackageReference Include="WPFExtensions" Version="1.0.0" />
@@ -71,7 +68,6 @@
     <PropertyGroup>
       <ErrorText>このプロジェクトは、このコンピューター上にない NuGet パッケージを参照しています。それらのパッケージをダウンロードするには、[NuGet パッケージの復元] を使用します。詳細については、http://go.microsoft.com/fwlink/?LinkID=322105 を参照してください。見つからないファイルは {0} です。</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets'))" />
   </Target>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="if $(PlatformName) equ x64 (&#xD;&#xA;xcopy  /y /s $(SolutionDir)Assemblies\Firebird\x64_dll $(TargetDir)&#xD;&#xA;) else (&#xD;&#xA;xcopy /y /s  $(SolutionDir)Assemblies\Firebird\x86_dll $(TargetDir)&#xD;&#xA;)&#xD;&#xA;if $(ConfigurationName) equ Release (&#xD;&#xA;del $(TargetDir)*.pdb&#xD;&#xA;del $(TargetDir)*.xml&#xD;&#xA;)" />
