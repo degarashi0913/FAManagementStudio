@@ -56,8 +56,8 @@
     <WCFMetadata Include="Connected Services\" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="AvalonEdit" Version="6.0.0-netcore3p4alpha1" />
-    <PackageReference Include="FirebirdSql.Data.FirebirdClient" Version="6.6.0" />
+    <PackageReference Include="AvalonEdit" Version="6.0.0" />
+    <PackageReference Include="FirebirdSql.Data.FirebirdClient" Version="7.1.1" />
     <PackageReference Include="GraphSharp" Version="1.1.0.0" />
     <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.0.1" />
     <PackageReference Include="QuickGraph" Version="3.6.61119.7" />
