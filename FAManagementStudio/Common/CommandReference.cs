@@ -11,7 +11,12 @@ namespace FAManagementStudio.Common
     /// </summary>
     public class CommandReference : Freezable, ICommand
     {
+        /// <summary>
+        /// Default constructor for design time data.
+        /// </summary>
+#pragma warning disable CS8618 
         public CommandReference() { }
+#pragma warning restore CS8618 
 
         public static readonly DependencyProperty CommandProperty = DependencyProperty.Register("Command", typeof(ICommand), typeof(CommandReference), new PropertyMetadata(new PropertyChangedCallback(OnCommandChanged)));
 

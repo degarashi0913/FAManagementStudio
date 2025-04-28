@@ -34,13 +34,13 @@
         <StaticResourceExtension ResourceKey="viewModel" />
     </Window.DataContext>
     <Behaviors:Interaction.Behaviors>
-        <b:WindowBehavior LoadedCommand="{Binding LoadHistry}" ClosedCommand="{Binding SaveHistry}"/>
+        <b:WindowBehavior LoadedCommand="{Binding LoadHistory}" ClosedCommand="{Binding SaveHistory}"/>
     </Behaviors:Interaction.Behaviors>
     <Behaviors:Interaction.Triggers>
         <b:MessageBaseTriger Target="WindowOpen">
             <b:ShowWindowAction WindowType="{x:Type v:ConnectionSettingsView}" IsDialog="True" />
         </b:MessageBaseTriger>
-        <b:MessageBaseTriger Target="EintityWindowOpen">
+        <b:MessageBaseTriger Target="EntityWindowOpen">
             <b:ShowWindowAction WindowType="{x:Type v:EntityRelationshipView}" IsDialog="False" />
         </b:MessageBaseTriger>
         <b:MessageBaseTriger Target="BasePathSettingsWindowOpen">
