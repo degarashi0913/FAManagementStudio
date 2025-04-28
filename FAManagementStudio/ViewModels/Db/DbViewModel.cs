@@ -1,5 +1,6 @@
 ﻿using FAManagementStudio.Common;
 using FAManagementStudio.Models;
+using FAManagementStudio.Models.db;
 using FAManagementStudio.ViewModels;
 using FirebirdSql.Data.FirebirdClient;
 using System.Collections.Generic;
