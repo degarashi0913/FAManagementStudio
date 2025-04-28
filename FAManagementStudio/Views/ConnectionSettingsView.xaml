@@ -75,7 +75,7 @@
                 </ListBox.ItemTemplate>
             </ListBox>
         </Expander>
-        <ListBox DockPanel.Dock="Top" ItemsSource="{Binding InputedList}">
+        <ListBox DockPanel.Dock="Top" ItemsSource="{Binding InputtedList}">
             <ListBox.ItemContainerStyle>
                 <Style TargetType="ListBoxItem">
                     <Setter Property="HorizontalContentAlignment" Value="Stretch"/>

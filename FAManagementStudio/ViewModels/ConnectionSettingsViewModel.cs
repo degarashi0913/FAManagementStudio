@@ -2,6 +2,7 @@
 using FAManagementStudio.Models;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 using System.Windows.Input;
@@ -10,7 +11,15 @@ namespace FAManagementStudio.ViewModels
 {
     public class ConnectionSettingsViewModel : ViewModelBase
     {
-        public ConnectionSettingsViewModel() { }
+        /// <summary>
+        /// Default constructor for design time data.
+        /// </summary>
+#pragma warning disable CS8618 
+        public ConnectionSettingsViewModel()
+#pragma warning restore CS8618 
+        {
+        }
+
         public ConnectionSettingsViewModel(DatabaseInfo inf)
         {
             _inf = inf;
@@ -18,36 +27,43 @@ namespace FAManagementStudio.ViewModels
             OkCommand = new RelayCommand(() =>
             {
                 var properties = _inf.Builder.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
-                foreach (var item in NotInputList.Where(x => x.Value != null).Union(InputedList))
+                foreach (var item in NotInputList.Where(x => x.Value != null).Union(InputtedList))
                 {
                     _inf.Builder[_synonyms[item.Name]] = item.Value;
                 }
                 MessengerInstance.Send(new MessageBase(this, "WindowClose"));
             });
         }
-        private DatabaseInfo _inf;
 
+        private readonly DatabaseInfo _inf;
+
+        [MemberNotNull(nameof(InputtedList), nameof(NotInputList))]
         private void Init()
         {
             var properties = _inf.Builder.GetType()
                 .GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly)
-                .Where(x => x.Name != "ContextConnection")
+                .Where(x => _synonyms.ContainsKey(x.Name) && x.Name != "ContextConnection")
                 .Select(x =>
                 {
-                    object value = null;
+                    object? value = null;
                     _inf.Builder.TryGetValue(_synonyms[x.Name], out value);
-                    return new ConnectionSettingsDispModel(x.Name, x.PropertyType, value);
+                    return new ConnectionSettingsDisplayModel(x.Name, x.PropertyType, value);
                 })
-                .OrderBy(x => x.Name);
-            InputedList = properties.Where(x => x.Value != null).ToList();
-            NotInputList = properties.Where(x => x.Value == null).ToList();
+                .OrderBy(x => x.Name)
+                .ToLookup(x => x.Value is not null);
+
+            InputtedList = [.. properties[true]];
+            NotInputList = [.. properties[false]];
         }
-        public List<ConnectionSettingsDispModel> InputedList { get; private set; }
-        public List<ConnectionSettingsDispModel> NotInputList { get; private set; }
+
+        public List<ConnectionSettingsDisplayModel> InputtedList { get; private set; }
+
+
+        public List<ConnectionSettingsDisplayModel> NotInputList { get; private set; }
 
         public ICommand OkCommand { get; private set; }
 
-        private readonly Dictionary<string, string> _synonyms = new Dictionary<string, string>
+        private readonly Dictionary<string, string> _synonyms = new()
         {
             {"UserID","user id"},
             {"Password","password"},
@@ -77,17 +93,5 @@ namespace FAManagementStudio.ViewModels
         };
     }
 
-    public class ConnectionSettingsDispModel
-    {
-        public string Name { get; set; }
-        public Type PropertyType { get; set; }
-        public object Value { get; set; }
-
-        public ConnectionSettingsDispModel(string name, Type type, object obj)
-        {
-            Name = name;
-            PropertyType = type;
-            Value = obj;
-        }
-    }
+    public record ConnectionSettingsDisplayModel(string Name, Type PropertyType, object? Value);
 }

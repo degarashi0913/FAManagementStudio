@@ -12,7 +12,7 @@ namespace FAManagementStudio.Views.Selectors
     {
         public override DataTemplate SelectTemplate(object item, DependencyObject container)
         {
-            var data = item as ConnectionSettingsDispModel;
+            var data = item as ConnectionSettingsDisplayModel;
             if (data == null) return null;
 
             if (data.PropertyType == typeof(bool))

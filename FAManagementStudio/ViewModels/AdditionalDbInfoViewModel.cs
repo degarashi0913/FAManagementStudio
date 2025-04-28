@@ -1,20 +1,12 @@
 ﻿using FAManagementStudio.Common;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows.Input;
 
 namespace FAManagementStudio.ViewModels
 {
-    public class AdditionalDbInfoViewModel : ViewModelBase
+    public class AdditionalDbInfoViewModel(string displayName) : ViewModelBase
     {
-        public AdditionalDbInfoViewModel() { }
-        public string DisplayName { get; }
-        public AdditionalDbInfoViewModel(string name)
-        {
-            DisplayName = name;
-        }
+        public string DisplayName => displayName;
     }
 
     public class AdditionalDbInfoControl : ViewModelBase
@@ -64,6 +56,4 @@ namespace FAManagementStudio.ViewModels
         }
 
     }
-
-    public interface IAddtionalDbInfo { }
 }
