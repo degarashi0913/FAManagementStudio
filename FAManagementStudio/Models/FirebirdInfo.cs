@@ -7,6 +7,9 @@ namespace FAManagementStudio.Models
 {
     public class FirebirdInfo : BindableBase
     {
+        // TODO: 後で削除する
+        public FirebirdInfo() { }
+
         public FirebirdInfo(string path)
         {
             SetConnection(path);

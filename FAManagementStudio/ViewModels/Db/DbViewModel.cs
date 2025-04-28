@@ -3,6 +3,7 @@ using FAManagementStudio.Models;
 using FAManagementStudio.Models.db;
 using FAManagementStudio.ViewModels;
 using FirebirdSql.Data.FirebirdClient;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -18,6 +19,14 @@ public class DbViewModel(DatabaseInfo dbInfo) : ViewModelBase
     {
         var dbInfo = new DatabaseInfo(new FirebirdInfo(path, type, charset));
         dbInfo.CreateDatabase();
+        var vm = new DbViewModel(dbInfo);
+        return vm;
+    }
+
+    // TODO: 後で削除する。Test用に抽象化する
+    public static DbViewModel CreateDatabaseForTest()
+    {
+        var dbInfo = new DatabaseInfo(new FirebirdInfo());
         var vm = new DbViewModel(dbInfo);
         return vm;
     }
@@ -42,6 +51,14 @@ public class DbViewModel(DatabaseInfo dbInfo) : ViewModelBase
     public IReadOnlyList<IndexViewModel> Indexes
     {
         get => _indexes ??= [.. Tables.Where(x => x is TableViewModel).SelectMany(x => ((TableViewModel)x).Indexs)];
+    }
+
+    // TODO: 後で削除する。
+    [Obsolete("Test用の一時的な実装です。")]
+    public void SetIndexes(List<IndexViewModel> indexes)
+    {
+        _indexes = indexes;
+        RaisePropertyChanged(nameof(Indexes));
     }
 
     private List<DomainViewModel>? _domains;
