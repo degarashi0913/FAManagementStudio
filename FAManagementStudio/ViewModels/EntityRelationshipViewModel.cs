@@ -1,13 +1,8 @@
 ﻿using FAManagementStudio.Common;
-using GraphSharp.Algorithms.Layout;
-using GraphSharp.Algorithms.Layout.Simple.FDP;
-using GraphSharp.Algorithms.Layout.Simple.Hierarchical;
-using GraphSharp.Algorithms.Layout.Simple.Tree;
-using QuickGraph;
-using System;
+using GraphShape.Algorithms.Layout;
+using QuikGraph;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace FAManagementStudio.ViewModels
 {
@@ -56,33 +51,25 @@ namespace FAManagementStudio.ViewModels
             switch (type)
             {
                 case "Tree":
-                    var treeParam = new SimpleTreeLayoutParameters();
-                    treeParam.Direction = LayoutDirection.BottomToTop;
-                    treeParam.LayerGap = 20;
-                    treeParam.SpanningTreeGeneration = SpanningTreeGeneration.BFS;
-                    treeParam.VertexGap = 20.0;
-                    treeParam.WidthPerHeight = 50;
-
-                    return treeParam;
+                    return new SimpleTreeLayoutParameters
+                    {
+                        Direction = LayoutDirection.BottomToTop,
+                        LayerGap = 20,
+                        SpanningTreeGeneration = SpanningTreeGeneration.BFS,
+                        VertexGap = 20.0
+                    };
                 case "BoundedFR":
-                    var frParam = new BoundedFRLayoutParameters();
-
-                    return frParam;
+                    return new BoundedFRLayoutParameters();
                 case "ISOM":
-                    var isomParam = new ISOMLayoutParameters();
-
-                    return isomParam;
+                    return new ISOMLayoutParameters();
                 case "LinLog":
-                    var linlogParam = new LinLogLayoutParameters();
-
-                    return linlogParam;
-                case "EfficientSugiyama":
-                    var sugiyamaParam = new EfficientSugiyamaLayoutParameters();
-                    sugiyamaParam.EdgeRouting = SugiyamaEdgeRoutings.Orthogonal;
-                    sugiyamaParam.WidthPerHeight = 5;
-
-                    return sugiyamaParam;
-
+                    return new LinLogLayoutParameters();
+                case "Sugiyama":
+                    return new SugiyamaLayoutParameters
+                    {
+                        EdgeRouting = SugiyamaEdgeRouting.Orthogonal,
+                        WidthPerHeight = 5
+                    };
                 default:
                     return null;
             }
@@ -91,11 +78,22 @@ namespace FAManagementStudio.ViewModels
         private ILayoutParameters _param;
         public ILayoutParameters Parameter
         {
-            get { return _param; }
+            get => _param;
             set
             {
                 _param = value;
                 RaisePropertyChanged(nameof(Parameter));
+            }
+        }
+
+        private double _scale = 1.0;
+        public double Scale
+        {
+            get => _scale;
+            set
+            {
+                _scale = value;
+                RaisePropertyChanged(nameof(Scale));
             }
         }
     }

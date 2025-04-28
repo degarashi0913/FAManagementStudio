@@ -6,7 +6,7 @@ using System.Collections.ObjectModel;
 using System.Data;
 using System.IO;
 using System.Linq;
-using System.Net;
+using System.Net.Http;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -205,7 +205,16 @@ namespace FAManagementStudio.ViewModels
 
             SaveHistry = new RelayCommand(() => _history.SaveData(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)));
 
-            OpenGitPage = new RelayCommand(() => System.Diagnostics.Process.Start("https://github.com/degarashi0913/FAManagementStudio"));
+
+            OpenGitPage = new RelayCommand(() =>
+            {
+                var psi = new System.Diagnostics.ProcessStartInfo
+                {
+                    FileName = "https://github.com/degarashi0913/FAManagementStudio",
+                    UseShellExecute = true
+                };
+                System.Diagnostics.Process.Start(psi);
+            });
 
             PinedCommand = new RelayCommand(() =>
             {
@@ -373,33 +382,29 @@ namespace FAManagementStudio.ViewModels
                 }
                 else
                 {
-                    latestVersion = await GetNewVirsion();
+                    latestVersion = await GetNewVersion();
                     AppSettingsManager.Version = latestVersion;
                 }
 
                 if (latestVersion != versionStr)
                 {
                     ExistNewVersion = Visibility.Visible;
-                };
+                }
+                ;
             }
             catch { }
         }
 
-        private Task<string> GetNewVirsion()
+        private async Task<string> GetNewVersion()
         {
-            return Task.Run<string>(() =>
-            {
-                var reqest = (HttpWebRequest)WebRequest.Create(@"https://github.com/degarashi0913/FAManagementStudio/releases/latest");
-                reqest.UserAgent = "FAManagementStudio";
-                reqest.Method = "GET";
-                using (var stream = reqest.GetResponse().GetResponseStream())
-                using (var readStream = new StreamReader(stream, Encoding.UTF8))
-                {
-                    var html = readStream.ReadToEnd();
-                    var title = Regex.Match(html, @"\<title\>(?<title>.*)\<\/title\>").Groups["title"].Value;
-                    return Regex.Match(title, @"FAManagementStudio-v(?<version>\d*\.\d*\.\d*)").Groups["version"].Value;
-                }
-            });
+            using var httpClient = new HttpClient();
+            httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("FAManagementStudio");
+            var response = await httpClient.GetAsync("https://github.com/degarashi0913/FAManagementStudio/releases/latest");
+            response.EnsureSuccessStatusCode();
+
+            var html = await response.Content.ReadAsStringAsync();
+            var title = Regex.Match(html, @"\<title\>(?<title>.*)\<\/title\>").Groups["title"].Value;
+            return Regex.Match(title, @"FAManagementStudio-v(?<version>\d*\.\d*\.\d*)").Groups["version"].Value;
         }
 
         public ObservableCollection<IProjectNodeViewModel> QueryProjects { get; } = new ObservableCollection<IProjectNodeViewModel>();

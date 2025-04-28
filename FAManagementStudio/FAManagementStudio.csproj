@@ -1,82 +1,62 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" Sdk="Microsoft.NET.Sdk.WindowsDesktop">
-  <PropertyGroup>
-    <OutputType>WinExe</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>FAManagementStudio</RootNamespace>
-    <AssemblyName>FAManagementStudio</AssemblyName>
-    <FileAlignment>512</FileAlignment>
-    <WarningLevel>4</WarningLevel>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-    <TargetFramework>netcoreapp3.0</TargetFramework>
-    <UseWPF>true</UseWPF>
-    <Version>1.0.0.0</Version>
-    <Platforms>x64;x86</Platforms>
-  </PropertyGroup>
-  <PropertyGroup>
-    <ApplicationIcon>Image\systemicon.ico</ApplicationIcon>
-  </PropertyGroup>
-  <ItemGroup>
-    <AppDesigner Include="Properties\" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Image\base_exclamationmark_32.png" />
-    <Resource Include="Image\action_add_16xLG.png" />
-    <Resource Include="Image\hardware_16xLG.png" />
-    <Resource Include="Image\ForeigenKey.png" />
-    <Resource Include="Image\PrimaryKey.png" />
-    <Resource Include="Image\systemicon.ico" />
-    <Resource Include="Image\DbShape.png" />
-    <Resource Include="Image\UpdateImage.png" />
-    <Resource Include="Image\Table.png" />
-    <Resource Include="Image\View.png" />
-    <Resource Include="Image\PFKey.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\FAManagementStudio.Controls\FAManagementStudio.Controls.csproj">
-      <Project>{0ae2fcf9-be9a-453a-a5b5-c294e9c1b06d}</Project>
-      <Name>FAManagementStudio.Controls</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Image\DatabaseItem.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Image\File.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Image\ExecutionPlan.png" />
-    <Resource Include="Image\PinItem.png" />
-    <Resource Include="Image\Folder.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Image\IntelliSenseKeyword.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <WCFMetadata Include="Connected Services\" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="AvalonEdit" Version="6.0.0" />
-    <PackageReference Include="FirebirdSql.Data.FirebirdClient" Version="7.1.1" />
-    <PackageReference Include="GraphSharp" Version="1.1.0.0" />
-    <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.0.1" />
-    <PackageReference Include="QuickGraph" Version="3.6.61119.7" />
-    <PackageReference Include="WPFExtensions" Version="1.0.0" />
-  </ItemGroup>
-  <PropertyGroup />
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>このプロジェクトは、このコンピューター上にない NuGet パッケージを参照しています。それらのパッケージをダウンロードするには、[NuGet パッケージの復元] を使用します。詳細については、http://go.microsoft.com/fwlink/?LinkID=322105 を参照してください。見つからないファイルは {0} です。</ErrorText>
-    </PropertyGroup>
-  </Target>
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="if $(PlatformName) equ x64 (&#xD;&#xA;xcopy  /y /s $(SolutionDir)Assemblies\Firebird\x64_dll $(TargetDir)&#xD;&#xA;) else (&#xD;&#xA;xcopy /y /s  $(SolutionDir)Assemblies\Firebird\x86_dll $(TargetDir)&#xD;&#xA;)&#xD;&#xA;if $(ConfigurationName) equ Release (&#xD;&#xA;del $(TargetDir)*.pdb&#xD;&#xA;del $(TargetDir)*.xml&#xD;&#xA;)" />
-  </Target>
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<OutputType>WinExe</OutputType>
+		<AppDesignerFolder>Properties</AppDesignerFolder>
+		<RootNamespace>FAManagementStudio</RootNamespace>
+		<AssemblyName>FAManagementStudio</AssemblyName>
+		<FileAlignment>512</FileAlignment>
+		<WarningLevel>4</WarningLevel>
+		<AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+		<TargetFramework>net9.0-windows</TargetFramework>
+		<UseWPF>true</UseWPF>
+		<Version>1.0.0.0</Version>
+		<Platforms>x64;x86</Platforms>
+	</PropertyGroup>
+	<PropertyGroup>
+		<ApplicationIcon>Image\systemicon.ico</ApplicationIcon>
+	</PropertyGroup>
+	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
+		<Exec Command="if $(PlatformName) equ x64 (&#xD;&#xA;xcopy /y /s $(SolutionDir)Assemblies\Firebird\x64_dll $(TargetDir)&#xD;&#xA;) else (&#xD;&#xA;xcopy /y /s  $(SolutionDir)Assemblies\Firebird\x86_dll $(TargetDir)&#xD;&#xA;)&#xD;&#xA;if $(ConfigurationName) equ Release (&#xD;&#xA;del $(TargetDir)*.pdb&#xD;&#xA;del $(TargetDir)*.xml&#xD;&#xA;)" />
+	</Target>
+	<ItemGroup>
+		<Resource Include="Image\base_exclamationmark_32.png" />
+		<Resource Include="Image\action_add_16xLG.png" />
+		<Resource Include="Image\hardware_16xLG.png" />
+		<Resource Include="Image\ForeigenKey.png" />
+		<Resource Include="Image\PrimaryKey.png" />
+		<Resource Include="Image\systemicon.ico" />
+		<Resource Include="Image\DbShape.png" />
+		<Resource Include="Image\UpdateImage.png" />
+		<Resource Include="Image\Table.png" />
+		<Resource Include="Image\View.png" />
+		<Resource Include="Image\PFKey.png" />
+		<Resource Include="Image\DatabaseItem.png" />
+		<Resource Include="Image\File.png" />
+		<Resource Include="Image\ExecutionPlan.png" />
+		<Resource Include="Image\PinItem.png" />
+		<Resource Include="Image\Folder.png" />
+		<Resource Include="Image\IntelliSenseKeyword.png" />
+	</ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="GraphShape" />
+		<PackageReference Include="GraphShape.Controls" />
+		<PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" />
+	</ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\FAManagementStudio.Controls\FAManagementStudio.Controls.csproj" />
+	</ItemGroup>
+	<ItemGroup>
+		<Compile Update="Properties\Settings.Designer.cs">
+			<DesignTimeSharedInput>True</DesignTimeSharedInput>
+			<AutoGen>True</AutoGen>
+			<DependentUpon>Settings.settings</DependentUpon>
+		</Compile>
+	</ItemGroup>
+	<ItemGroup>
+		<None Update="Properties\Settings.settings">
+			<Generator>SettingsSingleFileGenerator</Generator>
+			<LastGenOutput>Settings.Designer.cs</LastGenOutput>
+		</None>
+	</ItemGroup>
 </Project>

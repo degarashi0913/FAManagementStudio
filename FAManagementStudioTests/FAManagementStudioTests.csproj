@@ -1,22 +1,18 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
-
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <TargetFramework>net9.0-windows</TargetFramework>
     <IsPackable>false</IsPackable>
     <Platforms>x64;x86</Platforms>
   </PropertyGroup>
-
   <ItemGroup>
-    <PackageReference Include="ChainingAssertion" Version="1.7.1" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.3.0" />
-    <PackageReference Include="MSTest.TestAdapter" Version="2.0.0" />
-    <PackageReference Include="MSTest.TestFramework" Version="2.0.0" />
+    <PackageReference Include="ChainingAssertion" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="MSTest.TestAdapter" />
+    <PackageReference Include="MSTest.TestFramework" />
   </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\FAManagementStudio\FAManagementStudio.csproj" />
   </ItemGroup>
-  
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="if $(PlatformName) equ x64 (&#xD;&#xA;xcopy  /y /s $(SolutionDir)Assemblies\Firebird\x64_dll $(TargetDir)&#xD;&#xA;) else (&#xD;&#xA;xcopy /y /s  $(SolutionDir)Assemblies\Firebird\x86_dll $(TargetDir)&#xD;&#xA;)&#xD;&#xA;if $(ConfigurationName) equ Release (&#xD;&#xA;del $(TargetDir)*.pdb&#xD;&#xA;del $(TargetDir)*.xml&#xD;&#xA;)" />
   </Target>
