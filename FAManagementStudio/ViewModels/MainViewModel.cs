@@ -130,9 +130,9 @@ namespace FAManagementStudio.ViewModels
 
             if (string.IsNullOrEmpty(vm.Path)) return;
 
-            var db = new DbViewModel();
-            await db.CreateDatabase(vm.Path, vm.Type, vm.CharSet);
+            var db = DbViewModel.CreateDatabase(vm.Path, vm.Type, vm.CharSet);
             Databases.Add(db);
+            await db.LoadDatabase();
             _history.DataAdd(vm.Path);
         }
 
@@ -144,9 +144,9 @@ namespace FAManagementStudio.ViewModels
             var dbInf = new DatabaseInfo(new FirebirdInfo(path));
             if (!dbInf.CanLoadDatabase) return;
 
-            var db = new DbViewModel();
+            var db = new DbViewModel(dbInf);
             Databases.Add(db);
-            await db.LoadDatabase(dbInf);
+            await db.LoadDatabase();
             _history.DataAdd(path);
         }
 

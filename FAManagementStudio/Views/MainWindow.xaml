@@ -227,7 +227,7 @@
                 </TreeView>
                 <GridSplitter Grid.Row="1" Style="{StaticResource HorizontalSpliterStyle}" />
                 <DockPanel Grid.Row="2" Background="#fafbfc">
-                    <Button DockPanel.Dock="Bottom" Content="Other Info" Background="Transparent" Command="{Binding  ElementName=AdditionalBox, Path=DataContext.ContentChange}" Focusable="False" />
+                    <Button DockPanel.Dock="Bottom" Content="Other Info" Background="Transparent" Command="{Binding  ElementName=AdditionalBox, Path=DataContext.ContentChange}" CommandParameter="" Focusable="False" />
                     <ItemsControl DockPanel.Dock="Bottom" Name="AdditionalBox"  DataContext="{Binding SelectedValue.AdditionalInfo, ElementName=DbListBox}" ItemsSource="{Binding DataContext.CurrentContent, RelativeSource={RelativeSource Self}}">
                         <ItemsControl.Template>
                             <ControlTemplate>
