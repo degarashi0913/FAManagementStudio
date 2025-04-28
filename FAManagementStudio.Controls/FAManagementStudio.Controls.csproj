@@ -1,23 +1,32 @@
 ﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <OutputType>library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>FAManagementStudio.Controls</RootNamespace>
-    <AssemblyName>FAManagementStudio.Controls</AssemblyName>
-    <FileAlignment>512</FileAlignment>
-    <WarningLevel>4</WarningLevel>
-    <TargetFramework>net9.0-windows</TargetFramework>
-    <UseWPF>true</UseWPF>
-    <Version>1.0.0.0</Version>
-    <Platforms>x64;x86</Platforms>
-  </PropertyGroup>
-  <ItemGroup>
-    <Resource Include="Files\sql.xshd" />
-    <PackageReference Include="AvalonEdit" />
-    <PackageReference Include="FirebirdSql.Data.FirebirdClient" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Images\PinItem.png" />
-    <Resource Include="Images\PinnedItem.png" />
-  </ItemGroup>
+	<PropertyGroup>
+		<OutputType>library</OutputType>
+		<AppDesignerFolder>Properties</AppDesignerFolder>
+		<RootNamespace>FAManagementStudio.Controls</RootNamespace>
+		<AssemblyName>FAManagementStudio.Controls</AssemblyName>
+		<FileAlignment>512</FileAlignment>
+		<WarningLevel>4</WarningLevel>
+		<TargetFramework>net9.0-windows</TargetFramework>
+		<UseWPF>true</UseWPF>
+		<Version>1.0.0.0</Version>
+		<Platforms>x64;x86</Platforms>
+		<Nullable>enable</Nullable>
+	</PropertyGroup>
+	<ItemGroup>
+		<Resource Include="Files\sql.xshd" />
+		<PackageReference Include="AvalonEdit" />
+		<PackageReference Include="FirebirdSql.Data.FirebirdClient" />
+	</ItemGroup>
+	<ItemGroup>
+		<Resource Include="Images\PinItem.png" />
+		<Resource Include="Images\PinnedItem.png" />
+	</ItemGroup>
+	<ItemGroup>
+		<AssemblyAttribute Include="System.Windows.ThemeInfoAttribute">
+			<_Parameter1>System.Windows.ResourceDictionaryLocation.None</_Parameter1>
+			<_Parameter1_IsLiteral>true</_Parameter1_IsLiteral>
+			<_Parameter2>System.Windows.ResourceDictionaryLocation.SourceAssembly</_Parameter2>
+			<_Parameter2_IsLiteral>true</_Parameter2_IsLiteral>
+		</AssemblyAttribute>
+	</ItemGroup>
 </Project>
