@@ -70,6 +70,7 @@
                 <ComboBox Name="DbPathComb" Height="auto" Width="300" IsEditable="True" IsTextSearchEnabled="True" IsReadOnly="False" ItemsSource="{Binding DataInput}" Text="{Binding InputPath, Mode=TwoWay}" AllowDrop="True">
                     <Behaviors:Interaction.Behaviors>
                         <b:FileDropBehavior DropedCommand="{Binding DropFile}" FetchMode="Once"/>
+                        <b:MouseDoubleClickBehavior DoubleClickCommand="{Binding OpenFilePathDialog}"/>
                     </Behaviors:Interaction.Behaviors>
                 </ComboBox>
                 <Button Command="{Binding LoadDatabase}" CommandParameter="{Binding ElementName=DbPathComb, Path=Text }">

@@ -14,6 +14,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using Microsoft.Win32;
 
 namespace FAManagementStudio.ViewModels
 {
@@ -71,6 +72,8 @@ namespace FAManagementStudio.ViewModels
 
         public ICommand DropFile { get; private set; }
         public ICommand DbListDropFile { get; private set; }
+
+        public ICommand OpenFilePathDialog { get; private set; }
 
         public ICommand SetSqlTemplate { get; private set; }
         public ICommand ExecSqlTemplate { get; private set; }
@@ -149,6 +152,16 @@ namespace FAManagementStudio.ViewModels
             DbListDropFile = new RelayCommand<string>((string path) =>
             {
                 LoadDatabase.Execute(path);
+            });
+
+            OpenFilePathDialog = new RelayCommand(() =>
+            {
+                var dialog = new OpenFileDialog();
+                dialog.DefaultExt = "fdb";
+                dialog.Filter = "すべてのファイル(*.*)|*.*";
+                if (dialog.ShowDialog() != true) return;
+                if (!File.Exists(dialog.FileName)) return;
+                LoadDatabase.Execute(dialog.FileName);
             });
 
             SetSqlTemplate = new RelayCommand<SqlKind>((SqlKind sqlKind) =>
