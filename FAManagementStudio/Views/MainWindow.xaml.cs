@@ -73,5 +73,56 @@ namespace FAManagementStudio.Views
 
             itemSource.Move(sourceIdx, targetIdx);
         }
+
+        private void ResultView_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            if (sender is not DataGrid dataGrid) return;
+
+            var scrollViewer = FindVisualChild<ScrollViewer>(dataGrid);
+            if (scrollViewer == null) return;
+
+            if (0 < e.Delta)
+            {
+                if (scrollViewer.VerticalOffset == 0)
+                {
+                    e.Handled = true;
+                    RaiseMouseWheelEventToParent(dataGrid, e);
+                }
+            }
+            else
+            {
+                if (scrollViewer.VerticalOffset >= scrollViewer.ScrollableHeight)
+                {
+                    e.Handled = true;
+                    RaiseMouseWheelEventToParent(dataGrid, e);
+                }
+            }
+        }
+
+        private void RaiseMouseWheelEventToParent(UIElement sender, MouseWheelEventArgs e)
+        {
+            var e2 = new MouseWheelEventArgs(e.MouseDevice, e.Timestamp, e.Delta)
+            {
+                RoutedEvent = MouseWheelEvent,
+                Source = sender
+            };
+            if (VisualTreeHelper.GetParent(sender) is UIElement parent)
+            {
+                parent.RaiseEvent(e2);
+            }
+        }
+
+        private T? FindVisualChild<T>(DependencyObject? obj) where T : DependencyObject
+        {
+            if (obj == null) return null;
+
+            for (int i = 0; i < VisualTreeHelper.GetChildrenCount(obj); i++)
+            {
+                var child = VisualTreeHelper.GetChild(obj, i);
+                if (child is T childElement) return childElement;
+                if (FindVisualChild<T>(child) is { } childOfChild) return childOfChild;
+            }
+            return null;
+        }
     }
 }

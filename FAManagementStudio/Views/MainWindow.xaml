@@ -424,7 +424,7 @@
                     </TabControl.ItemTemplate>
                     <TabControl.ContentTemplate>
                         <DataTemplate>
-                            <ListBox ItemsSource="{Binding Result}" ScrollViewer.VerticalScrollBarVisibility="Visible" ScrollViewer.CanContentScroll="False" HorizontalContentAlignment="Stretch">
+                            <ListBox ItemsSource="{Binding Result}" ScrollViewer.VerticalScrollBarVisibility="Visible" ScrollViewer.CanContentScroll="True" VirtualizingPanel.ScrollUnit="Pixel" HorizontalContentAlignment="Stretch">
                                 <ListBox.Resources>
                                     <c:GridHightSizeConverter x:Key="HeightConverter"/>
                                     <c:GridWidthSizeConverter x:Key="WidthConverter"/>
@@ -436,14 +436,15 @@
                                 </ListBox.ItemContainerStyle>
                                 <ListBox.ItemTemplate>
                                     <DataTemplate>
-                                        <StackPanel Orientation="Vertical" Margin="0,0,0,10">
+                                        <StackPanel Orientation="Vertical" Margin="10,5,10,5">
                                             <DataGrid Name="ResultView" HorizontalAlignment="Stretch"
                                                 ItemsSource="{Binding View}" Margin="0,0,0,0" EnableColumnVirtualization="True" EnableRowVirtualization="True"
                                                 VirtualizingStackPanel.IsVirtualizing="True" VirtualizingStackPanel.VirtualizationMode="Recycling" 
                                                 CanUserAddRows="False" CanUserDeleteRows="False"
                                                 MaxWidth="{Binding Path=ActualWidth, ElementName=ResultGrid, Converter={StaticResource WidthConverter}}"
                                                 MaxHeight="{Binding Path=ActualHeight, ElementName=ResultRow, Converter={StaticResource HeightConverter}}"
-                                                IsReadOnly="True" AutoGenerateColumns="True">
+                                                IsReadOnly="True" AutoGenerateColumns="True"
+                                                PreviewMouseWheel="ResultView_PreviewMouseWheel">
                                                 <Behaviors:Interaction.Behaviors>
                                                     <b:GridHeaderDisplayNameBehavior/>
                                                 </Behaviors:Interaction.Behaviors>
