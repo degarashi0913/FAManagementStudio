@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
@@ -201,9 +202,9 @@ namespace FAManagementStudio.ViewModels
                 Queries.Remove(item);
             });
 
-            LoadHistry = new RelayCommand(() => _history.LoadData(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)));
+            LoadHistry = new RelayCommand(() => _history.LoadData(Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName)));
 
-            SaveHistry = new RelayCommand(() => _history.SaveData(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)));
+            SaveHistry = new RelayCommand(() => _history.SaveData(Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName)));
 
 
             OpenGitPage = new RelayCommand(() =>

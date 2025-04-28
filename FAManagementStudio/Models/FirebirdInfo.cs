@@ -1,8 +1,7 @@
 ﻿using FAManagementStudio.Common;
 using FAManagementStudio.Models.Firebird;
 using FirebirdSql.Data.FirebirdClient;
-using System.IO;
-using System.Reflection;
+using System.Diagnostics;
 
 namespace FAManagementStudio.Models
 {
@@ -16,7 +15,7 @@ namespace FAManagementStudio.Models
         public FirebirdInfo(string path, FirebirdType fbType, FbCharset charset)
         {
             Builder.Database = path;
-            Builder.ClientLibrary = fbType == FirebirdType.Fb3 ? @"fb3\fbclient" : System.IO.Path.Combine(System.IO.Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), @"fb25\fbembed.dll");
+            Builder.ClientLibrary = fbType == FirebirdType.Fb3 ? @"fb3\fbclient" : System.IO.Path.Combine(System.IO.Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName), @"fb25\fbembed.dll");
             Builder.Charset = new FbUtility().GetCharsetString(charset);
         }
 
@@ -30,7 +29,7 @@ namespace FAManagementStudio.Models
         {
             _odsVersion = new FbUtility().GetOdsVersion(path);
             Builder.Database = path;
-            Builder.ClientLibrary = _odsVersion == _fb3Ods ? @"fb3\fbclient" : System.IO.Path.Combine(System.IO.Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), @"fb25\fbembed.dll");
+            Builder.ClientLibrary = _odsVersion == _fb3Ods ? @"fb3\fbclient" : System.IO.Path.Combine(System.IO.Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName), @"fb25\fbembed.dll");
         }
 
         public bool IsTargetOdsVersion() => _odsVersion == _fb2Ods || _odsVersion == _fb3Ods;

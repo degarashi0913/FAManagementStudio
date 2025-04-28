@@ -12,13 +12,25 @@
 		<UseWPF>true</UseWPF>
 		<Version>1.0.0.0</Version>
 		<Platforms>x64;x86</Platforms>
-	</PropertyGroup>
-	<PropertyGroup>
+		<PublishSingleFile>true</PublishSingleFile>
+		<SelfContained>true</SelfContained>
 		<ApplicationIcon>Image\systemicon.ico</ApplicationIcon>
+		<Nullable>enable</Nullable>
+		<SatelliteResourceLanguages>en-US;ja</SatelliteResourceLanguages>
 	</PropertyGroup>
-	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
-		<Exec Command="if $(PlatformName) equ x64 (&#xD;&#xA;xcopy /y /s $(SolutionDir)Assemblies\Firebird\x64_dll $(TargetDir)&#xD;&#xA;) else (&#xD;&#xA;xcopy /y /s  $(SolutionDir)Assemblies\Firebird\x86_dll $(TargetDir)&#xD;&#xA;)&#xD;&#xA;if $(ConfigurationName) equ Release (&#xD;&#xA;del $(TargetDir)*.pdb&#xD;&#xA;del $(TargetDir)*.xml&#xD;&#xA;)" />
+	<ItemGroup>
+		<NativeDlls Include="$(SolutionDir)Assemblies\Firebird\$(PlatformName)_dll\**\*" />
+	</ItemGroup>
+
+	<Target Name="CopyNativeDllsAfterBuild" AfterTargets="PostBuildEvent">
+		<Copy SourceFiles="@(NativeDlls)" DestinationFiles="@(NativeDlls->'$(TargetDir)%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" />
 	</Target>
+	<ItemGroup>
+		<ResolvedFileToPublish Include="@(NativeDlls)">
+			<RelativePath>%(RecursiveDir)%(Filename)%(Extension)</RelativePath>
+			<CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+		</ResolvedFileToPublish>
+	</ItemGroup>
 	<ItemGroup>
 		<Resource Include="Image\base_exclamationmark_32.png" />
 		<Resource Include="Image\action_add_16xLG.png" />

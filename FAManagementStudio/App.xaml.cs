@@ -21,7 +21,7 @@ namespace FAManagementStudio
         {
             AppSettingsManager.Save();
             //FB 3秒問題のため、暫定実装。
-            UnloadDll(Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), @"fb25\fbembed.dll"));
+            UnloadDll(Path.Combine(Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName), @"fb25\fbembed.dll"));
             base.OnExit(e);
         }
         [DllImport("kernel32", SetLastError = true)]
