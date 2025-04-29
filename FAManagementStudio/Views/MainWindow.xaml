@@ -141,7 +141,14 @@
                 </ListBox>
                 <GridSplitter Grid.Row="1" Style="{StaticResource HorizontalSpliterStyle}" />
                 <DockPanel Grid.Row="2">
-                    <Button DockPanel.Dock="Bottom" Content="BasePathSettings" Background="Transparent" Command="{Binding ShowPathSettings}" Focusable="False" />
+                    <Grid DockPanel.Dock="Bottom">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="auto"/>
+                        </Grid.ColumnDefinitions>
+                        <Button Content="📁" Background="Transparent" Command="{Binding ShowPathSettings}" Focusable="False" Grid.Column="0" FontFamily="Segoe UI Emoji"/>
+                        <Button Content="🔄" Background="Transparent"  Command="{Binding ReloadFileView}" Grid.Column="1" FontFamily="Segoe UI Emoji"/>
+                    </Grid>
                     <TreeView ItemsSource="{Binding QueryProjects}" AllowDrop="True" Background="#fafbfc">
                         <Behaviors:Interaction.Behaviors>
                             <b:TreeViewItemDobleClickBehavior ClickCommand="{Binding ProjectItemOpen}" />

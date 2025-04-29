@@ -23,8 +23,10 @@ namespace FAManagementStudio.ViewModels
     {
         public MainViewModel()
         {
-#if !DEBUG || true
-            SetNewVersionStatus();
+            QueryProjects = new(_queryProjects);
+
+#if !DEBUG
+            _ = SetNewVersionStatusAsync();
 #endif
             SetQueryProject();
         }
@@ -115,6 +117,9 @@ namespace FAManagementStudio.ViewModels
 
         private ICommand? _showPathSettings;
         public ICommand ShowPathSettings => _showPathSettings ??= new RelayCommand(OnShowPathSettings);
+
+        private ICommand? _reloadFileView;
+        public ICommand ReloadFileView => _reloadFileView ??= new RelayCommand(OnReloadFileView);
 
         private ICommand? _projectItemOpen;
         public ICommand ProjectItemOpen => _projectItemOpen ??= new RelayCommand<object>(OnProjectItemOpen);
@@ -340,6 +345,12 @@ namespace FAManagementStudio.ViewModels
             MessengerInstance.Send(new MessageBase(vm, "BasePathSettingsWindowOpen"));
         }
 
+        private void OnReloadFileView()
+        {
+            _queryProjects.Clear();
+            SetQueryProject();
+        }
+
         private void OnProjectItemOpen(object obj)
         {
             if (obj is not QueryProjectFileViewModel item) return;
@@ -354,7 +365,7 @@ namespace FAManagementStudio.ViewModels
 
         private void OnProjectItemDrop(string path)
         {
-            QueryProjects.Add(QueryProjectViewModel.GetData(path).First());
+            _queryProjects.Add(QueryProjectViewModel.GetData(path).First());
             AppSettingsManager.QueryProjectBasePaths.Add(path);
         }
 
@@ -411,7 +422,7 @@ namespace FAManagementStudio.ViewModels
         private string EscapeKeyWord(string column)
             => _sqlKeyWord.Contains(column.ToLower()) ? $"'{column}'" : column;
 
-        private async void SetNewVersionStatus()
+        private async Task SetNewVersionStatusAsync()
         {
             try
             {
@@ -452,17 +463,15 @@ namespace FAManagementStudio.ViewModels
             return ExtractVersionRegex().Match(title).Groups["version"].Value;
         }
 
-        public ObservableCollection<IProjectNodeViewModel> QueryProjects { get; } = [];
+        private ObservableCollection<IProjectNodeViewModel> _queryProjects = [];
+        public ReadOnlyObservableCollection<IProjectNodeViewModel> QueryProjects { get; }
 
-        private async void SetQueryProject()
+        private void SetQueryProject()
         {
-            await Task.Run(() =>
+            foreach (var pItem in QueryProjectViewModel.GetData([.. AppSettingsManager.QueryProjectBasePaths]))
             {
-                foreach (var pItem in QueryProjectViewModel.GetData([.. AppSettingsManager.QueryProjectBasePaths]))
-                {
-                    Application.Current.Dispatcher.Invoke(new Action(() => QueryProjects.Add(pItem)));
-                }
-            });
+                _queryProjects.Add(pItem);
+            }
         }
 
         public FirebirdRecommender Recommender { get; } = new FirebirdRecommender();
