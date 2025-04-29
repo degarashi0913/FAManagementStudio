@@ -14,7 +14,7 @@ public class DatabaseInfo(FirebirdInfo fbInfo) : BindableBase
 
     public void CreateDatabase()
     {
-        FbConnection.CreateDatabase(fbInfo.Builder.ConnectionString, false);
+        FbConnection.CreateDatabase(fbInfo.Builder.ConnectionString, overwrite: false);
     }
 
     public string GetDefaultCharSet(FbConnection con)

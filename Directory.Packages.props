@@ -7,7 +7,7 @@
   <ItemGroup>
     <PackageVersion Include="AvalonEdit" Version="6.3.1.120" />
     <PackageVersion Include="ChainingAssertion" Version="1.7.1" />
-    <PackageVersion Include="FirebirdSql.Data.FirebirdClient" Version="7.1.1" />
+    <PackageVersion Include="FirebirdSql.Data.FirebirdClient" Version="10.3.3" />
     <PackageVersion Include="GraphShape" Version="1.2.1" />
     <PackageVersion Include="GraphShape.Controls" Version="1.2.2" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.13.0" />

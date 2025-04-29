@@ -15,7 +15,6 @@
 	<ItemGroup>
 		<Resource Include="Files\sql.xshd" />
 		<PackageReference Include="AvalonEdit" />
-		<PackageReference Include="FirebirdSql.Data.FirebirdClient" />
 	</ItemGroup>
 	<ItemGroup>
 		<Resource Include="Images\PinItem.png" />

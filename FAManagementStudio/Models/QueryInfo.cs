@@ -100,7 +100,7 @@ namespace FAManagementStudio.Models
                     table.Rows.Add(row);
                 }
                 var executeTime = DateTime.Now - startTime;
-                var plan = showExecutePlan ? command.CommandPlan : "";
+                var plan = showExecutePlan ? command.GetCommandPlan() : "";
 
                 return new QueryResult(table, executeTime, query, table.Rows.Count, plan);
             }

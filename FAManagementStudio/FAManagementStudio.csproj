@@ -51,6 +51,7 @@
 		<Resource Include="Image\IntelliSenseKeyword.png" />
 	</ItemGroup>
 	<ItemGroup>
+		<PackageReference Include="FirebirdSql.Data.FirebirdClient" />
 		<PackageReference Include="GraphShape" />
 		<PackageReference Include="GraphShape.Controls" />
 		<PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" />
