@@ -5,15 +5,15 @@
     <NoWarn>$(NoWarn);NU1507</NoWarn>
   </PropertyGroup>
   <ItemGroup>
-    <PackageVersion Include="AvalonEdit" Version="6.0.0" />
+    <PackageVersion Include="AvalonEdit" Version="6.3.1.120" />
     <PackageVersion Include="ChainingAssertion" Version="1.7.1" />
     <PackageVersion Include="FirebirdSql.Data.FirebirdClient" Version="7.1.1" />
     <PackageVersion Include="GraphShape" Version="1.2.1" />
     <PackageVersion Include="GraphShape.Controls" Version="1.2.2" />
-    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="16.3.0" />
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.13.0" />
     <PackageVersion Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.135" />
-    <PackageVersion Include="MSTest.TestAdapter" Version="2.0.0" />
-    <PackageVersion Include="MSTest.TestFramework" Version="2.0.0" />
+    <PackageVersion Include="MSTest.TestAdapter" Version="3.8.3" />
+    <PackageVersion Include="MSTest.TestFramework" Version="3.8.3" />
     <PackageVersion Include="QuickGraph" Version="3.6.61119.7" />
     <PackageVersion Include="WPFExtensions" Version="1.0.0" />
   </ItemGroup>
