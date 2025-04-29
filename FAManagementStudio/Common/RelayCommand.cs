@@ -29,31 +29,21 @@ class RelayCommand : ICommand
         => CanExecuteChanged?.Invoke(this, EventArgs.Empty);
 }
 
-class RelayCommand<T> : ICommand
+class RelayCommand<T>(Action<T> execute, Func<bool> canExecute) : ICommand
 {
-    private readonly Action<T> _execute;
-    private readonly Func<bool> _canExecute;
-
     public event EventHandler? CanExecuteChanged;
 
     public RelayCommand(Action<T> execute) : this(execute, () => true)
     {
     }
 
-    public RelayCommand(Action<T> execute, Func<bool> canExecute)
-    {
-        ArgumentNullException.ThrowIfNull(execute);
-        _execute = execute;
-        _canExecute = canExecute;
-    }
-
-    public bool CanExecute(object? parameter) => _canExecute == null || _canExecute();
+    public bool CanExecute(object? parameter) => canExecute == null || canExecute();
 
     public void Execute(object? parameter)
     {
-        ArgumentNullException.ThrowIfNull(parameter);
+        if (parameter is null) return;
 
-        _execute((T)parameter);
+        execute((T)parameter);
     }
 
     public void RaiseCanExecuteChanged()
