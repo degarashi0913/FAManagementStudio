@@ -30,48 +30,42 @@ public class QueryProjectFolderViewModel : IProjectNodeViewModel
 
         watcher.Created += (sender, e) =>
         {
-            Application.Current.Dispatcher.Invoke(new Action(() =>
-            {
-                if (_children == null || e.Name == null) return;
+            if (_children == null || e.Name == null) return;
 
+            Application.Current.Dispatcher.Invoke(new(() =>
+            {
                 if (File.Exists(e.FullPath))
                 {
                     _children.Add(new QueryProjectFileViewModel(e.Name, e.FullPath));
-                }
-                else
-                {
-                    _children.Add(new QueryProjectFolderViewModel(e.Name, e.FullPath));
                 }
             }));
         };
 
         watcher.Deleted += (sender, e) =>
         {
-            Application.Current.Dispatcher.Invoke(new Action(() =>
-            {
-                if (_children == null) return;
+            if (_children == null) return;
 
+            Application.Current.Dispatcher.Invoke(new(() =>
+            {
                 var item = _children.Where(x => x.FullPath == e.FullPath).FirstOrDefault();
                 if (item == null) return;
                 _children.Remove(item);
             }));
         };
+
         watcher.Renamed += (sender, e) =>
         {
+            if (_children == null || e.OldName == null || e.Name == null) return;
+
             Application.Current.Dispatcher.Invoke(new Action(() =>
             {
-                if (_children == null || e.Name == null) return;
-
-                var item = _children.Where(x => x.FullPath == e.FullPath).FirstOrDefault();
-                if (item == null) return;
-                _children.Remove(item);
+                if (_children.Where(x => x.FullPath == e.OldFullPath).FirstOrDefault() is { } item)
+                {
+                    _children.Remove(item);
+                }
                 if (File.Exists(e.FullPath))
                 {
                     _children.Add(new QueryProjectFileViewModel(e.Name, e.FullPath));
-                }
-                else
-                {
-                    _children.Add(new QueryProjectFolderViewModel(e.Name, e.FullPath));
                 }
             }));
         };
@@ -89,14 +83,20 @@ public class QueryProjectFolderViewModel : IProjectNodeViewModel
     {
         var list = new ObservableCollection<IProjectNodeViewModel>();
         var dir = new DirectoryInfo(FullPath);
+
         foreach (var folder in dir.GetDirectories())
         {
+            var files = folder.GetFiles("*.fmq");
+            if (files.Length == 0) continue;
+
             list.Add(new QueryProjectFolderViewModel(folder.Name, folder.FullName));
         }
+
         foreach (var file in dir.GetFiles("*.fmq"))
         {
             list.Add(new QueryProjectFileViewModel(file.Name, file.FullName));
         }
+
         return list;
     }
 }
