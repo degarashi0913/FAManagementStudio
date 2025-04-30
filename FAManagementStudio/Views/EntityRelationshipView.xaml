@@ -51,8 +51,8 @@
                                                 <Image Source="../Image/Table.png" Height="30" Width="30" />
                                                 <TextBlock Text="{Binding TableName}" TextAlignment="Center" />
                                             </StackPanel>
-                                            <Expander Header="Colums">
-                                                <ItemsControl ItemsSource="{Binding Colums}">
+                                            <Expander Header="Columns">
+                                                <ItemsControl ItemsSource="{Binding Columns}">
                                                     <ItemsControl.Resources>
                                                         <c:ConstraintsKeyToIconConverter x:Key="KeyConverter"/>
                                                     </ItemsControl.Resources>
