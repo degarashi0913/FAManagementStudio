@@ -1,11 +1,8 @@
 ﻿using FAManagementStudio.Models;
 using FirebirdSql.Data.FirebirdClient;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace FAManagementStudioTests
 {
@@ -15,7 +12,7 @@ namespace FAManagementStudioTests
 
         private void SetupTestDbFb3()
         {
-            FbConnection.CreateDatabase(GetFb3ConnectionString(), true);
+            FbConnection.CreateDatabase(GetFb3ConnectionString(), overwrite: true);
             CreateTestTablesFb3(GetFb3ConnectionString());
         }
 
