@@ -266,7 +266,8 @@
                                     <StackPanel>
                                         <TextBlock Text="{Binding IndexName, StringFormat=Name: {0}}" />
                                         <TextBlock Text="{Binding TableName, StringFormat=Table: {0}}" />
-                                        <TextBlock Text="{Binding Kind, StringFormat=Kind: {0}}" />
+                                        <TextBlock Text="{Binding Kind, StringFormat=Constraint: {0}}" />
+                                        <TextBlock Text="{Binding IsUnique, StringFormat=Unique: {0}}" />
                                     </StackPanel>
                                 </Border>
                             </DataTemplate>

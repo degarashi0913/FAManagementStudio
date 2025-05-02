@@ -2,6 +2,7 @@
 using FirebirdSql.Data.FirebirdClient;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace FAManagementStudio.Models
 {
@@ -131,53 +132,51 @@ namespace FAManagementStudio.Models
             }
         }
 
+        // Currently, only simple indexes are supported.
         public IEnumerable<IndexInfo> GetIndex(FbConnection con)
         {
-            using (var command = con.CreateCommand())
+            using var command = con.CreateCommand();
+            command.CommandText =
+                "select trim(idx.rdb$index_name) Name, trim(seg.rdb$field_name) FiledName, idx.rdb$unique_flag UniqueFlag, rel.rdb$constraint_type ConstraintType, trim(rdb$foreign_key) ForeignKey, trim(ref.rdb$update_rule) UpdateRule, trim(ref.rdb$delete_rule) DeleteRule " +
+                "from rdb$indices idx " +
+                "left outer join rdb$index_segments seg on idx.rdb$index_name = seg.rdb$index_name " +
+                "left outer join rdb$relation_constraints rel on idx.rdb$index_name = rel.rdb$index_name " +
+                "left outer join rdb$ref_constraints ref on ref.rdb$constraint_name = rel.rdb$constraint_name " +
+                $"where idx.rdb$relation_name = '{this.TableName}' and idx.rdb$system_flag = 0 order by seg.rdb$field_position";
+            var reader = command.ExecuteReader();
+
+            var list = new List<IndexRecord>();
+
+            while (reader.Read())
             {
-                command.CommandText =
-                    "select trim(idx.rdb$index_name) Name, trim(seg.rdb$field_name) FiledName, rel.rdb$constraint_type ConstraintType, trim(rdb$foreign_key) ForeignKey, trim(ref.rdb$update_rule) UpdateRule, trim(ref.rdb$delete_rule) DeleteRule " +
-                    "from rdb$indices idx " +
-                    "left outer join rdb$index_segments seg on idx.rdb$index_name = seg.rdb$index_name " +
-                    "left outer join rdb$relation_constraints rel on idx.rdb$index_name = rel.rdb$index_name " +
-                    "left outer join rdb$ref_constraints ref on ref.rdb$constraint_name = rel.rdb$constraint_name " +
-                    $"where idx.rdb$relation_name = '{this.TableName}' and idx.rdb$system_flag = 0 order by seg.rdb$field_position";
-                var reader = command.ExecuteReader();
-                var tmpName = "";
-                IndexInfo tmpInf = null;
-                while (reader.Read())
-                {
-                    if (tmpName == (string)reader["Name"])
-                    {
-                        tmpInf.FieldNames.Add((string)reader["FiledName"]);
-                    }
-                    else
-                    {
-                        if (tmpInf != null)
-                        {
-                            tmpName = "";
-                            yield return tmpInf;
-                        }
-                        tmpInf = new IndexInfo();
-                        tmpName = (string)reader["Name"];
-                        tmpInf.Name = tmpName;
-                        var constraintType = reader["ConstraintType"] == DBNull.Value ? "" : (string)(reader["ConstraintType"]);
-                        tmpInf.Kind = GetConstraintType(constraintType);
-                        tmpInf.TableName = this.TableName;
-                        if (tmpInf.Kind == ConstraintsKind.Foreign)
-                        {
-                            tmpInf.ForigenKeyName = (string)reader["ForeignKey"];
-                            tmpInf.UpdateRule = (string)reader["UpdateRule"] == "RESTRICT" ? "" : (string)reader["UpdateRule"];
-                            tmpInf.DeleteRule = (string)reader["DeleteRule"] == "RESTRICT" ? "" : (string)reader["DeleteRule"];
-                        }
-                        tmpInf.FieldNames.Add((string)reader["FiledName"]);
-                    }
-                }
-                if (tmpInf != null)
-                {
-                    yield return tmpInf;
-                }
+                var data = new IndexRecord(
+                    reader.GetString(0),
+                    reader.GetString(1),
+                    reader.GetInt16(2) == 1,
+                    reader.GetString(3),
+                    reader.GetString(4),
+                    reader.GetString(5),
+                    reader.GetString(6));
+
+                list.Add(data);
             }
+
+            return [..list.ToLookup(x => x.Name)
+                 .Select(x =>
+                 {
+                    var first = x.ElementAt(0);
+
+                    return  new IndexInfo(
+                        x.Key,
+                        first.UniqueFlag ,
+                        GetConstraintType(first.ConstraintType),
+                        first.ForeignKey,
+                        [.. x.Select(y => y.FiledName)],
+                        TableName,
+                        first.UpdateRule,
+                        first.DeleteRule);
+                 })];
         }
+        private record struct IndexRecord(string Name, string FiledName, bool UniqueFlag, string ConstraintType, string ForeignKey, string UpdateRule, string DeleteRule);
     }
 }

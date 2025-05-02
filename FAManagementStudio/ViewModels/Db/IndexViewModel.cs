@@ -2,26 +2,20 @@
 using FAManagementStudio.Models;
 using System.Collections.Generic;
 
-namespace FAManagementStudio.ViewModels
+namespace FAManagementStudio.ViewModels;
+
+public class IndexViewModel(IndexInfo indexInfo) : ViewModelBase
 {
-    public class IndexViewModel : ViewModelBase
-    {
-        private IndexInfo _index;
-        public IndexViewModel(IndexInfo inf)
-        {
-            _index = inf;
-        }
+    public string IndexName => indexInfo.Name;
 
-        public string IndexName { get { return _index.Name; } }
+    public string IsUnique => indexInfo.UniqueFlag ? "〇" : "×";
+    public ConstraintsKind Kind => indexInfo.Kind;
 
-        public ConstraintsKind Kind { get { return _index.Kind; } }
+    public string ForeignKeyName => indexInfo.ForeignKeyName;
+    public string UpdateRule => indexInfo.UpdateRule;
+    public string DeleteRule => indexInfo.DeleteRule;
 
-        public string ForignKeyName { get { return _index.ForigenKeyName; } }
-        public string UpdateRule { get { return _index.UpdateRule; } }
-        public string DeleteRule { get { return _index.DeleteRule; } }
+    public string TableName => indexInfo.TableName;
 
-        public string TableName { get { return _index.TableName; } }
-
-        public List<string> FieldNames { get { return _index.FieldNames; } }
-    }
+    public IReadOnlyList<string> FieldNames => indexInfo.FieldNames;
 }

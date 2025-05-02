@@ -1,19 +1,15 @@
 ﻿using FAManagementStudio.Common;
 using System.Collections.Generic;
 
-namespace FAManagementStudio.Models
-{
-    public class IndexInfo
-    {
-        public IndexInfo() { }
-        public string Name { get; set; }
-        public ConstraintsKind Kind { get; set; }
-        public string ForigenKeyName { get; set; }
-        public List<string> FieldNames { get; } = new List<string>();
-        public string TableName { get; set; }
-        //only ForeignKey
-        public string UpdateRule { get; set; }
-        //only ForeignKey
-        public string DeleteRule { get; set; }
-    }
-}
+namespace FAManagementStudio.Models;
+
+public record class IndexInfo(
+    string Name,
+    bool UniqueFlag,
+    ConstraintsKind Kind,
+    string ForeignKeyName,
+    IReadOnlyList<string> FieldNames,
+    string TableName,
+    string UpdateRule, // only ForeignKey
+    string DeleteRule  // onlyForeignKey
+    );
