@@ -1,17 +1,15 @@
 ﻿using FAManagementStudio.Common;
 using FAManagementStudio.Models;
-using FAManagementStudio.Models.db;
-using FAManagementStudio.ViewModels;
+using FAManagementStudio.Models.Db;
 using FirebirdSql.Data.FirebirdClient;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 
-namespace FAManagementStudio.ViewModels;
+namespace FAManagementStudio.ViewModels.Db;
 
 public class DbViewModel(DatabaseInfo dbInfo) : ViewModelBase
 {
@@ -116,7 +114,7 @@ public class DbViewModel(DatabaseInfo dbInfo) : ViewModelBase
              foreach (var item in dbInfo.GetTables(con))
              {
                  var vm = new TableViewModel(item.TableName);
-                 vm.Colums.AddRange([.. item.GetColums(con).Select(x => new ColumViewMoodel(x))]);
+                 vm.Colums.AddRange([.. item.GetColumns(con).Select(x => new ColumViewMoodel(x))]);
                  vm.Triggers.AddRange([.. item.GetTrigger(con).Select(x => new TriggerViewModel(x))]);
                  vm.Indexs.AddRange([.. item.GetIndex(con).Select(x => new IndexViewModel(x))]);
                  table.Add(vm);
@@ -147,7 +145,7 @@ public class DbViewModel(DatabaseInfo dbInfo) : ViewModelBase
             foreach (var item in dbInfo.GetSystemTables(con))
             {
                 var vm = new TableViewModel(item.TableName, true);
-                vm.Colums.AddRange([.. item.GetColums(con).Select(x => new ColumViewMoodel(x))]);
+                vm.Colums.AddRange([.. item.GetColumns(con).Select(x => new ColumViewMoodel(x))]);
                 table.Add(vm);
             }
         });

@@ -15,7 +15,8 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using Microsoft.Win32;
-using FAManagementStudio.Models.db;
+using FAManagementStudio.Models.Db;
+using FAManagementStudio.ViewModels.Db;
 
 namespace FAManagementStudio.ViewModels
 {

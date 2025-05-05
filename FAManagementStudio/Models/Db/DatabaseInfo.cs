@@ -3,7 +3,7 @@ using FirebirdSql.Data.FirebirdClient;
 using System;
 using System.Collections.Generic;
 
-namespace FAManagementStudio.Models.db;
+namespace FAManagementStudio.Models.Db;
 
 public class DatabaseInfo(FirebirdInfo fbInfo) : BindableBase
 {

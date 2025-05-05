@@ -1,5 +1,5 @@
 ﻿using FAManagementStudio.Common;
-using FAManagementStudio.Models.db;
+using FAManagementStudio.Models.Db;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;

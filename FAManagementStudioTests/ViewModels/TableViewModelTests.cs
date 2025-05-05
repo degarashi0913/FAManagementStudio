@@ -1,6 +1,7 @@
 ﻿using FAManagementStudio.Common;
 using FAManagementStudio.Models;
 using FAManagementStudio.ViewModels;
+using FAManagementStudio.ViewModels.Db;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 
