@@ -11,7 +11,7 @@
         xmlns:core="clr-namespace:System;assembly=System.Runtime"
         xmlns:s="clr-namespace:FAManagementStudio.Views.Selectors"
         xmlns:c="clr-namespace:FAManagementStudio.Views.Converters"
-        Title="接続情報" Height="300" Width="400" Icon="../Image/systemicon.ico" WindowStartupLocation="CenterOwner">
+        Title="接続情報" Height="300" Width="500" Icon="../Image/systemicon.ico" WindowStartupLocation="CenterOwner">
     <Window.DataContext>
         <vm:ConnectionSettingsViewModel/>
     </Window.DataContext>
@@ -20,7 +20,7 @@
             <b:WindowCloseAction />
         </b:MessageBaseTriger>
     </Behaviors:Interaction.Triggers>
-    <DockPanel>
+    <DockPanel Grid.IsSharedSizeScope="True">
         <DockPanel.Resources>
             <c:BoolConverter x:Key="bConverter" />
             <DataTemplate x:Key="Other">
@@ -38,7 +38,7 @@
         <StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom" HorizontalAlignment="Center" Margin="0,0,0,5">
             <StackPanel.Resources>
                 <Style x:Key="ButtonStyle" TargetType="Button">
-                    <Setter Property="Width" Value="40"/>
+                    <Setter Property="Width" Value="60"/>
                 </Style>
             </StackPanel.Resources>
             <Button Content="OK" Margin="0,0,5,0" Style="{StaticResource ButtonStyle}" Command="{Binding OkCommand}" />
@@ -51,7 +51,7 @@
             </Button>
         </StackPanel>
         <Expander DockPanel.Dock="Bottom" ExpandDirection="Down">
-            <ListBox DockPanel.Dock="Bottom" ItemsSource="{Binding NotInputList}">
+            <ListBox ItemsSource="{Binding NotInputList}">
                 <ListBox.ItemContainerStyle>
                     <Style TargetType="ListBoxItem">
                         <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
@@ -59,18 +59,27 @@
                 </ListBox.ItemContainerStyle>
                 <ListBox.ItemTemplate>
                     <DataTemplate>
-                        <DockPanel>
-                            <Viewbox MaxWidth="100" DockPanel.Dock="Left" StretchDirection="DownOnly">
+                        <Grid Margin="0,2">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" SharedSizeGroup="LabelColumn"/>
+                                <ColumnDefinition Width="Auto" SharedSizeGroup="SeparatorColumn"/>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <Viewbox MaxWidth="90" StretchDirection="DownOnly" Grid.Column="0" VerticalAlignment="Center">
                                 <TextBlock Text="{Binding Name}" />
                             </Viewbox>
-                            <CheckBox x:Name="EnableCheck" DockPanel.Dock="Right"/>
-                            <ContentControl MinWidth="200" Content="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBoxItem}}}" IsEnabled="{Binding ElementName=EnableCheck,Path=IsChecked}" DockPanel.Dock="Right">
+                            <TextBlock Text=":" Margin="5,0" Grid.Column="1" VerticalAlignment="Center"/>
+                            <ContentControl Grid.Column="2"
+                                        MinWidth="250" Margin="10,0"
+                                        Content="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBoxItem}}}"
+                                        IsEnabled="{Binding ElementName=EnableCheck, Path=IsChecked}">
                                 <ContentControl.ContentTemplateSelector>
                                     <s:ConnectionContentSelector />
                                 </ContentControl.ContentTemplateSelector>
                             </ContentControl>
-                            <TextBlock Text=":" Margin="5,0,5,0" DockPanel.Dock="Right"/>
-                        </DockPanel>
+                            <CheckBox x:Name="EnableCheck" Grid.Column="3" VerticalAlignment="Center"/>
+                        </Grid>
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
@@ -83,17 +92,24 @@
             </ListBox.ItemContainerStyle>
             <ListBox.ItemTemplate>
                 <DataTemplate>
-                    <DockPanel>
-                        <Viewbox MaxWidth="100" DockPanel.Dock="Left" StretchDirection="DownOnly">
+                    <Grid Margin="0,2">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" SharedSizeGroup="LabelColumn"/>
+                            <ColumnDefinition Width="Auto" SharedSizeGroup="SeparatorColumn"/>
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Viewbox MaxWidth="90" StretchDirection="DownOnly" Grid.Column="0" VerticalAlignment="Center">
                             <TextBlock Text="{Binding Name}" />
                         </Viewbox>
-                        <ContentControl Content="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBoxItem}}}" Margin="0,0,10,0" DockPanel.Dock="Right"  MinWidth="250" >
+                        <TextBlock Text=":" Margin="5,0" Grid.Column="1" VerticalAlignment="Center"/>
+                        <ContentControl Grid.Column="2" Margin="10,0,0,0"
+                                    MinWidth="250"
+                                    Content="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBoxItem}}}">
                             <ContentControl.ContentTemplateSelector>
                                 <s:ConnectionContentSelector />
                             </ContentControl.ContentTemplateSelector>
                         </ContentControl>
-                        <TextBlock Text=":" Margin="5,0,5,0" DockPanel.Dock="Right"/>
-                    </DockPanel>
+                    </Grid>
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
