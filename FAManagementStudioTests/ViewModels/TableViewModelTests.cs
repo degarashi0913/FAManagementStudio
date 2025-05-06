@@ -148,7 +148,7 @@ public class TableViewModelTests
     }
 
     [TestMethod()]
-    public void GetDdlTest_ForignKey1()
+    public void GetDdlTest_ForeignKey1()
     {
         var dbVm = DbViewModel.CreateDatabaseForTest();
         var table = new TableViewModel("TEST");
