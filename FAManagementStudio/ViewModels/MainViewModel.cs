@@ -130,6 +130,8 @@ namespace FAManagementStudio.ViewModels
         private readonly PathHistoryRepository _history = new();
         public ObservableCollection<string> DataInput => _history.History;
 
+        private readonly QueryBuilder _queryBuilder = new();
+
         private async Task OnCreateDatabaseAsync()
         {
             var vm = new NewDatabaseSettingsViewModel();
@@ -309,12 +311,12 @@ namespace FAManagementStudio.ViewModels
             {
                 if (table is TableViewViewModel) return;
                 var columns = table.Colums.Select(x => x.ColumName).ToArray();
-                var escapedColumnsStr = string.Join(", ", columns.Select(x => EscapeKeyWord(x)).ToArray());
+                var escapedColumnsStr = string.Join(", ", columns.Select(x => _queryBuilder.EscapeKeyWord(x)).ToArray());
 
                 var insertTemplate = $"insert into {table.TableName} ({escapedColumnsStr})";
 
                 var qry = new QueryInfo(false);
-                var res = qry.ExecuteQuery(CurrentDatabase.ConnectionString, CreateSelectStatement(table.TableName, columns, 0)).First();
+                var res = qry.ExecuteQuery(CurrentDatabase.ConnectionString, _queryBuilder.CreateSelectStatement(table.TableName, columns, 0)).First();
 
                 var sb = new StringBuilder();
 
@@ -390,38 +392,14 @@ namespace FAManagementStudio.ViewModels
 
             return sqlKind switch
             {
-                SqlKind.Select => CreateSelectStatement(table.TableName, columns, limitCount),
-                SqlKind.Insert => CreateInsertStatement(table.TableName, columns),
-                SqlKind.Update => CreateUpdateStatement(table.TableName, columns),
+                SqlKind.Select => _queryBuilder.CreateSelectStatement(table.TableName, columns, limitCount),
+                SqlKind.Insert => _queryBuilder.CreateInsertStatement(table.TableName, columns),
+                SqlKind.Update => _queryBuilder.CreateUpdateStatement(table.TableName, columns),
                 _ => ""
             };
         }
 
         #endregion
-
-        private string CreateSelectStatement(string tableName, string[] columns, int topCount)
-        {
-            var escapedColumnsStr = string.Join(", ", [.. columns.Select(EscapeKeyWord)]);
-            var topSentence = 0 < topCount ? $" first({topCount})" : "";
-            return $"select{topSentence} {escapedColumnsStr} from {tableName}";
-        }
-
-        private string CreateInsertStatement(string tableName, string[] columns)
-        {
-            var escapedColumnsStr = string.Join(", ", columns.Select(EscapeKeyWord).ToArray());
-            var valuesStr = string.Join(", ", columns.Select(x => $"@{x.ToLower()}").ToArray());
-            return $"insert into {tableName} ({escapedColumnsStr}) values ({valuesStr})";
-        }
-
-        private string CreateUpdateStatement(string tableName, string[] columns)
-        {
-            var setStr = string.Join(", ", [.. columns.Select(x => $"{EscapeKeyWord(x)} = @{x.ToLower()}")]);
-            return $"update {tableName} set {setStr}";
-        }
-
-        private readonly HashSet<string> _sqlKeyWord = ["index"];
-        private string EscapeKeyWord(string column)
-            => _sqlKeyWord.Contains(column.ToLower()) ? $"'{column}'" : column;
 
         private async Task SetNewVersionStatusAsync()
         {
