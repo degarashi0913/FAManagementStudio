@@ -2,6 +2,7 @@
 using FAManagementStudio.Models;
 using FAManagementStudio.ViewModels;
 using FAManagementStudio.ViewModels.Db;
+using Microsoft.VisualStudio.TestPlatform.Common.Utilities;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 
@@ -35,14 +36,14 @@ public class TableViewModelTests
 
         table.Indexs.Add(idxVm);
 
-        table.GetDdl(dbVm).Is(
+        Assert.AreEqual(
 "CREATE TABLE TEST (" + Environment.NewLine +
 "  COL1 INTEGER NOT NULL," + Environment.NewLine +
 "  COL2 VARCHAR(100) NOT NULL," + Environment.NewLine +
 "  COL3 TIMESTAMP NOT NULL," + Environment.NewLine +
 "  COL4 BLOB," + Environment.NewLine +
 "  PRIMARY KEY (COL1)" + Environment.NewLine +
-")");
+")", table.GetDdl(dbVm));
     }
     [TestMethod()]
     public void GetDdlTest2()
@@ -72,17 +73,17 @@ public class TableViewModelTests
         dbVm.SetIndexes([idxVm]);
         table.Indexs.Add(idxVm);
 
-        table.GetDdl(dbVm).Is(
-"CREATE TABLE TEST (" + Environment.NewLine +
-"  COL1 INTEGER NOT NULL," + Environment.NewLine +
-"  COL2 VARCHAR(100) NOT NULL," + Environment.NewLine +
-"  COL3 TIMESTAMP NOT NULL," + Environment.NewLine +
-"  COL4 BLOB," + Environment.NewLine +
-"  COL5 NUMERIC(4)," + Environment.NewLine +
-"  COL6 DECIMAL(4,2)," + Environment.NewLine +
-"  COL7 DECIMAL(10,4)," + Environment.NewLine +
-"  CONSTRAINT COMPLEXKEY PRIMARY KEY (COL1, COL2)" + Environment.NewLine +
-")");
+        Assert.AreEqual(
+ "CREATE TABLE TEST (" + Environment.NewLine +
+ "  COL1 INTEGER NOT NULL," + Environment.NewLine +
+ "  COL2 VARCHAR(100) NOT NULL," + Environment.NewLine +
+ "  COL3 TIMESTAMP NOT NULL," + Environment.NewLine +
+ "  COL4 BLOB," + Environment.NewLine +
+ "  COL5 NUMERIC(4)," + Environment.NewLine +
+ "  COL6 DECIMAL(4,2)," + Environment.NewLine +
+ "  COL7 DECIMAL(10,4)," + Environment.NewLine +
+ "  CONSTRAINT COMPLEXKEY PRIMARY KEY (COL1, COL2)" + Environment.NewLine +
+ ")", table.GetDdl(dbVm));
     }
     [TestMethod()]
     public void GetDdlTest3()
@@ -112,7 +113,7 @@ public class TableViewModelTests
         dbVm.SetIndexes([idxVm]);
         table.Indexs.Add(idxVm);
 
-        table.GetDdl(dbVm).Is(
+        Assert.AreEqual(
 "CREATE DOMAIN SARARY AS INTEGER;" + Environment.NewLine +
 "CREATE DOMAIN NAME AS VARCHAR(100);" + Environment.NewLine +
 "CREATE DOMAIN MEMO AS VARCHAR(100) DEFAULT 'HOGE';" + Environment.NewLine +
@@ -126,7 +127,7 @@ public class TableViewModelTests
 "  COL6 MEMO," + Environment.NewLine +
 "  COL7 MEMO2," + Environment.NewLine +
 "  CONSTRAINT COMPLEXKEY PRIMARY KEY (COL1, COL2)" + Environment.NewLine +
-")");
+")", table.GetDdl(dbVm));
     }
     [TestMethod()]
     public void GetDdlTest4()
@@ -142,9 +143,9 @@ public class TableViewModelTests
         var col3 = new ColumInfo("SNOW_ALTITUDE", new FieldType(35, null, null, null, null, 8), new ColumConstraintsInfo(ConstraintsKind.None), "RDB$3", false, true, "");
         table.Colums.Add(new ColumViewMoodel(col3));
 
-        table.GetDdl(dbVm).Is(
+        Assert.AreEqual(
 "CREATE VIEW SNOW_LINE (CITY, STATE, SNOW_ALTITUDE) AS" + Environment.NewLine +
-"SELECT CITY, STATE, ALTITUDE FROM CITIES WHERE ALTITUDE > 5000");
+"SELECT CITY, STATE, ALTITUDE FROM CITIES WHERE ALTITUDE > 5000", table.GetDdl(dbVm));
     }
 
     [TestMethod()]
@@ -184,7 +185,7 @@ public class TableViewModelTests
         table.Indexs.Add(idxVm2);
         dbVm.SetIndexes([idxVm, fpIdxVm1, idxVm1, fpIdxVm2, idxVm2]);
 
-        table.GetDdl(dbVm).Is(
+        Assert.AreEqual(
 "CREATE TABLE TEST (" + Environment.NewLine +
 "  COL1 INTEGER NOT NULL," + Environment.NewLine +
 "  COL2 VARCHAR(100) NOT NULL," + Environment.NewLine +
@@ -192,7 +193,7 @@ public class TableViewModelTests
 "  PRIMARY KEY (COL1)," + Environment.NewLine +
 "  FOREIGN KEY (COL2) REFERENCES MASTER (M_COL1)," + Environment.NewLine +
 "  CONSTRAINT C_FOREIGNKEY FOREIGN KEY (COL3) REFERENCES MASTER (M_COL2) ON DELETE SET DEFAULT ON UPDATE CASCADE" + Environment.NewLine +
-")");
+")", table.GetDdl(dbVm));
     }
 
     [TestMethod()]
@@ -218,14 +219,14 @@ public class TableViewModelTests
         table.Indexs.Add(uniqueIdxVm);
         dbVm.SetIndexes([idxVm, uniqueIdxVm]);
 
-        table.GetDdl(dbVm).Is(
+        Assert.AreEqual(
 "CREATE TABLE TEST (" + Environment.NewLine +
 "  COL1 INTEGER NOT NULL," + Environment.NewLine +
 "  COL2 VARCHAR(100) NOT NULL," + Environment.NewLine +
 "  COL3 TIMESTAMP NOT NULL," + Environment.NewLine +
 "  PRIMARY KEY (COL1)," + Environment.NewLine +
 "  UNIQUE (COL2, COL3)" + Environment.NewLine +
-")");
+")", table.GetDdl(dbVm));
     }
 
 }
