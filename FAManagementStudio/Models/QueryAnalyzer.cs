@@ -5,7 +5,7 @@ namespace FAManagementStudio.Models
 {
     public class QueryAnalyzer
     {
-        public static string[] Analyze(string inputs)
+        public static IReadOnlyCollection<string> Analyze(string inputs)
         {
             var endIdx = 0;
             var result = new List<string> { };
