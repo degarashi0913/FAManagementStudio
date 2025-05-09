@@ -1,62 +1,52 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Reflection;
 
-namespace FAManagementStudio.Common
+namespace FAManagementStudio.Common;
+
+public class Messenger
 {
-    public class Messenger
+    private static readonly Messenger _instance = new ();
+    public static Messenger Instance { get { return _instance; } }
+    private readonly Dictionary<Type, List<MessageAction>> _actions = [];
+    public void Register<TMessage>(object recipient, Action<TMessage> action)
     {
-        private static readonly Messenger _instance = new Messenger();
-        public static Messenger Instance { get { return _instance; } }
-        private Dictionary<Type, List<MessageAction>> _actions = new Dictionary<Type, List<MessageAction>>();
-        public void Register<TMessage>(object recipient, Action<TMessage> action)
+        var type = typeof(TMessage);
+        if (!_actions.TryGetValue(type, out List<MessageAction>? list))
         {
-            var type = typeof(TMessage);
-            if (!_actions.ContainsKey(type))
-            {
-                _actions.Add(type, new List<MessageAction>());
-            }
-            var list = _actions[type];
-
-            list.Add(new MessageAction(recipient, action));
-
-        }
-        public void Send<TMessage>(TMessage message)
-        {
-            var actions = _actions[typeof(TMessage)].ToList();
-            foreach (var item in actions)
-            {
-                item.Execute(message);
-            }
+            list = [];
+            _actions.Add(type, list);
         }
 
-        public void Unregister<TMessage>(object recipient)
-        {
-            var items = _actions[typeof(TMessage)].Where(x => x.Target == recipient);
-            foreach (var item in items)
-            {
-                _actions[typeof(TMessage)].Remove(item);
-            }
+        list.Add(new MessageAction(recipient, action));
 
+    }
+    public void Send<TMessage>(TMessage message)
+    {
+        var actions = _actions[typeof(TMessage)].ToList();
+        foreach (var item in actions)
+        {
+            item.Execute(message);
         }
     }
 
-    public class MessageAction
+    public void Unregister<TMessage>(object recipient)
     {
-        private object _target;
-        private Delegate _action;
+        var items = _actions[typeof(TMessage)].Where(x => x.Target == recipient);
+        foreach (var item in items)
+        {
+            _actions[typeof(TMessage)].Remove(item);
+        }
 
-        public object Target { get { return _target; } }
-        public MessageAction(object target, Delegate action)
-        {
-            _target = target;
-            _action = action;
-        }
-        public void Execute<T>(T param)
-        {
-            _action.Method.Invoke(_target, new object[] { param });
-        }
+    }
+}
+
+public class MessageAction(object target, Delegate action)
+{
+    public object Target => target; 
+
+    public void Execute<T>(T param)
+    {
+        action.Method.Invoke(target, [param]);
     }
 }

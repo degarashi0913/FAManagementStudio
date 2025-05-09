@@ -14,7 +14,7 @@ public class AdditionalDbInfoControl(DbViewModel db) : ViewModelBase
 {
     private static IReadOnlyList<AdditionalDbInfoViewModel> ContentList { get; } = [
         new("Triggers"),
-        new("Indexs"),
+        new("Indexes"),
         new("Domains"),
         new("Procedures"),
         new("Sequences")];
@@ -32,7 +32,7 @@ public class AdditionalDbInfoControl(DbViewModel db) : ViewModelBase
         {
             "" => ContentList,
             "Triggers" => db.Triggers,
-            "Indexs" => db.Indexes,
+            "Indexes" => db.Indexes,
             "Domains" => db.Domains,
             "Procedures" => db.Procedures,
             "Sequences" => db.Sequences,

@@ -19,8 +19,7 @@ namespace FAManagementStudio.Views
         }
         private void TreeViewItem_MouseRightButtonDown(Object sender, MouseButtonEventArgs e)
         {
-            TreeViewItem item = sender as TreeViewItem;
-            if (item != null)
+            if (sender is TreeViewItem item)
             {
                 item.IsSelected = true;
                 e.Handled = true;
@@ -28,8 +27,7 @@ namespace FAManagementStudio.Views
         }
         private void TabItem_MouseRightButtonDown(Object sender, MouseButtonEventArgs e)
         {
-            TabItem item = sender as TabItem;
-            if (item != null)
+            if (sender is TabItem item)
             {
                 item.IsSelected = true;
                 e.Handled = true;
@@ -99,7 +97,7 @@ namespace FAManagementStudio.Views
             }
         }
 
-        private void RaiseMouseWheelEventToParent(UIElement sender, MouseWheelEventArgs e)
+        private static void RaiseMouseWheelEventToParent(UIElement sender, MouseWheelEventArgs e)
         {
             var e2 = new MouseWheelEventArgs(e.MouseDevice, e.Timestamp, e.Delta)
             {

@@ -66,8 +66,10 @@ namespace FAManagementStudio.Views
             for (int i = 0; i < VisualTreeHelper.GetChildrenCount(obj); i++)
             {
                 DependencyObject child = VisualTreeHelper.GetChild(obj, i);
-                if (child != null && child is childItem)
-                    yield return (childItem)child;
+                if (child is childItem target)
+                {
+                    yield return target;
+                }
                 else
                 {
                     foreach (var item in FindVisualChild<childItem>(child))
