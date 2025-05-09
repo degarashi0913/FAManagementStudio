@@ -79,7 +79,7 @@ public class TableInfo(string name, int systemFlag = 0)
         return dic;
     }
 
-    private ConstraintsKind GetConstraintType(string input)
+    private static ConstraintsKind GetConstraintType(string input)
     {
         var name = input.Trim();
         if (string.IsNullOrEmpty(name)) return ConstraintsKind.None;
@@ -108,14 +108,12 @@ public class TableInfo(string name, int systemFlag = 0)
 
     public IEnumerable<TriggerInfo> GetTrigger(FbConnection con)
     {
-        using (var command = con.CreateCommand())
+        using var command = con.CreateCommand();
+        command.CommandText = $"select rdb$trigger_name Name, rdb$relation_name TableName, rdb$trigger_source Source from rdb$triggers where rdb$relation_name = '{this.TableName}' and rdb$system_flag = 0";
+        var reader = command.ExecuteReader();
+        while (reader.Read())
         {
-            command.CommandText = $"select rdb$trigger_name Name, rdb$relation_name TableName, rdb$trigger_source Source from rdb$triggers where rdb$relation_name = '{this.TableName}' and rdb$system_flag = 0";
-            var reader = command.ExecuteReader();
-            while (reader.Read())
-            {
-                yield return new TriggerInfo((string)reader["Name"], (string)reader["TableName"], (string)reader["Source"]);
-            }
+            yield return new TriggerInfo((string)reader["Name"], (string)reader["TableName"], (string)reader["Source"]);
         }
     }
 

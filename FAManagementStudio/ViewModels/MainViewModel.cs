@@ -376,7 +376,7 @@ namespace FAManagementStudio.ViewModels
             => treeItem switch
             {
                 ITableViewModel table => table,
-                ColumViewMoodel table => db.Tables.First(x => x.Colums.Any(c => c == (ColumViewMoodel)treeItem)),
+                ColumViewModel table => db.Tables.First(x => x.Colums.Any(c => c == (ColumViewModel)treeItem)),
                 _ => throw new NotImplementedException($"{treeItem.GetType()} is not supported")
             };
 
@@ -386,7 +386,7 @@ namespace FAManagementStudio.ViewModels
 
             var table = GetTreeViewTableName(CurrentDatabase, treeItem);
 
-            string[] columns = treeItem is ColumViewMoodel col
+            string[] columns = treeItem is ColumViewModel col
                    ? [col.ColumName]
                    : [.. table.Colums.Select(x => x.ColumName)];
 

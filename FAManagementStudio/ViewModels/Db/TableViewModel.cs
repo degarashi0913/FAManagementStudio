@@ -15,7 +15,7 @@ namespace FAManagementStudio.ViewModels
         }
         public string TableName { get; }
         public bool IsSystemTable { get; }
-        public List<ColumViewMoodel> Colums { get; } = new List<ColumViewMoodel>();
+        public List<ColumViewModel> Colums { get; } = new List<ColumViewModel>();
         public TableKind Kind { get; } = TableKind.Table;
         public List<TriggerViewModel> Triggers { get; } = new List<TriggerViewModel>();
         public List<IndexViewModel> Indexs { get; } = new List<IndexViewModel>();

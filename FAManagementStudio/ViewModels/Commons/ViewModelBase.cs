@@ -13,7 +13,7 @@ namespace FAManagementStudio.ViewModels
     {
         string TableName { get; }
         string GetDdl(DbViewModel dbVm);
-        List<ColumViewMoodel> Colums { get; }
+        List<ColumViewModel> Colums { get; }
         TableKind Kind { get; }
     }
 }

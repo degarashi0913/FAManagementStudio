@@ -99,7 +99,7 @@ public class DbViewModel(DatabaseInfo dbInfo) : ViewModelBase
     public string ConnectionString { get { return dbInfo.ConnectionString; } }
     public string Path { get { return dbInfo.Path; } }
 
-    public AdditionalDbInfoControl AdditionalInfo { get; private set; }
+    public AdditionalDbInfoControl? AdditionalInfo { get; private set; }
 
     public bool CanExecute()
         => !string.IsNullOrEmpty(dbInfo.ConnectionString);
@@ -114,7 +114,7 @@ public class DbViewModel(DatabaseInfo dbInfo) : ViewModelBase
              foreach (var item in dbInfo.GetTables(con))
              {
                  var vm = new TableViewModel(item.TableName);
-                 vm.Colums.AddRange([.. item.GetColumns(con).Select(x => new ColumViewMoodel(x))]);
+                 vm.Colums.AddRange([.. item.GetColumns(con).Select(x => new ColumViewModel(x))]);
                  vm.Triggers.AddRange([.. item.GetTrigger(con).Select(x => new TriggerViewModel(x))]);
                  vm.Indexs.AddRange([.. item.GetIndex(con).Select(x => new IndexViewModel(x))]);
                  table.Add(vm);
@@ -123,7 +123,7 @@ public class DbViewModel(DatabaseInfo dbInfo) : ViewModelBase
              foreach (var item in dbInfo.GetViews(con))
              {
                  var vm = new TableViewViewModel(item.ViewName, item.Source);
-                 vm.Colums.AddRange([.. item.GetColums(con).Select(x => new ColumViewMoodel(x))]);
+                 vm.Colums.AddRange([.. item.GetColumns(con).Select(x => new ColumViewModel(x))]);
                  table.Add(vm);
              }
          });
@@ -145,7 +145,7 @@ public class DbViewModel(DatabaseInfo dbInfo) : ViewModelBase
             foreach (var item in dbInfo.GetSystemTables(con))
             {
                 var vm = new TableViewModel(item.TableName, true);
-                vm.Colums.AddRange([.. item.GetColumns(con).Select(x => new ColumViewMoodel(x))]);
+                vm.Colums.AddRange([.. item.GetColumns(con).Select(x => new ColumViewModel(x))]);
                 table.Add(vm);
             }
         });

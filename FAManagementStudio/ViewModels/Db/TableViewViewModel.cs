@@ -15,7 +15,7 @@ namespace FAManagementStudio.ViewModels
         }
         public string TableName { get; }
         public TableKind Kind { get; } = TableKind.View;
-        public List<ColumViewMoodel> Colums { get; } = new List<ColumViewMoodel>();
+        public List<ColumViewModel> Colums { get; } = new List<ColumViewModel>();
         public string Source { get; private set; }
 
         public string GetDdl(DbViewModel dbVm)

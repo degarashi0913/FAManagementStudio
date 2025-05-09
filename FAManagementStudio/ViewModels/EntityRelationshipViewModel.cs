@@ -35,7 +35,7 @@ public class EntityRelationshipViewModel : ViewModelBase
         {
             foreach (var col in table.Columns.Where(x => (x.ConstraintsInf?.Kind & ConstraintsKind.Foreign) == ConstraintsKind.Foreign))
             {
-                if (_data.FirstOrDefault(x => x.TableName == col.ConstraintsInf.ForeignKeyTableName) is { } column)
+                if (_data.FirstOrDefault(x => x.TableName == col.ConstraintsInf?.ForeignKeyTableName) is { } column)
                 {
                     Graph.AddEdge(new Edge<object>(column, table));
                 }
@@ -98,5 +98,5 @@ public class EntityRelationshipViewModel : ViewModelBase
         }
     }
 
-    public record EntityTableModel(string TableName, List<ColumViewMoodel> Columns);
+    public record EntityTableModel(string TableName, List<ColumViewModel> Columns);
 }
