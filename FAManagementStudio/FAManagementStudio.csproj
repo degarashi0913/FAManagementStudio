@@ -35,7 +35,7 @@
 		<Resource Include="Image\base_exclamationmark_32.png" />
 		<Resource Include="Image\action_add_16xLG.png" />
 		<Resource Include="Image\hardware_16xLG.png" />
-		<Resource Include="Image\ForeigenKey.png" />
+		<Resource Include="Image\ForeignKey.png" />
 		<Resource Include="Image\PrimaryKey.png" />
 		<Resource Include="Image\systemicon.ico" />
 		<Resource Include="Image\DbShape.png" />
