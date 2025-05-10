@@ -1,4 +1,5 @@
 ﻿using FAManagementStudio.Models;
+using FAManagementStudio.ViewModels.Commons;
 
 namespace FAManagementStudio.ViewModels
 {

@@ -1,8 +1,8 @@
 ﻿using FAManagementStudio.Common;
-using FAManagementStudio.ViewModels;
 using System;
 using System.Windows;
 using Microsoft.Xaml.Behaviors;
+using FAManagementStudio.ViewModels.Commons;
 
 namespace FAManagementStudio.Views.Behaviors;
 

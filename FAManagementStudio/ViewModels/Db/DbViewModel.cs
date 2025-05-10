@@ -1,6 +1,7 @@
 ﻿using FAManagementStudio.Common;
 using FAManagementStudio.Models;
 using FAManagementStudio.Models.Db;
+using FAManagementStudio.ViewModels.Commons;
 using FirebirdSql.Data.FirebirdClient;
 using System;
 using System.Collections.Generic;
@@ -36,7 +37,7 @@ public class DbViewModel(DatabaseInfo dbInfo) : ViewModelBase
     public List<ITableViewModel> Tables { get; private set; } =
     [
         //暫定
-        new TableViewModel("Loading")
+        new TableLoadingViewModel()
     ];
 
     private List<TriggerViewModel>? _triggers;
@@ -48,7 +49,7 @@ public class DbViewModel(DatabaseInfo dbInfo) : ViewModelBase
     private List<IndexViewModel>? _indexes;
     public IReadOnlyList<IndexViewModel> Indexes
     {
-        get => _indexes ??= [.. Tables.Where(x => x is TableViewModel).SelectMany(x => ((TableViewModel)x).Indexs)];
+        get => _indexes ??= [.. Tables.Where(x => x is TableViewModel).SelectMany(x => ((TableViewModel)x).Indexes)];
     }
 
     // TODO: 後で削除する。
@@ -113,17 +114,16 @@ public class DbViewModel(DatabaseInfo dbInfo) : ViewModelBase
              con.Open();
              foreach (var item in dbInfo.GetTables(con))
              {
-                 var vm = new TableViewModel(item.TableName);
-                 vm.Colums.AddRange([.. item.GetColumns(con).Select(x => new ColumViewModel(x))]);
+                 var vm = new TableViewModel(item.TableName, [.. item.GetColumns(con).Select(x => new ColumViewModel(x))]);
                  vm.Triggers.AddRange([.. item.GetTrigger(con).Select(x => new TriggerViewModel(x))]);
-                 vm.Indexs.AddRange([.. item.GetIndex(con).Select(x => new IndexViewModel(x))]);
+                 vm.Indexes.AddRange([.. item.GetIndex(con).Select(x => new IndexViewModel(x))]);
                  table.Add(vm);
              }
 
              foreach (var item in dbInfo.GetViews(con))
              {
-                 var vm = new TableViewViewModel(item.ViewName, item.Source);
-                 vm.Colums.AddRange([.. item.GetColumns(con).Select(x => new ColumViewModel(x))]);
+                 ColumViewModel[] columns = [.. item.GetColumns(con).Select(x => new ColumViewModel(x))];
+                 var vm = new TableViewViewModel(item.ViewName, item.Source, columns);
                  table.Add(vm);
              }
          });
@@ -144,8 +144,7 @@ public class DbViewModel(DatabaseInfo dbInfo) : ViewModelBase
             con.Open();
             foreach (var item in dbInfo.GetSystemTables(con))
             {
-                var vm = new TableViewModel(item.TableName, true);
-                vm.Colums.AddRange([.. item.GetColumns(con).Select(x => new ColumViewModel(x))]);
+                var vm = new TableViewModel(item.TableName, [.. item.GetColumns(con).Select(x => new ColumViewModel(x))], true);
                 table.Add(vm);
             }
         });

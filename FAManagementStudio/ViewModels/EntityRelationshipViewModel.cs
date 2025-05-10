@@ -1,4 +1,5 @@
 ﻿using FAManagementStudio.Common;
+using FAManagementStudio.ViewModels.Commons;
 using FAManagementStudio.ViewModels.Db;
 using GraphShape.Algorithms.Layout;
 using QuikGraph;
@@ -26,7 +27,7 @@ public class EntityRelationshipViewModel : ViewModelBase
     {
         foreach (var item in db.Tables)
         {
-            var table = new EntityTableModel(item.TableName, item.Colums);
+            var table = new EntityTableModel(item.TableName, item.Columns);
             Graph.AddVertex(table);
             _data.Add(table);
         }
@@ -98,5 +99,5 @@ public class EntityRelationshipViewModel : ViewModelBase
         }
     }
 
-    public record EntityTableModel(string TableName, List<ColumViewModel> Columns);
+    public record EntityTableModel(string TableName, IReadOnlyCollection<ColumViewModel> Columns);
 }

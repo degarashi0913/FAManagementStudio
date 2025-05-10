@@ -17,6 +17,7 @@ using System.Windows.Input;
 using Microsoft.Win32;
 using FAManagementStudio.Models.Db;
 using FAManagementStudio.ViewModels.Db;
+using FAManagementStudio.ViewModels.Commons;
 
 namespace FAManagementStudio.ViewModels
 {
@@ -310,7 +311,7 @@ namespace FAManagementStudio.ViewModels
             else if (s == "insert")
             {
                 if (table is TableViewViewModel) return;
-                var columns = table.Colums.Select(x => x.ColumName).ToArray();
+                var columns = table.Columns.Select(x => x.ColumName).ToArray();
                 var escapedColumnsStr = string.Join(", ", columns.Select(x => _queryBuilder.EscapeKeyWord(x)).ToArray());
 
                 var insertTemplate = $"insert into {table.TableName} ({escapedColumnsStr})";
@@ -376,7 +377,7 @@ namespace FAManagementStudio.ViewModels
             => treeItem switch
             {
                 ITableViewModel table => table,
-                ColumViewModel table => db.Tables.First(x => x.Colums.Any(c => c == (ColumViewModel)treeItem)),
+                ColumViewModel table => db.Tables.First(x => x.Columns.Any(c => c == (ColumViewModel)treeItem)),
                 _ => throw new NotImplementedException($"{treeItem.GetType()} is not supported")
             };
 
@@ -388,7 +389,7 @@ namespace FAManagementStudio.ViewModels
 
             string[] columns = treeItem is ColumViewModel col
                    ? [col.ColumName]
-                   : [.. table.Colums.Select(x => x.ColumName)];
+                   : [.. table.Columns.Select(x => x.ColumName)];
 
             return sqlKind switch
             {

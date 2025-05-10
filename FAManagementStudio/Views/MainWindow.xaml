@@ -213,7 +213,7 @@
                         </Style>
                     </TreeView.ItemContainerStyle>
                     <TreeView.ItemTemplate>
-                        <HierarchicalDataTemplate ItemsSource="{Binding Colums}">
+                        <HierarchicalDataTemplate ItemsSource="{Binding Columns}">
                             <StackPanel Orientation="Horizontal" Margin="-2,0,0,0">
                                 <Image Source="{Binding Kind, Converter={StaticResource TableIconConverter}}" Width="11" Stretch="Uniform"/>
                                 <TextBlock Text="{Binding Path=TableName}"/>

@@ -1,5 +1,6 @@
 ﻿using FAManagementStudio.Common;
 using FAManagementStudio.Models;
+using FAManagementStudio.ViewModels.Commons;
 using System.Collections.Generic;
 
 namespace FAManagementStudio.ViewModels;

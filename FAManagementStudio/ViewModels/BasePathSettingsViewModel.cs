@@ -1,5 +1,6 @@
 ﻿using FAManagementStudio.Common;
 using FAManagementStudio.Models;
+using FAManagementStudio.ViewModels.Commons;
 using System.Collections.Generic;
 using System.Windows.Forms;
 using System.Windows.Input;
