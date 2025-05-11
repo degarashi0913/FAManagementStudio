@@ -49,14 +49,14 @@ namespace FAManagementStudio.ViewModels
                 RaisePropertyChanged(nameof(IsShowExecutionPlan));
             }
         }
-        private bool _IntelisenseEnabled = false;
-        public bool IntelisenseEnabled
+        private bool _IntellisenseEnabled = false;
+        public bool IntellisenseEnabled
         {
-            get { return _IntelisenseEnabled; }
+            get { return _IntellisenseEnabled; }
             set
             {
-                _IntelisenseEnabled = value;
-                RaisePropertyChanged(nameof(IntelisenseEnabled));
+                _IntellisenseEnabled = value;
+                RaisePropertyChanged(nameof(IntellisenseEnabled));
             }
         }
         public QueryTabViewModel(string header, string query)

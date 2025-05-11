@@ -394,16 +394,16 @@
                                             </Behaviors:Interaction.Behaviors>
                                             <Image Source="../Image/ExecutionPlan.png" Opacity="{Binding IsShowExecutionPlan,Converter={StaticResource OpacityConverter}}"/>
                                         </Button>
-                                        <Button Focusable="False" ToolTip="Enable Intelisense (beta)" Background="{Binding IntelisenseEnabled, Converter={StaticResource BackColorConverter}}" Margin="2,0,0,0">
+                                        <Button Focusable="False" ToolTip="Enable Intellisense (beta)" Background="{Binding IntellisenseEnabled, Converter={StaticResource BackColorConverter}}" Margin="2,0,0,0">
                                             <Behaviors:Interaction.Behaviors>
-                                                <b:ImageButtonBehavior ChangeEnable="{Binding IntelisenseEnabled, Mode=TwoWay}"/>
+                                                <b:ImageButtonBehavior ChangeEnable="{Binding IntellisenseEnabled, Mode=TwoWay}"/>
                                             </Behaviors:Interaction.Behaviors>
-                                            <Image Source="../Image/IntelliSenseKeyword.png" Opacity="{Binding IntelisenseEnabled,Converter={StaticResource OpacityConverter}}"/>
+                                            <Image Source="../Image/IntellisenseKeyword.png" Opacity="{Binding IntellisenseEnabled,Converter={StaticResource OpacityConverter}}"/>
                                         </Button>
                                     </StackPanel>
                                 </Border>
                                 <controls:BindableEditor DockPanel.Dock="Top" AllowDrop="True" Text="{Binding Query, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalScrollBarVisibility="Disabled" Margin="0,2" Grid.RowSpan="2"  PreviewDragEnter="TextBox_PreviewDragEnter"
-            PreviewDragOver="TextBox_PreviewDragEnter" FontSize="14" IntelisenseEnabled="{Binding IntelisenseEnabled, Mode=TwoWay}" Recommender="{Binding DataContext.Recommender, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}">
+            PreviewDragOver="TextBox_PreviewDragEnter" FontSize="14" IntellisenseEnabled="{Binding IntellisenseEnabled, Mode=TwoWay}" Recommender="{Binding DataContext.Recommender, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}">
                                     <controls:BindableEditor.Resources>
                                         <Common:CommandReference x:Key="OverwriteSave" Command="{Binding OverwriteSave}"/>
                                         <Common:CommandReference x:Key="DropFile" Command="{Binding DropFile}"/>

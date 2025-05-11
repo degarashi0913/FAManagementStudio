@@ -48,7 +48,7 @@
 		<Resource Include="Image\ExecutionPlan.png" />
 		<Resource Include="Image\PinItem.png" />
 		<Resource Include="Image\Folder.png" />
-		<Resource Include="Image\IntelliSenseKeyword.png" />
+		<Resource Include="Image\IntellisenseKeyword.png" />
 	</ItemGroup>
 	<ItemGroup>
 		<PackageReference Include="FirebirdSql.Data.FirebirdClient" />
