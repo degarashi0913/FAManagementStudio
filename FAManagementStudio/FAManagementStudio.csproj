@@ -58,6 +58,7 @@
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\FAManagementStudio.Controls\FAManagementStudio.Controls.csproj" />
+		<ProjectReference Include="..\FAManagementStudio.Foundation\FAManagementStudio.Foundation.csproj" />
 	</ItemGroup>
 	<ItemGroup>
 		<Compile Update="Properties\Settings.Designer.cs">

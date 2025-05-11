@@ -1,7 +1,11 @@
 ﻿using FAManagementStudio.Common;
+using FAManagementStudio.Foundation.Common;
 using FAManagementStudio.Models;
+using FAManagementStudio.Models.Db;
+using FAManagementStudio.ViewModels.Commons;
+using FAManagementStudio.ViewModels.Db;
+using Microsoft.Win32;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data;
 using System.Diagnostics;
@@ -14,10 +18,6 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
-using Microsoft.Win32;
-using FAManagementStudio.Models.Db;
-using FAManagementStudio.ViewModels.Db;
-using FAManagementStudio.ViewModels.Commons;
 
 namespace FAManagementStudio.ViewModels
 {

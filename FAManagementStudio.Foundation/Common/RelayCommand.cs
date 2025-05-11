@@ -1,9 +1,8 @@
-﻿using System;
-using System.Windows.Input;
+﻿using System.Windows.Input;
 
-namespace FAManagementStudio.Common;
+namespace FAManagementStudio.Foundation.Common;
 
-class RelayCommand : ICommand
+public class RelayCommand : ICommand
 {
     private readonly Action _execute;
     private readonly Func<bool> _canExecute;
@@ -29,7 +28,7 @@ class RelayCommand : ICommand
         => CanExecuteChanged?.Invoke(this, EventArgs.Empty);
 }
 
-class RelayCommand<T>(Action<T> execute, Func<bool> canExecute) : ICommand
+public class RelayCommand<T>(Action<T> execute, Func<bool> canExecute) : ICommand
 {
     public event EventHandler? CanExecuteChanged;
 

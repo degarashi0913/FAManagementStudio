@@ -1,4 +1,4 @@
-﻿using FAManagementStudio.Common;
+﻿using FAManagementStudio.Foundation.Common;
 using FAManagementStudio.ViewModels.Commons;
 using FAManagementStudio.ViewModels.Db;
 using System.Collections.Generic;
