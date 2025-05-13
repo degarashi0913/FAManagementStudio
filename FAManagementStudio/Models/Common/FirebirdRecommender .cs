@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace FAManagementStudio.Models;
+namespace FAManagementStudio.Models.Common;
 
 public class FirebirdRecommender : IRecommender
 {

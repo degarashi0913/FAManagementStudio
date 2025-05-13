@@ -1,4 +1,5 @@
 ﻿using FAManagementStudio.Common;
+using FAManagementStudio.Models.Common;
 
 namespace FAManagementStudio.Models.Db;
 

@@ -1,6 +1,7 @@
 ﻿using FAManagementStudio.Common;
 using FAManagementStudio.Foundation.Common;
 using FAManagementStudio.Models;
+using FAManagementStudio.Models.Common;
 using FAManagementStudio.Models.Db;
 using FAManagementStudio.ViewModels.Commons;
 using FAManagementStudio.ViewModels.Db;
