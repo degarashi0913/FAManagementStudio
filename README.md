@@ -20,7 +20,7 @@ This project is licensed under the MIT License. See the [LICENSE](./LICENSE) fil
 
 ### Third-party libraries
 
-This project includes or links to the Firebird client libraries, which are licensed under variants of the Mozilla Public License 1.1 (MPL 1.1):
+This project uses the Firebird client libraries, licensed under the Interbase Public License and the Initial Developer's Public License (variants of MPL 1.1):
 
 - [Initial Developer’s Public License (IDPL)](https://www.firebirdsql.org/en/initial-developer-s-public-license-version-1-0/)
 - [Interbase Public License (IPL)](https://www.firebirdsql.org/en/interbase-public-license/)
