@@ -18,19 +18,21 @@
 		<Nullable>enable</Nullable>
 		<SatelliteResourceLanguages>en-US;ja</SatelliteResourceLanguages>
 	</PropertyGroup>
+	
 	<ItemGroup>
-		<NativeDlls Include="$(SolutionDir)Assemblies\Firebird\$(PlatformName)_dll\**\*" />
+		<NativeDlls Include="..\Assemblies\Firebird\$(PlatformName)_dll\**\*" />
 	</ItemGroup>
 
 	<Target Name="CopyNativeDllsAfterBuild" AfterTargets="PostBuildEvent">
 		<Copy SourceFiles="@(NativeDlls)" DestinationFiles="@(NativeDlls->'$(TargetDir)%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" />
 	</Target>
-	<ItemGroup>
-		<ResolvedFileToPublish Include="@(NativeDlls)">
-			<RelativePath>%(RecursiveDir)%(Filename)%(Extension)</RelativePath>
-			<CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-		</ResolvedFileToPublish>
-	</ItemGroup>
+
+	<Target Name="CopyNativeDllsAfterPublish" AfterTargets="Publish">
+		<Message Text="Copying Native DLLs from ..\Assemblies\Firebird\$(PlatformName)_dll\**\* to @(NativeDlls->'$(PublishDir)%(RecursiveDir)%(Filename)%(Extension)')" Importance="high" />
+
+		<Copy SourceFiles="@(NativeDlls)" DestinationFiles="@(NativeDlls->'$(PublishDir)%(RecursiveDir)%(Filename)%(Extension)')" />
+	</Target>
+
 	<ItemGroup>
 		<Resource Include="Image\base_exclamationmark_32.png" />
 		<Resource Include="Image\action_add_16xLG.png" />

@@ -43,10 +43,13 @@ jobs:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
       - name: Build project
-        run: dotnet build ${{ env.APP_PATH }} -c ${{ env.BUILD_CONFIGURATION }} -p:Version=${{ inputs.tag }}
+        run: dotnet build ${{ env.APP_PATH }} -c ${{ env.BUILD_CONFIGURATION }} -p:Version=${{ inputs.tag }} -p:Platform=x64
+
+      - name: Run tests
+        run: dotnet test --no-build
 
       - name: Publish project
-        run: dotnet publish ${{ env.APP_PATH }} -c ${{ env.BUILD_CONFIGURATION }} -p:Version=${{ inputs.tag }} --self-contained true --runtime win-x64 --output ${{ env.OUTPUT_DIR }}
+        run: dotnet publish ${{ env.APP_PATH }} -c ${{ env.BUILD_CONFIGURATION }} -p:Version=${{ inputs.tag }} --self-contained true --runtime win-x64 -p:Platform=x64 -p:DebugSymbols=false --output ${{ env.OUTPUT_DIR }}
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.13.35931.197 d17.13
+VisualStudioVersion = 17.13.35931.197
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FAManagementStudio", "FAManagementStudio\FAManagementStudio.csproj", "{35ABA54C-D4AE-438A-B9E9-490441E72854}"
 EndProject
@@ -41,14 +41,14 @@ Global
 		{0AE2FCF9-BE9A-453A-A5B5-C294E9C1B06D}.Release|x64.Build.0 = Release|x64
 		{0AE2FCF9-BE9A-453A-A5B5-C294E9C1B06D}.Release|x86.ActiveCfg = Release|x86
 		{0AE2FCF9-BE9A-453A-A5B5-C294E9C1B06D}.Release|x86.Build.0 = Release|x86
-		{14F56AED-4416-4A4A-90FE-906D59D09BAB}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{14F56AED-4416-4A4A-90FE-906D59D09BAB}.Debug|x64.Build.0 = Debug|Any CPU
-		{14F56AED-4416-4A4A-90FE-906D59D09BAB}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{14F56AED-4416-4A4A-90FE-906D59D09BAB}.Debug|x86.Build.0 = Debug|Any CPU
-		{14F56AED-4416-4A4A-90FE-906D59D09BAB}.Release|x64.ActiveCfg = Release|Any CPU
-		{14F56AED-4416-4A4A-90FE-906D59D09BAB}.Release|x64.Build.0 = Release|Any CPU
-		{14F56AED-4416-4A4A-90FE-906D59D09BAB}.Release|x86.ActiveCfg = Release|Any CPU
-		{14F56AED-4416-4A4A-90FE-906D59D09BAB}.Release|x86.Build.0 = Release|Any CPU
+		{14F56AED-4416-4A4A-90FE-906D59D09BAB}.Debug|x64.ActiveCfg = Debug|x64
+		{14F56AED-4416-4A4A-90FE-906D59D09BAB}.Debug|x64.Build.0 = Debug|x64
+		{14F56AED-4416-4A4A-90FE-906D59D09BAB}.Debug|x86.ActiveCfg = Debug|x86
+		{14F56AED-4416-4A4A-90FE-906D59D09BAB}.Debug|x86.Build.0 = Debug|x86
+		{14F56AED-4416-4A4A-90FE-906D59D09BAB}.Release|x64.ActiveCfg = Release|x64
+		{14F56AED-4416-4A4A-90FE-906D59D09BAB}.Release|x64.Build.0 = Release|x64
+		{14F56AED-4416-4A4A-90FE-906D59D09BAB}.Release|x86.ActiveCfg = Release|x86
+		{14F56AED-4416-4A4A-90FE-906D59D09BAB}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
