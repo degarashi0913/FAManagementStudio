@@ -1,13 +1,15 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25123.0
+# Visual Studio Version 17
+VisualStudioVersion = 17.13.35931.197
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FAManagementStudio", "FAManagementStudio\FAManagementStudio.csproj", "{35ABA54C-D4AE-438A-B9E9-490441E72854}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FAManagementStudio", "FAManagementStudio\FAManagementStudio.csproj", "{35ABA54C-D4AE-438A-B9E9-490441E72854}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FAManagementStudioTests", "FAManagementStudioTests\FAManagementStudioTests.csproj", "{29D4823D-C591-4E1E-980E-E7B5013EFE77}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FAManagementStudio.Controls", "FAManagementStudio.Controls\FAManagementStudio.Controls.csproj", "{0AE2FCF9-BE9A-453A-A5B5-C294E9C1B06D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FAManagementStudio.Controls", "FAManagementStudio.Controls\FAManagementStudio.Controls.csproj", "{0AE2FCF9-BE9A-453A-A5B5-C294E9C1B06D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FAManagementStudio.Foundation", "FAManagementStudio.Foundation\FAManagementStudio.Foundation.csproj", "{14F56AED-4416-4A4A-90FE-906D59D09BAB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -30,9 +32,7 @@ Global
 		{29D4823D-C591-4E1E-980E-E7B5013EFE77}.Debug|x86.ActiveCfg = Debug|x86
 		{29D4823D-C591-4E1E-980E-E7B5013EFE77}.Debug|x86.Build.0 = Debug|x86
 		{29D4823D-C591-4E1E-980E-E7B5013EFE77}.Release|x64.ActiveCfg = Release|x64
-		{29D4823D-C591-4E1E-980E-E7B5013EFE77}.Release|x64.Build.0 = Release|x64
 		{29D4823D-C591-4E1E-980E-E7B5013EFE77}.Release|x86.ActiveCfg = Release|x86
-		{29D4823D-C591-4E1E-980E-E7B5013EFE77}.Release|x86.Build.0 = Release|x86
 		{0AE2FCF9-BE9A-453A-A5B5-C294E9C1B06D}.Debug|x64.ActiveCfg = Debug|x64
 		{0AE2FCF9-BE9A-453A-A5B5-C294E9C1B06D}.Debug|x64.Build.0 = Debug|x64
 		{0AE2FCF9-BE9A-453A-A5B5-C294E9C1B06D}.Debug|x86.ActiveCfg = Debug|x86
@@ -41,8 +41,19 @@ Global
 		{0AE2FCF9-BE9A-453A-A5B5-C294E9C1B06D}.Release|x64.Build.0 = Release|x64
 		{0AE2FCF9-BE9A-453A-A5B5-C294E9C1B06D}.Release|x86.ActiveCfg = Release|x86
 		{0AE2FCF9-BE9A-453A-A5B5-C294E9C1B06D}.Release|x86.Build.0 = Release|x86
+		{14F56AED-4416-4A4A-90FE-906D59D09BAB}.Debug|x64.ActiveCfg = Debug|x64
+		{14F56AED-4416-4A4A-90FE-906D59D09BAB}.Debug|x64.Build.0 = Debug|x64
+		{14F56AED-4416-4A4A-90FE-906D59D09BAB}.Debug|x86.ActiveCfg = Debug|x86
+		{14F56AED-4416-4A4A-90FE-906D59D09BAB}.Debug|x86.Build.0 = Debug|x86
+		{14F56AED-4416-4A4A-90FE-906D59D09BAB}.Release|x64.ActiveCfg = Release|x64
+		{14F56AED-4416-4A4A-90FE-906D59D09BAB}.Release|x64.Build.0 = Release|x64
+		{14F56AED-4416-4A4A-90FE-906D59D09BAB}.Release|x86.ActiveCfg = Release|x86
+		{14F56AED-4416-4A4A-90FE-906D59D09BAB}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {B33340A5-0564-49D1-A176-8437FA3C4808}
 	EndGlobalSection
 EndGlobal

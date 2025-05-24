@@ -1,11 +1,8 @@
 ﻿using FAManagementStudio.Models;
 using FirebirdSql.Data.FirebirdClient;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace FAManagementStudioTests
 {
@@ -15,7 +12,7 @@ namespace FAManagementStudioTests
 
         private void SetupTestDbFb3()
         {
-            FbConnection.CreateDatabase(GetFb3ConnectionString(), true);
+            FbConnection.CreateDatabase(GetFb3ConnectionString(), overwrite: true);
             CreateTestTablesFb3(GetFb3ConnectionString());
         }
 
@@ -70,12 +67,12 @@ namespace FAManagementStudioTests
             SetupTestDbFb3();
             var inf = new QueryInfo(false);
             var conStr = GetFb3ConnectionString();
-            inf.ExecuteQuery(conStr, "select * from test").ToList()[0].View.Rows.Count.Is(0);
+            Assert.AreEqual(0, inf.ExecuteQuery(conStr, "select * from test").ToList()[0].View.Rows.Count);
 
             var result = inf.ExecuteQuery(conStr, "insert into test values (1, 123456789000, null, '12asd', '2016-07-24', 50000, 2.5, 2.5555, 4500, 10, '10:00:00', current_timestamp, 'asdfghjk', true);update test set varchar_test = 'testtesttesttest' where int_test = 1;select * from test").ToList();
-            result[0].View.Rows[0].Is(x => ((string)x[0]).Contains("実行しました。"));
-            result[1].View.Rows[0].Is(x => ((string)x[0]).Contains("更新しました。"));
-            result[2].View.Rows.Count.Is(1);
+            Assert.AreEqual("実行しました。", (string)result[0].View.Rows[0][0]);
+            Assert.IsTrue(((string)result[1].View.Rows[0][0]).Contains("更新しました。"));
+            Assert.AreEqual(1, result[2].View.Rows.Count);
         }
     }
 }

@@ -1,69 +1,44 @@
-﻿using FAManagementStudio.Common;
-using System;
+﻿using FAManagementStudio.Foundation.Common;
+using FAManagementStudio.ViewModels.Commons;
+using FAManagementStudio.ViewModels.Db;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows.Input;
 
-namespace FAManagementStudio.ViewModels
+namespace FAManagementStudio.ViewModels;
+
+public class AdditionalDbInfoViewModel(string displayName) : ViewModelBase
 {
-    public class AdditionalDbInfoViewModel : ViewModelBase
+    public string DisplayName => displayName;
+}
+
+public class AdditionalDbInfoControl(DbViewModel db) : ViewModelBase
+{
+    private static IReadOnlyList<AdditionalDbInfoViewModel> ContentList { get; } = [
+        new("Triggers"),
+        new("Indexes"),
+        new("Domains"),
+        new("Procedures"),
+        new("Sequences")];
+
+    public object CurrentContent { get; private set; } = ContentList;
+
+    private ICommand? _contentChange;
+    public ICommand ContentChange => _contentChange ??= new RelayCommand<string>(ChangeContent);
+
+    public void InitContent() => ChangeContent(string.Empty);
+
+    public void ChangeContent(string target)
     {
-        public AdditionalDbInfoViewModel() { }
-        public string DisplayName { get; }
-        public AdditionalDbInfoViewModel(string name)
+        CurrentContent = target switch
         {
-            DisplayName = name;
-        }
+            "" => ContentList,
+            "Triggers" => db.Triggers,
+            "Indexes" => db.Indexes,
+            "Domains" => db.Domains,
+            "Procedures" => db.Procedures,
+            "Sequences" => db.Sequences,
+            _ => CurrentContent
+        };
+        RaisePropertyChanged(nameof(CurrentContent));
     }
-
-    public class AdditionalDbInfoControl : ViewModelBase
-    {
-        public object CurrentContent { get; private set; }
-        public List<AdditionalDbInfoViewModel> ContentList { get; } = new List<AdditionalDbInfoViewModel> {
-            new AdditionalDbInfoViewModel("Triggers") ,new AdditionalDbInfoViewModel("Indexs"),
-            new AdditionalDbInfoViewModel("Domains"), new AdditionalDbInfoViewModel("Procedures"),
-            new AdditionalDbInfoViewModel("Sequences")};
-        public ICommand ContentChange { get; }
-        private DbViewModel _db;
-        public AdditionalDbInfoControl(DbViewModel db)
-        {
-            ContentChange = new RelayCommand<string>(x => ChangeContent(x));
-            _db = db;
-            CurrentContent = ContentList;
-            RaisePropertyChanged(nameof(CurrentContent));
-        }
-
-        public void ChangeContent(string target)
-        {
-            if (string.IsNullOrEmpty(target))
-            {
-                CurrentContent = ContentList;
-            }
-            else if (target == "Triggers")
-            {
-                CurrentContent = _db.Triggers;
-            }
-            else if (target == "Indexs")
-            {
-                CurrentContent = _db.Indexes;
-            }
-            else if (target == "Domains")
-            {
-                CurrentContent = _db.Domains;
-            }
-            else if (target == "Procedures")
-            {
-                CurrentContent = _db.Procedures;
-            }
-            else if (target == "Sequences")
-            {
-                CurrentContent = _db.Sequences;
-            }
-            RaisePropertyChanged(nameof(CurrentContent));
-        }
-
-    }
-
-    public interface IAddtionalDbInfo { }
 }

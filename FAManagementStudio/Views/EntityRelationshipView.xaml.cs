@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FAManagementStudio.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -23,9 +24,26 @@ namespace FAManagementStudio.Views
             InitializeComponent();
         }
 
-        private void RelayoutButton_Clisk(object sender, RoutedEventArgs e)
+        private void RelayoutButton_Click(object sender, RoutedEventArgs e)
         {
             Layout.Relayout();
+        }
+
+        private void ZoomInButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (DataContext is EntityRelationshipViewModel vm)
+            {
+                vm.Scale += 0.1;
+            }
+
+        }
+
+        private void ZoomOutButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (DataContext is EntityRelationshipViewModel vm)
+            {
+                vm.Scale -= 0.1;
+            }
         }
 
         private void ExpandOpenButton_Click(object sender, RoutedEventArgs e)
@@ -48,8 +66,10 @@ namespace FAManagementStudio.Views
             for (int i = 0; i < VisualTreeHelper.GetChildrenCount(obj); i++)
             {
                 DependencyObject child = VisualTreeHelper.GetChild(obj, i);
-                if (child != null && child is childItem)
-                    yield return (childItem)child;
+                if (child is childItem target)
+                {
+                    yield return target;
+                }
                 else
                 {
                     foreach (var item in FindVisualChild<childItem>(child))

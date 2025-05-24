@@ -1,4 +1,5 @@
 ﻿using FAManagementStudio.Common;
+using FAManagementStudio.Foundation.Common;
 using FAManagementStudio.Models;
 using System;
 using System.Collections.ObjectModel;
@@ -9,125 +10,137 @@ using System.Text;
 using System.Windows.Forms;
 using System.Windows.Input;
 
-namespace FAManagementStudio.ViewModels
+namespace FAManagementStudio.ViewModels;
+
+public class QueryResultViewModel : BindableBase
 {
-    public class QueryResultViewModel : BindableBase
+    private string _header = string.Empty;
+    public string Header
     {
-        private string _header;
-        public string Header
+        get { return _header; }
+        set
         {
-            get { return _header; }
-            set
-            {
-                _header = value;
-                RaisePropertyChanged(nameof(Header));
-            }
+            _header = value;
+            RaisePropertyChanged(nameof(Header));
         }
+    }
 
-        private bool _pined = false;
-        public bool Pined
+    private bool _pined = false;
+    public bool Pined
+    {
+        get { return _pined; }
+        set
         {
-            get { return _pined; }
-            set
-            {
-                _pined = value;
-                RaisePropertyChanged(nameof(Pined));
-            }
+            _pined = value;
+            RaisePropertyChanged(nameof(Pined));
         }
-        public ObservableCollection<ResultDetailViewModel> Result { get; } = new ObservableCollection<ResultDetailViewModel>();
+    }
+    public ObservableCollection<ResultDetailViewModel> Result { get; } = [];
 
-        public QueryResultViewModel(string header)
-        {
-            Header = header;
-        }
+    public QueryResultViewModel(string header)
+    {
+        Header = header;
+    }
 
-        public void GetExecuteResult(QueryInfo inf, string connectionString, string query)
+    public void GetExecuteResult(QueryInfo inf, string connectionString, string query)
+    {
+        System.Windows.Application.Current.Dispatcher.Invoke(new Action(() =>
         {
-            System.Windows.Application.Current.Dispatcher.Invoke(new Action(() =>
+            try
             {
-                try
+                foreach (var queryResult in inf.ExecuteQuery(connectionString, query))
                 {
-                    foreach (var queryResult in inf.ExecuteQuery(connectionString, query))
-                    {
-                        var vm = new ResultDetailViewModel();
-                        vm.View = queryResult.View;
-                        vm.SetAdditionalInfo(queryResult.Count, queryResult.ExecuteTime, queryResult.ExecuteSql, queryResult.ExecutionPlan);
-                        Result.Add(vm);
-                    }
-                }
-                catch (Exception e)
-                {
-                    var vm = new ResultDetailViewModel();
-                    var table = new DataTable("Exception");
-                    table.Columns.Add(new DataColumn { ColumnName = "0", Caption = "Message", DataType = typeof(string) });
-                    table.Rows.Add(e.Message);
-                    vm.View = table;
+                    var vm = ResultDetailViewModel.CreateResultDetailViewModel(queryResult);
                     Result.Add(vm);
                 }
-            }));
-        }
+            }
+            catch (Exception e)
+            {
 
+                var table = new DataTable("Exception");
+                table.Columns.Add(new DataColumn { ColumnName = "0", Caption = "Message", DataType = typeof(string) });
+                table.Rows.Add(e.Message);
+                var vm = new ResultDetailViewModel(table, string.Empty);
+                Result.Add(vm);
+            }
+        }));
     }
-    public class ResultDetailViewModel
+
+}
+public class ResultDetailViewModel
+{
+    public DataTable View { get; }
+    public string AdditionalInfo { get; }
+
+    public ICommand OutputCsv { get; private set; }
+
+    public ResultDetailViewModel(DataTable view, string additionalInfo)
     {
-        public DataTable View { get; set; }
-        public string AdditionalInfo { get; set; }
+        View = view;
+        AdditionalInfo = additionalInfo;
+        OutputCsv = new RelayCommand<bool>(OnOutputCsv);
+    }
 
-        public ICommand OutputCsv { get; private set; }
+    public static ResultDetailViewModel CreateResultDetailViewModel(QueryResult queryResult)
+    {
+        var info = GetAdditionalInfoString(queryResult.Count, queryResult.ExecuteTime, queryResult.ExecuteSql, queryResult.ExecutionPlan);
+        return new ResultDetailViewModel(queryResult.View, info);
+    }
 
-        public ResultDetailViewModel()
+    private static string GetAdditionalInfoString(int count, TimeSpan time, string query, string executionPlan)
+    {
+        var sb = new StringBuilder();
+
+        if (0 < count)
         {
-            OutputCsv = new RelayCommand<bool>((needHeader) =>
-            {
-                var path = "";
-                using (var dialog = new SaveFileDialog())
-                {
-                    dialog.FileName = "output.csv";
-                    dialog.DefaultExt = "csv";
-                    dialog.Filter = "csv files (*.csv)|*.csv|すべてのファイル(*.*)|*.*";
-                    if (dialog.ShowDialog() != DialogResult.OK) return;
-                    path = dialog.FileName;
-                }
+            sb.Append($"取得行: {count} ");
+        }
+        if (0 < time.TotalSeconds)
+        {
+            sb.Append($"実行時間: {time.TotalSeconds}秒 ");
+        }
+        sb.Append(query);
+        if (!string.IsNullOrEmpty(executionPlan))
+        {
+            sb.Append(Environment.NewLine + $"実行プラン: {executionPlan}");
+        }
+        return sb.ToString();
+    }
 
-                var sb = new StringBuilder();
-                if (needHeader)
-                {
-                    var header = View.Columns.Cast<DataColumn>().Select(x => $"\"{x.Caption}\"").ToArray();
-                    sb.AppendLine(string.Join(",", header));
-                }
-                var rows = View.Rows.Cast<DataRow>().Select(x => string.Join(",", x.ItemArray.Select(y => $"\"{y}\"").ToArray()));
-                foreach (var row in rows)
-                {
-                    sb.AppendLine(row);
-                }
-                try
-                {
-                    File.WriteAllText(path, sb.ToString(), Encoding.UTF8);
-                }
-                catch (Exception ex)
-                {
-                    //throwしても拾う先が無いので握りつぶす
-                    MessageBox.Show(ex.Message, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-            });
+    private void OnOutputCsv(bool needHeader)
+    {
+        static (bool IsOk, string Path) OpenSaveFileDialog()
+        {
+            using var dialog = new SaveFileDialog()
+            {
+                FileName = "output.csv",
+                DefaultExt = "csv",
+                Filter = "csv files (*.csv)|*.csv|すべてのファイル(*.*)|*.*"
+            };
+            return (dialog.ShowDialog() == DialogResult.OK, dialog.FileName);
         }
 
-        public void SetAdditionalInfo(int count, TimeSpan time, string query, string executionPlan)
+        if (OpenSaveFileDialog() is { } result && !result.IsOk) return;
+
+        var sb = new StringBuilder();
+        if (needHeader)
         {
-            AdditionalInfo = "";
-            if (0 < count)
-            {
-                AdditionalInfo += $"取得行: {count} ";
-            }
-            if (0 < time.TotalSeconds)
-            {
-                AdditionalInfo += $"実行時間: {time.TotalSeconds}秒 ";
-            }
-            AdditionalInfo += query;
-            if (!string.IsNullOrEmpty(executionPlan))
-            {
-                AdditionalInfo += Environment.NewLine + $"実行プラン: {executionPlan}";
-            }
+            var header = View.Columns.Cast<DataColumn>().Select(x => $"\"{x.Caption}\"").ToArray();
+            sb.AppendLine(string.Join(",", header));
+        }
+        var rows = View.Rows.Cast<DataRow>().Select(x => string.Join(",", x.ItemArray.Select(y => $"\"{y}\"").ToArray()));
+        foreach (var row in rows)
+        {
+            sb.AppendLine(row);
+        }
+        try
+        {
+            File.WriteAllText(result.Path, sb.ToString(), Encoding.UTF8);
+        }
+        catch (Exception ex)
+        {
+            //throwしても拾う先が無いので握りつぶす
+            MessageBox.Show(ex.Message, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
     }
 }

@@ -4,26 +4,25 @@
 FireBird、特にEmbededを対象にしたGUIツールです。    
 インストール不要、バイナリを配置するだけで動作します。  
   
-[![Build status (master)](https://img.shields.io/appveyor/ci/kowill/FAManagementStudio.svg?style=flat-square)](https://ci.appveyor.com/project/kowill/famanagementstudio)
 [![Release](https://img.shields.io/github/release/degarashi0913/FAManagementStudio.svg?style=flat-square)](https://github.com/degarashi0913/FAManagementStudio/releases/latest)
 
 ## 動作環境  
-* Windows 7 以降  
-.NET Framework 4.5 で動作します。    
-Windows 7 で使用する場合、インストールをお願いします。  
-
-* Firebird 2.5 / 3 対応  
+- Windows x64
+- Firebird 2.5 / 3 対応  
 同時接続可
 
 ## Technologies    
-* C# + WPF  
+* .NET 9 + C# + WPF  
 
-## Library
-- AvalonEdit  
- - License: The MIT License (MIT)  
-  
-- GraphSharp  
- - License: Apache License Version 2.0
+## License
 
-## ライセンス
-MIT License (MIT)
+This project is licensed under the MIT License. See the [LICENSE](./LICENSE) file for details.
+
+### Third-party libraries
+
+This project uses the Firebird client libraries, licensed under the Interbase Public License and the Initial Developer's Public License (variants of MPL 1.1):
+
+- [Initial Developer’s Public License (IDPL)](https://www.firebirdsql.org/en/initial-developer-s-public-license-version-1-0/)
+- [Interbase Public License (IPL)](https://www.firebirdsql.org/en/interbase-public-license/)
+
+Please refer to the above links for detailed licensing information.

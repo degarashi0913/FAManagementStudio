@@ -1,8 +1,9 @@
 ﻿using FAManagementStudio.Models;
+using FAManagementStudio.ViewModels.Commons;
 
 namespace FAManagementStudio.ViewModels
 {
-    public class TriggerViewModel : ViewModelBase, IAddtionalDbInfo
+    public class TriggerViewModel : ViewModelBase
     {
         private TriggerInfo _inf;
         public TriggerViewModel(TriggerInfo inf)

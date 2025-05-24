@@ -1,338 +1,78 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
-  <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{35ABA54C-D4AE-438A-B9E9-490441E72854}</ProjectGuid>
-    <OutputType>WinExe</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>FAManagementStudio</RootNamespace>
-    <AssemblyName>FAManagementStudio</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <WarningLevel>4</WarningLevel>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-    <TargetFrameworkProfile />
-    <NuGetPackageImportStamp>
-    </NuGetPackageImportStamp>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\x64\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <DebugType>full</DebugType>
-    <PlatformTarget>x64</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <Prefer32Bit>false</Prefer32Bit>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
-    <OutputPath>bin\x64\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>none</DebugType>
-    <PlatformTarget>x64</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <UseVSHostingProcess>false</UseVSHostingProcess>
-    <Prefer32Bit>false</Prefer32Bit>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\x86\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <DebugType>full</DebugType>
-    <PlatformTarget>x86</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <Prefer32Bit>false</Prefer32Bit>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
-    <OutputPath>bin\x86\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>none</DebugType>
-    <PlatformTarget>x86</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <UseVSHostingProcess>false</UseVSHostingProcess>
-    <Prefer32Bit>false</Prefer32Bit>
-  </PropertyGroup>
-  <PropertyGroup>
-    <ApplicationIcon>Image\systemicon.ico</ApplicationIcon>
-  </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="FirebirdSql.Data.FirebirdClient, Version=5.12.1.0, Culture=neutral, PublicKeyToken=3750abcc3150b00c, processorArchitecture=MSIL">
-      <HintPath>..\packages\FirebirdSql.Data.FirebirdClient.5.12.1\lib\net40-client\FirebirdSql.Data.FirebirdClient.dll</HintPath>
-    </Reference>
-    <Reference Include="GraphSharp, Version=1.0.2.0, Culture=neutral, PublicKeyToken=f9c24778325a6b82, processorArchitecture=MSIL">
-      <HintPath>..\packages\GraphSharp.1.1.0.0\lib\net40\GraphSharp.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="GraphSharp.Controls, Version=1.1.0.0, Culture=neutral, PublicKeyToken=f9c24778325a6b82, processorArchitecture=MSIL">
-      <HintPath>..\packages\GraphSharp.1.1.0.0\lib\net40\GraphSharp.Controls.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="ICSharpCode.AvalonEdit, Version=5.0.3.0, Culture=neutral, PublicKeyToken=9cc39be672370310, processorArchitecture=MSIL">
-      <HintPath>..\packages\AvalonEdit.5.0.3\lib\Net40\ICSharpCode.AvalonEdit.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Microsoft.Expression.Interactions, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Assemblies\Microsoft.Expression.Interactions.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Threading.Tasks, Version=1.0.12.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Bcl.Async.1.0.168\lib\net40\Microsoft.Threading.Tasks.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Threading.Tasks.Extensions, Version=1.0.12.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Bcl.Async.1.0.168\lib\net40\Microsoft.Threading.Tasks.Extensions.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Threading.Tasks.Extensions.Desktop, Version=1.0.168.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Bcl.Async.1.0.168\lib\net40\Microsoft.Threading.Tasks.Extensions.Desktop.dll</HintPath>
-    </Reference>
-    <Reference Include="PresentationCore" />
-    <Reference Include="QuickGraph, Version=3.6.61114.0, Culture=neutral, PublicKeyToken=f3fb40175eec2af3, processorArchitecture=MSIL">
-      <HintPath>..\packages\QuickGraph.3.6.61119.7\lib\net4\QuickGraph.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="QuickGraph.Data, Version=3.6.61114.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\QuickGraph.3.6.61119.7\lib\net4\QuickGraph.Data.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="QuickGraph.Graphviz, Version=3.6.61114.0, Culture=neutral, PublicKeyToken=f3fb40175eec2af3, processorArchitecture=MSIL">
-      <HintPath>..\packages\QuickGraph.3.6.61119.7\lib\net4\QuickGraph.Graphviz.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="QuickGraph.Serialization, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\QuickGraph.3.6.61119.7\lib\net4\QuickGraph.Serialization.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Net" />
-    <Reference Include="System.Runtime.Serialization" />
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Assemblies\System.Windows.Interactivity.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Xaml" />
-    <Reference Include="System.Xml" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="UIAutomationProvider" />
-    <Reference Include="WindowsBase" />
-    <Reference Include="PresentationFramework" />
-    <Reference Include="WindowsFormsIntegration" />
-    <Reference Include="WPFExtensions, Version=1.0.3437.34043, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\WPFExtensions.1.0.0\lib\WPFExtensions.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup>
-    <ApplicationDefinition Include="App.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </ApplicationDefinition>
-    <Compile Include="Common\Definitions.cs" />
-    <Compile Include="Common\MessageBase.cs" />
-    <Compile Include="Common\Messenger.cs" />
-    <Compile Include="Models\AppSettings.cs" />
-    <Compile Include="Models\Commons\FieldType.cs" />
-    <Compile Include="Models\Commons\FirebirdRecommender .cs" />
-    <Compile Include="Models\Db\ColumInfo.cs" />
-    <Compile Include="Models\Db\SequenceInfo.cs" />
-    <Compile Include="Models\Db\ProcedureInfo.cs" />
-    <Compile Include="Models\Db\DomainInfo.cs" />
-    <Compile Include="Models\Db\IndexInfo.cs" />
-    <Compile Include="Models\Db\TableInfo.cs" />
-    <Compile Include="Models\Db\TriggerInfo.cs" />
-    <Compile Include="Models\Db\ViewInfo.cs" />
-    <Compile Include="Models\FirebirdInfo.cs" />
-    <Compile Include="Models\Firebird\HeaderPage.cs" />
-    <Compile Include="Models\Firebird\FbUtility.cs" />
-    <Compile Include="Models\QueryAnalyzer.cs" />
-    <Compile Include="Models\QueryResult.cs" />
-    <Compile Include="ViewModels\AdditionalDbInfoViewModel.cs" />
-    <Compile Include="ViewModels\BasePathSettingsViewModel.cs" />
-    <Compile Include="ViewModels\ConnectionSettingsViewModel.cs" />
-    <Compile Include="ViewModels\Db\ColumViewMoodel.cs" />
-    <Compile Include="ViewModels\Db\DbViewModel.cs" />
-    <Compile Include="ViewModels\Db\SequenceViewModel.cs" />
-    <Compile Include="ViewModels\Db\ProcedureViewModel.cs" />
-    <Compile Include="ViewModels\Db\DomainViewModel.cs" />
-    <Compile Include="ViewModels\Db\IndexViewModel.cs" />
-    <Compile Include="ViewModels\Db\TableViewModel.cs" />
-    <Compile Include="ViewModels\Db\TableViewViewModel.cs" />
-    <Compile Include="ViewModels\Db\TriggerViewModel.cs" />
-    <Compile Include="ViewModels\EntityRelationshipViewModel.cs" />
-    <Compile Include="ViewModels\NewDatabaseSettingsViewModel.cs" />
-    <Compile Include="ViewModels\QueryProjectViewModel.cs" />
-    <Compile Include="ViewModels\QueryResultViewModel.cs" />
-    <Compile Include="ViewModels\QueryTabViewModel.cs" />
-    <Compile Include="Views\BasePathSettingsView.xaml.cs">
-      <DependentUpon>BasePathSettingsView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Behaviors\GetFocusWhenMovedTabKeyBehavior.cs" />
-    <Compile Include="Views\Behaviors\GridHeaderDisplayNameBehavior.cs" />
-    <Compile Include="Views\Behaviors\ImageButtonBehavior.cs" />
-    <Compile Include="Views\Behaviors\TreeViewItemDobleClickBehavior.cs" />
-    <Compile Include="Views\Commons\MessageTrigger.cs" />
-    <Compile Include="Views\Commons\MessageBaseTriger.cs" />
-    <Compile Include="Views\Behaviors\ShowWindowAction.cs" />
-    <Compile Include="Views\Behaviors\DynamicTabControlBehavior.cs" />
-    <Compile Include="Views\Behaviors\FileDropBehavior.cs" />
-    <Compile Include="Views\Behaviors\TreeViewSelectedItemBehavior.cs" />
-    <Compile Include="Common\BindableBase.cs" />
-    <Compile Include="Common\CommandReference.cs" />
-    <Compile Include="Common\RelayCommand.cs" />
-    <Compile Include="Models\PathHistory.cs" />
-    <Compile Include="Models\QueryInfo.cs" />
-    <Compile Include="ViewModels\MainViewModel.cs" />
-    <Compile Include="Views\Behaviors\WindowBehavior.cs" />
-    <Compile Include="Views\Behaviors\WindowCloseAction.cs" />
-    <Compile Include="ViewModels\Commons\ViewModelBase.cs" />
-    <Compile Include="Views\ConnectionSettingsView.xaml.cs">
-      <DependentUpon>ConnectionSettingsView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Converters\RadioButtonConverter.cs" />
-    <Compile Include="Views\Converters\BoolConverter.cs" />
-    <Compile Include="Views\Converters\ImageButtonConverter.cs" />
-    <Compile Include="Views\Converters\TableIconConverter.cs" />
-    <Compile Include="Views\Converters\ConstraintsKeyToIconConverter.cs" />
-    <Compile Include="Views\Converters\GridSizeConverter.cs" />
-    <Compile Include="Views\Converters\VisibilityConverter.cs" />
-    <Compile Include="Views\NewDatabaseSettings.xaml.cs">
-      <DependentUpon>NewDatabaseSettings.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Selectors\ConnectionContentSelector.cs" />
-    <Page Include="Views\BasePathSettingsView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\ConnectionSettingsView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\EntityRelationshipView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\MainWindow.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Compile Include="App.xaml.cs">
-      <DependentUpon>App.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Views\EntityRelationshipView.xaml.cs">
-      <DependentUpon>EntityRelationshipView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\MainWindow.xaml.cs">
-      <DependentUpon>MainWindow.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
-    <Page Include="Views\NewDatabaseSettings.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Models\Db\DatabaseInfo.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-    <Compile Include="Properties\Settings.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Settings.settings</DependentUpon>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-    </Compile>
-    <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <None Include="packages.config">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Properties\Settings.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
-    </None>
-    <AppDesigner Include="Properties\" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="App.config">
-      <SubType>Designer</SubType>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Image\base_exclamationmark_32.png" />
-    <Resource Include="Image\action_add_16xLG.png" />
-    <Resource Include="Image\hardware_16xLG.png" />
-    <Resource Include="Image\ForeigenKey.png" />
-    <Resource Include="Image\PrimaryKey.png" />
-    <Resource Include="Image\systemicon.ico" />
-    <Resource Include="Image\DbShape.png" />
-    <Resource Include="Image\UpdateImage.png" />
-    <Resource Include="Image\Table.png" />
-    <Resource Include="Image\View.png" />
-    <Resource Include="Image\PFKey.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\FAManagementStudio.Controls\FAManagementStudio.Controls.csproj">
-      <Project>{0ae2fcf9-be9a-453a-a5b5-c294e9c1b06d}</Project>
-      <Name>FAManagementStudio.Controls</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Image\DatabaseItem.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Image\File.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Image\ExecutionPlan.png" />
-    <Resource Include="Image\PinItem.png" />
-    <Resource Include="Image\Folder.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Image\IntelliSenseKeyword.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <WCFMetadata Include="Connected Services\" />
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    <PostBuildEvent>if $(PlatformName) equ x64 (
-xcopy  /y /s $(SolutionDir)Assemblies\Firebird\x64_dll $(TargetDir)
-) else (
-xcopy /y /s  $(SolutionDir)Assemblies\Firebird\x86_dll $(TargetDir)
-)
- if $(ConfigurationName) equ Release (del $(TargetDir)*.pdb
-del $(TargetDir)*.xml)</PostBuildEvent>
-  </PropertyGroup>
-  <Import Project="..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets" Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets')" />
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>このプロジェクトは、このコンピューター上にない NuGet パッケージを参照しています。それらのパッケージをダウンロードするには、[NuGet パッケージの復元] を使用します。詳細については、http://go.microsoft.com/fwlink/?LinkID=322105 を参照してください。見つからないファイルは {0} です。</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets'))" />
-  </Target>
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<OutputType>WinExe</OutputType>
+		<AppDesignerFolder>Properties</AppDesignerFolder>
+		<RootNamespace>FAManagementStudio</RootNamespace>
+		<AssemblyName>FAManagementStudio</AssemblyName>
+		<FileAlignment>512</FileAlignment>
+		<WarningLevel>4</WarningLevel>
+		<AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+		<TargetFramework>net9.0-windows</TargetFramework>
+		<UseWPF>true</UseWPF>
+		<Version>1.0.0.0</Version>
+		<Platforms>x64;x86</Platforms>
+		<PublishSingleFile>true</PublishSingleFile>
+		<SelfContained>true</SelfContained>
+		<ApplicationIcon>Image\systemicon.ico</ApplicationIcon>
+		<Nullable>enable</Nullable>
+		<SatelliteResourceLanguages>en-US;ja</SatelliteResourceLanguages>
+	</PropertyGroup>
+	
+	<ItemGroup>
+		<NativeDlls Include="..\Assemblies\Firebird\$(PlatformName)_dll\**\*" />
+	</ItemGroup>
+
+	<Target Name="CopyNativeDllsAfterBuild" AfterTargets="PostBuildEvent">
+		<Copy SourceFiles="@(NativeDlls)" DestinationFiles="@(NativeDlls->'$(TargetDir)%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" />
+	</Target>
+
+	<Target Name="CopyNativeDllsAfterPublish" AfterTargets="Publish">
+		<Message Text="Copying Native DLLs from ..\Assemblies\Firebird\$(PlatformName)_dll\**\* to @(NativeDlls->'$(PublishDir)%(RecursiveDir)%(Filename)%(Extension)')" Importance="high" />
+
+		<Copy SourceFiles="@(NativeDlls)" DestinationFiles="@(NativeDlls->'$(PublishDir)%(RecursiveDir)%(Filename)%(Extension)')" />
+	</Target>
+
+	<ItemGroup>
+		<Resource Include="Image\base_exclamationmark_32.png" />
+		<Resource Include="Image\action_add_16xLG.png" />
+		<Resource Include="Image\hardware_16xLG.png" />
+		<Resource Include="Image\ForeignKey.png" />
+		<Resource Include="Image\PrimaryKey.png" />
+		<Resource Include="Image\systemicon.ico" />
+		<Resource Include="Image\DbShape.png" />
+		<Resource Include="Image\UpdateImage.png" />
+		<Resource Include="Image\Table.png" />
+		<Resource Include="Image\View.png" />
+		<Resource Include="Image\PFKey.png" />
+		<Resource Include="Image\DatabaseItem.png" />
+		<Resource Include="Image\File.png" />
+		<Resource Include="Image\ExecutionPlan.png" />
+		<Resource Include="Image\PinItem.png" />
+		<Resource Include="Image\Folder.png" />
+		<Resource Include="Image\IntellisenseKeyword.png" />
+	</ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="FirebirdSql.Data.FirebirdClient" />
+		<PackageReference Include="GraphShape" />
+		<PackageReference Include="GraphShape.Controls" />
+		<PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" />
+	</ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\FAManagementStudio.Controls\FAManagementStudio.Controls.csproj" />
+		<ProjectReference Include="..\FAManagementStudio.Foundation\FAManagementStudio.Foundation.csproj" />
+	</ItemGroup>
+	<ItemGroup>
+		<Compile Update="Properties\Settings.Designer.cs">
+			<DesignTimeSharedInput>True</DesignTimeSharedInput>
+			<AutoGen>True</AutoGen>
+			<DependentUpon>Settings.settings</DependentUpon>
+		</Compile>
+	</ItemGroup>
+	<ItemGroup>
+		<None Update="Properties\Settings.settings">
+			<Generator>SettingsSingleFileGenerator</Generator>
+			<LastGenOutput>Settings.Designer.cs</LastGenOutput>
+		</None>
+	</ItemGroup>
 </Project>

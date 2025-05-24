@@ -5,7 +5,7 @@ namespace FAManagementStudio.Models
 {
     public class QueryAnalyzer
     {
-        public static string[] Analyze(string inputs)
+        public static IReadOnlyCollection<string> Analyze(string inputs)
         {
             var endIdx = 0;
             var result = new List<string> { };
@@ -20,32 +20,52 @@ namespace FAManagementStudio.Models
                     //comment
                     case var x when x.StartsWith("--"):
                         new NewLineToken().StatementEnd(ref inputs, ref endIdx);
+                        
                         break;
                     case var x when x.StartsWith("create", StringComparison.OrdinalIgnoreCase) ||
                                     x.StartsWith("recreate", StringComparison.OrdinalIgnoreCase) ||
                                     x.StartsWith("alter", StringComparison.OrdinalIgnoreCase):
-                        new BlockToken().StatementEnd(ref inputs, ref endIdx);
-                        break;
+                        {
+                            var secondIdx = endIdx;
+                            var next = GetWord(ref inputs, ref secondIdx, out endIdx);
+
+                            switch (next)
+                            {
+                                case var y when y.StartsWith("procedure", StringComparison.OrdinalIgnoreCase):
+                                    {
+                                        new ExecuteBlockToken().StatementEnd(ref inputs, ref endIdx);
+                                    }
+                                    break;
+                                default:
+                                    {
+                                        new BlockToken().StatementEnd(ref inputs, ref endIdx);
+                                        break;
+                                    }
+                            }
+                            break;
+                        }
                     case var x when x.StartsWith("execute", StringComparison.OrdinalIgnoreCase):
-                        var secondIdx = endIdx;
-                        var next = GetWord(ref inputs, ref secondIdx, out endIdx);
-                        //ignore space
-                        if (next.StartsWith("block", StringComparison.OrdinalIgnoreCase))
                         {
-                            new ExecuteBlockToken().StatementEnd(ref inputs, ref endIdx);
+                            var secondIdx = endIdx;
+                            var next = GetWord(ref inputs, ref secondIdx, out endIdx);
+                            //ignore space
+                            if (next.StartsWith("block", StringComparison.OrdinalIgnoreCase))
+                            {
+                                new ExecuteBlockToken().StatementEnd(ref inputs, ref endIdx);
+                            }
+                            else
+                            {
+                                new NormalToken().StatementEnd(ref inputs, ref endIdx);
+                            }
+                            break;
                         }
-                        else
-                        {
-                            new NormalToken().StatementEnd(ref inputs, ref endIdx);
-                        }
-                        break;
                     default:
                         new NormalToken().StatementEnd(ref inputs, ref endIdx);
                         break;
                 }
-                result.Add(inputs.Substring(startIdx, endIdx - startIdx));
+                result.Add(inputs[startIdx..endIdx]);
             }
-            return result.ToArray();
+            return [.. result];
         }
 
         public static string GetWord(ref string statement, ref int startIdx, out int endIdx)
@@ -93,7 +113,7 @@ namespace FAManagementStudio.Models
                 }
             }
             return statement.Substring(startIdx);
-            end:
+        end:
             return statement.Substring(startIdx, endIdx - startIdx);
         }
 
@@ -187,6 +207,17 @@ namespace FAManagementStudio.Models
                             }
                             break;
                     }
+                }
+            }
+        }
+        class DeclarationsToken : BaseToken
+        {
+            public override void StatementEnd(ref string statement, ref int endIdx)
+            {
+                while (endIdx < statement.Length)
+                {
+                    var startIdx = endIdx;
+                    if (string.Compare(GetWord(ref statement, ref startIdx, out endIdx), "begin", true) == 0) return;
                 }
             }
         }

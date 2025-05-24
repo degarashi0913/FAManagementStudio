@@ -3,7 +3,7 @@ using FAManagementStudio.Models;
 
 namespace FAManagementStudio.ViewModels
 {
-    public class SequenceViewModel : BindableBase, IAddtionalDbInfo
+    public class SequenceViewModel : BindableBase
     {
         private SequenceInfo _inf;
         public SequenceViewModel(SequenceInfo inf)

@@ -1,18 +1,18 @@
 ﻿using FAManagementStudio.Common;
+using FAManagementStudio.ViewModels.Db;
 using System.Collections.Generic;
 
-namespace FAManagementStudio.ViewModels
-{
-    public class ViewModelBase : BindableBase
-    {
-        protected Messenger MessengerInstance { get; set; } = Messenger.Instance;
-    }
+namespace FAManagementStudio.ViewModels.Commons;
 
-    public interface ITableViewModel
-    {
-        string TableName { get; }
-        string GetDdl(DbViewModel dbVm);
-        List<ColumViewMoodel> Colums { get; }
-        TableKind Kind { get; }
-    }
+public class ViewModelBase : BindableBase
+{
+    protected Messenger MessengerInstance { get; set; } = Messenger.Instance;
+}
+
+public interface ITableViewModel
+{
+    string TableName { get; }
+    string GetDdl(DbViewModel dbVm);
+    IReadOnlyCollection<ColumViewModel> Columns { get; }
+    TableKind Kind { get; }
 }

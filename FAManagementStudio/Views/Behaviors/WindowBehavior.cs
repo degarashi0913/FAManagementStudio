@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Input;
-using System.Windows.Interactivity;
+using Microsoft.Xaml.Behaviors;
 
 namespace FAManagementStudio.Views.Behaviors
 {
@@ -30,7 +30,7 @@ namespace FAManagementStudio.Views.Behaviors
             AssociatedObject.Closed += AssociatedObject_Closed;
         }
 
-        private void AssociatedObject_Closed(object sender, EventArgs e)
+        private void AssociatedObject_Closed(object? sender, EventArgs e)
         {
             ClosedCommand?.Execute(null);
         }

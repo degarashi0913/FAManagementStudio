@@ -3,7 +3,7 @@ using FAManagementStudio.Models;
 
 namespace FAManagementStudio.ViewModels
 {
-    public class DomainViewModel : BindableBase, IAddtionalDbInfo
+    public class DomainViewModel : BindableBase
     {
         private DomainInfo _inf;
         public DomainViewModel(DomainInfo inf)

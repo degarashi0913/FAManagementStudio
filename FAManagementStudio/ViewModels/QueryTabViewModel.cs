@@ -1,4 +1,5 @@
-﻿using FAManagementStudio.Common;
+﻿using FAManagementStudio.Foundation.Common;
+using FAManagementStudio.ViewModels.Commons;
 using System.IO;
 using System.Text;
 using System.Windows.Forms;
@@ -48,14 +49,14 @@ namespace FAManagementStudio.ViewModels
                 RaisePropertyChanged(nameof(IsShowExecutionPlan));
             }
         }
-        private bool _IntelisenseEnabled = false;
-        public bool IntelisenseEnabled
+        private bool _IntellisenseEnabled = false;
+        public bool IntellisenseEnabled
         {
-            get { return _IntelisenseEnabled; }
+            get { return _IntellisenseEnabled; }
             set
             {
-                _IntelisenseEnabled = value;
-                RaisePropertyChanged(nameof(IntelisenseEnabled));
+                _IntellisenseEnabled = value;
+                RaisePropertyChanged(nameof(IntellisenseEnabled));
             }
         }
         public QueryTabViewModel(string header, string query)

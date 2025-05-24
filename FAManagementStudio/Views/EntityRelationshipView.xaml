@@ -1,13 +1,14 @@
 ﻿<Window x:Class="FAManagementStudio.Views.EntityRelationshipView"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:Behaviors="http://schemas.microsoft.com/xaml/behaviors"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:FAManagementStudio.Views"
-        xmlns:graph="clr-namespace:GraphSharp.Controls;assembly=GraphSharp.Controls"
-        xmlns:extensions="clr-namespace:WPFExtensions.Controls;assembly=WPFExtensions"
+        xmlns:graph="clr-namespace:GraphShape.Controls;assembly=GraphShape.Controls"
         xmlns:vm="clr-namespace:FAManagementStudio.ViewModels"
         xmlns:c="clr-namespace:FAManagementStudio.Views.Converters"
+        xmlns:b="clr-namespace:FAManagementStudio.Views.Behaviors"
         mc:Ignorable="d"
         Title="相関図" Height="500" Width="800" Icon="../Image/systemicon.ico" WindowStartupLocation="CenterOwner">
     <Window.DataContext>
@@ -19,7 +20,11 @@
             <RowDefinition Height="1*"/>
         </Grid.RowDefinitions>
         <StackPanel Grid.Row="0">
-            <Button Content="再配置" Click="RelayoutButton_Clisk" />
+            <StackPanel Orientation="Horizontal">
+                <Button Content="再配置" Width="100" Click="RelayoutButton_Click" />
+                <Button Content="縮小" Click="ZoomOutButton_Click" Margin="10,0,5,0" />
+                <Button Content="拡大" Click="ZoomInButton_Click" />
+            </StackPanel>
             <StackPanel Orientation="Horizontal">
                 <Button Content="ExpanderOpen" Click="ExpandOpenButton_Click" />
                 <Button Content="ExpanderClose" Click="ExpandCloseButton_Click" />
@@ -31,10 +36,10 @@
                 </Border>
             </StackPanel>
         </StackPanel>
-        <extensions:ZoomControl Grid.Row="1">
+        <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
             <graph:GraphLayout x:Name="Layout" Margin="0,0,0,0" Graph="{Binding Graph}" 
-                               LayoutMode="Automatic" LayoutParameters="{Binding Parameter, Mode=TwoWay}"
-                               OverlapRemovalConstraint="Automatic" OverlapRemovalAlgorithmType="FSA" LayoutAlgorithmType="{Binding LayoutAlgorithmType}" >
+                   LayoutMode="Automatic" LayoutParameters="{Binding Parameter, Mode=TwoWay}"
+                   OverlapRemovalConstraint="Automatic" OverlapRemovalAlgorithmType="FSA" LayoutAlgorithmType="{Binding LayoutAlgorithmType}" >
                 <graph:GraphLayout.Resources>
                     <Style TargetType="{x:Type graph:VertexControl}">
                         <Setter Property="Template">
@@ -46,8 +51,8 @@
                                                 <Image Source="../Image/Table.png" Height="30" Width="30" />
                                                 <TextBlock Text="{Binding TableName}" TextAlignment="Center" />
                                             </StackPanel>
-                                            <Expander Header="Colums">
-                                                <ItemsControl ItemsSource="{Binding Colums}">
+                                            <Expander Header="Columns">
+                                                <ItemsControl ItemsSource="{Binding Columns}">
                                                     <ItemsControl.Resources>
                                                         <c:ConstraintsKeyToIconConverter x:Key="KeyConverter"/>
                                                     </ItemsControl.Resources>
@@ -68,7 +73,10 @@
                         </Setter>
                     </Style>
                 </graph:GraphLayout.Resources>
+                <Behaviors:Interaction.Behaviors>
+                    <b:BindableScaleBehavior Scale="{Binding Scale}" />
+                </Behaviors:Interaction.Behaviors>
             </graph:GraphLayout>
-        </extensions:ZoomControl>
+        </ScrollViewer>
     </Grid>
 </Window>

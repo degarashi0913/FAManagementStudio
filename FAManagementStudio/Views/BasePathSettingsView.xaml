@@ -5,18 +5,18 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:FAManagementStudio.Views"
         xmlns:vm="clr-namespace:FAManagementStudio.ViewModels"
-        xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+        xmlns:Behaviors="http://schemas.microsoft.com/xaml/behaviors"
         xmlns:b="clr-namespace:FAManagementStudio.Views.Behaviors"
         mc:Ignorable="d"
         Title="Queryファイル管理" Height="160" Width="300"  Icon="../Image/systemicon.ico" WindowStartupLocation="CenterOwner">
     <Window.DataContext>
         <vm:BasePathSettingsViewModel />
     </Window.DataContext>
-    <i:Interaction.Triggers>
+    <Behaviors:Interaction.Triggers>
         <b:MessageBaseTriger Target="WindowClose">
             <b:WindowCloseAction />
         </b:MessageBaseTriger>
-    </i:Interaction.Triggers>
+    </Behaviors:Interaction.Triggers>
     <DockPanel>
         <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right">
             <Button Content="ADD"  Width="50" Command="{Binding AddBasePath}"/>

@@ -1,45 +1,49 @@
-﻿using System.Diagnostics;
+﻿using Microsoft.Xaml.Behaviors;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using System.Windows.Interactivity;
+using System.Windows.Media;
 
-namespace FAManagementStudio.Views.Behaviors
+namespace FAManagementStudio.Views.Behaviors;
+
+class TreeViewItemDobleClickBehavior : Behavior<TreeView>
 {
-    class TreeViewItemDobleClickBehavior : Behavior<TreeView>
+    public TreeViewItemDobleClickBehavior() { }
+    public ICommand ClickCommand
     {
-        public TreeViewItemDobleClickBehavior() { }
-        public ICommand ClickCommand
-        {
-            get { return (ICommand)GetValue(ClickCommandProperty); }
-            set { SetValue(ClickCommandProperty, value); }
-        }
-        public static readonly DependencyProperty ClickCommandProperty = DependencyProperty.Register(nameof(ClickCommand), typeof(ICommand), typeof(TreeViewItemDobleClickBehavior), new PropertyMetadata(null));
+        get { return (ICommand)GetValue(ClickCommandProperty); }
+        set { SetValue(ClickCommandProperty, value); }
+    }
+    public static readonly DependencyProperty ClickCommandProperty = DependencyProperty.Register(nameof(ClickCommand), typeof(ICommand), typeof(TreeViewItemDobleClickBehavior), new PropertyMetadata(null));
 
-        private object _selectedValue;
 
-        protected override void OnAttached()
-        {
-            base.OnAttached();
-            this.AssociatedObject.MouseDoubleClick += AssociatedObject_MouseDoubleClick;
-            this.AssociatedObject.SelectedItemChanged += AssociatedObject_SelectedItemChanged;
-        }
+    protected override void OnAttached()
+    {
+        base.OnAttached();
+        AssociatedObject.MouseDoubleClick += AssociatedObject_MouseDoubleClick;
+    }
 
-        private void AssociatedObject_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+    private void AssociatedObject_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+    {
+        static TreeViewItem? FindTreeViewItem(DependencyObject child)
         {
-            _selectedValue = e.NewValue;
-        }
-
-        private void AssociatedObject_MouseDoubleClick(object sender, MouseButtonEventArgs e)
-        {
-            ClickCommand?.Execute(_selectedValue);
+            while (child != null)
+            {
+                if (child is TreeViewItem item) return item;
+                child = VisualTreeHelper.GetParent(child);
+            }
+            return null;
         }
 
-        protected override void OnDetaching()
+        if (e.OriginalSource is DependencyObject source && FindTreeViewItem(source) is TreeViewItem item)
         {
-            this.AssociatedObject.SelectedItemChanged -= AssociatedObject_SelectedItemChanged;
-            this.AssociatedObject.MouseDoubleClick -= AssociatedObject_MouseDoubleClick;
-            base.OnDetaching();
+            ClickCommand?.Execute(item.DataContext);
         }
+    }
+
+    protected override void OnDetaching()
+    {
+        AssociatedObject.MouseDoubleClick -= AssociatedObject_MouseDoubleClick;
+        base.OnDetaching();
     }
 }

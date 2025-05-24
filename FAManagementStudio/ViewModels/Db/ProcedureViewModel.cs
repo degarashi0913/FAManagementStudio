@@ -3,7 +3,7 @@ using FAManagementStudio.Models;
 
 namespace FAManagementStudio.ViewModels
 {
-    public class ProcedureViewModel : BindableBase, IAddtionalDbInfo
+    public class ProcedureViewModel : BindableBase
     {
         private ProcedureInfo _inf;
         public ProcedureViewModel(ProcedureInfo inf)

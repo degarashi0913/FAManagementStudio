@@ -6,10 +6,10 @@
         xmlns:local="clr-namespace:FAManagementStudio.Views"
         xmlns:vm="clr-namespace:FAManagementStudio.ViewModels"
         xmlns:converter="clr-namespace:FAManagementStudio.Views.Converters"
-        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+        xmlns:Behaviors="http://schemas.microsoft.com/xaml/behaviors"
         xmlns:b="clr-namespace:FAManagementStudio.Views.Behaviors"
         xmlns:fb="clr-namespace:FirebirdSql.Data.FirebirdClient;assembly=FirebirdSql.Data.FirebirdClient"
-        xmlns:system="clr-namespace:System;assembly=mscorlib"
+        xmlns:system="clr-namespace:System;assembly=System.Runtime"
         mc:Ignorable="d"
         Title="CreateNewDatabase" Icon="../Image/systemicon.ico" Height="160" Width="300" WindowStartupLocation="CenterOwner">
     <Window.DataContext>
@@ -23,11 +23,11 @@
             </ObjectDataProvider.MethodParameters>
         </ObjectDataProvider>
     </Window.Resources>
-    <i:Interaction.Triggers>
+    <Behaviors:Interaction.Triggers>
         <b:MessageBaseTriger Target="WindowClose">
             <b:WindowCloseAction />
         </b:MessageBaseTriger>
-    </i:Interaction.Triggers>
+    </Behaviors:Interaction.Triggers>
     <StackPanel Background="#fafbfc">
         <DockPanel Margin="0,5,0,5">
             <Button DockPanel.Dock="Right" Width="15" Content=".." Command="{Binding OpenFileDialog}" Margin="4,0,2,0"/>

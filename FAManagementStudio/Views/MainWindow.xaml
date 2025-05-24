@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+        xmlns:Behaviors="http://schemas.microsoft.com/xaml/behaviors"
         xmlns:local="clr-namespace:FAManagementStudio"
         xmlns:Common="clr-namespace:FAManagementStudio.Common"
         xmlns:b="clr-namespace:FAManagementStudio.Views.Behaviors"
@@ -11,7 +11,7 @@
         xmlns:vm="clr-namespace:FAManagementStudio.ViewModels"
         xmlns:v="clr-namespace:FAManagementStudio.Views"
         xmlns:controls="clr-namespace:FAManagementStudio.Controls;assembly=FAManagementStudio.Controls"
-        xmlns:core="clr-namespace:System;assembly=mscorlib"
+        xmlns:core="clr-namespace:System;assembly=System.Runtime"
         xmlns:search="http://icsharpcode.net/sharpdevelop/avalonedit"
         mc:Ignorable="d"
         Title="FAManagementStudio" Height="700" Width="1000" Icon="../Image/systemicon.ico" Loaded="Window_Loaded">
@@ -33,14 +33,14 @@
     <Window.DataContext>
         <StaticResourceExtension ResourceKey="viewModel" />
     </Window.DataContext>
-    <i:Interaction.Behaviors>
-        <b:WindowBehavior LoadedCommand="{Binding LoadHistry}" ClosedCommand="{Binding SaveHistry}"/>
-    </i:Interaction.Behaviors>
-    <i:Interaction.Triggers>
+    <Behaviors:Interaction.Behaviors>
+        <b:WindowBehavior LoadedCommand="{Binding LoadHistory}" ClosedCommand="{Binding SaveHistory}"/>
+    </Behaviors:Interaction.Behaviors>
+    <Behaviors:Interaction.Triggers>
         <b:MessageBaseTriger Target="WindowOpen">
             <b:ShowWindowAction WindowType="{x:Type v:ConnectionSettingsView}" IsDialog="True" />
         </b:MessageBaseTriger>
-        <b:MessageBaseTriger Target="EintityWindowOpen">
+        <b:MessageBaseTriger Target="EntityWindowOpen">
             <b:ShowWindowAction WindowType="{x:Type v:EntityRelationshipView}" IsDialog="False" />
         </b:MessageBaseTriger>
         <b:MessageBaseTriger Target="BasePathSettingsWindowOpen">
@@ -49,7 +49,7 @@
         <b:MessageBaseTriger Target="NewDbSettingsWindowOpen">
             <b:ShowWindowAction WindowType="{x:Type v:NewDatabaseSettings}" IsDialog="True" />
         </b:MessageBaseTriger>
-    </i:Interaction.Triggers>
+    </Behaviors:Interaction.Triggers>
     <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
         <Grid.RowDefinitions>
             <RowDefinition Height="22"/>
@@ -68,9 +68,10 @@
                     </StackPanel>
                 </Button>
                 <ComboBox Name="DbPathComb" Height="auto" Width="300" IsEditable="True" IsTextSearchEnabled="True" IsReadOnly="False" ItemsSource="{Binding DataInput}" Text="{Binding InputPath, Mode=TwoWay}" AllowDrop="True">
-                    <i:Interaction.Behaviors>
+                    <Behaviors:Interaction.Behaviors>
                         <b:FileDropBehavior DropedCommand="{Binding DropFile}" FetchMode="Once"/>
-                    </i:Interaction.Behaviors>
+                        <b:MouseDoubleClickBehavior DoubleClickCommand="{Binding OpenFilePathDialog}"/>
+                    </Behaviors:Interaction.Behaviors>
                 </ComboBox>
                 <Button Command="{Binding LoadDatabase}" CommandParameter="{Binding ElementName=DbPathComb, Path=Text }">
                     <StackPanel Orientation="Horizontal">
@@ -125,10 +126,10 @@
                     <ListBox.InputBindings>
                         <KeyBinding Command="{StaticResource Shutdown}" Key="Delete"/>
                     </ListBox.InputBindings>
-                    <i:Interaction.Behaviors>
+                    <Behaviors:Interaction.Behaviors>
                         <b:FileDropBehavior DropedCommand="{Binding DbListDropFile}"/>
                         <b:GetFocusWhenMovedTabKeyBehavior />
-                    </i:Interaction.Behaviors>
+                    </Behaviors:Interaction.Behaviors>
                     <ListBox.ItemTemplate>
                         <DataTemplate>
                             <Canvas Height="70" Width="50" ToolTip="{Binding Path}">
@@ -140,12 +141,19 @@
                 </ListBox>
                 <GridSplitter Grid.Row="1" Style="{StaticResource HorizontalSpliterStyle}" />
                 <DockPanel Grid.Row="2">
-                    <Button DockPanel.Dock="Bottom" Content="BasePathSettings" Background="Transparent" Command="{Binding ShowPathSettings}" Focusable="False" />
+                    <Grid DockPanel.Dock="Bottom">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="auto"/>
+                        </Grid.ColumnDefinitions>
+                        <Button Content="📁" Background="Transparent" Command="{Binding ShowPathSettings}" Focusable="False" Grid.Column="0" FontFamily="Segoe UI Emoji"/>
+                        <Button Content="🔄" Background="Transparent"  Command="{Binding ReloadFileView}" Grid.Column="1" FontFamily="Segoe UI Emoji"/>
+                    </Grid>
                     <TreeView ItemsSource="{Binding QueryProjects}" AllowDrop="True" Background="#fafbfc">
-                        <i:Interaction.Behaviors>
+                        <Behaviors:Interaction.Behaviors>
                             <b:TreeViewItemDobleClickBehavior ClickCommand="{Binding ProjectItemOpen}" />
                             <b:FileDropBehavior DropedCommand="{Binding ProjectItemDrop}" FetchMode="Once"/>
-                        </i:Interaction.Behaviors>
+                        </Behaviors:Interaction.Behaviors>
                         <TreeView.Resources>
                             <HierarchicalDataTemplate DataType="{x:Type vm:QueryProjectFolderViewModel}" ItemsSource="{Binding Children}">
                                 <StackPanel Orientation="Horizontal" Margin="-2,0,0,0">
@@ -177,9 +185,9 @@
                     <Common:CommandReference x:Key="SetSqlDataTemplate" Command="{Binding DataContext.SetSqlDataTemplate, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}"/>
                 </Grid.Resources>
                 <TreeView Grid.Row="0" MinWidth="170" ItemsSource="{Binding CurrentDatabase.Tables, Mode=OneWay}" Background="#fafbfc">
-                    <i:Interaction.Behaviors>
+                    <Behaviors:Interaction.Behaviors>
                         <b:TreeViewSelectedItemBehavior SelectedItem="{Binding SelectedTableItem, Mode=TwoWay}" />
-                    </i:Interaction.Behaviors>
+                    </Behaviors:Interaction.Behaviors>
                     <TreeView.Resources>
                         <c:ConstraintsKeyToIconConverter x:Key="KeyConverter"/>
                         <c:TableIconConverter x:Key="TableIconConverter" />
@@ -205,7 +213,7 @@
                         </Style>
                     </TreeView.ItemContainerStyle>
                     <TreeView.ItemTemplate>
-                        <HierarchicalDataTemplate ItemsSource="{Binding Colums}">
+                        <HierarchicalDataTemplate ItemsSource="{Binding Columns}">
                             <StackPanel Orientation="Horizontal" Margin="-2,0,0,0">
                                 <Image Source="{Binding Kind, Converter={StaticResource TableIconConverter}}" Width="11" Stretch="Uniform"/>
                                 <TextBlock Text="{Binding Path=TableName}"/>
@@ -226,7 +234,7 @@
                 </TreeView>
                 <GridSplitter Grid.Row="1" Style="{StaticResource HorizontalSpliterStyle}" />
                 <DockPanel Grid.Row="2" Background="#fafbfc">
-                    <Button DockPanel.Dock="Bottom" Content="Other Info" Background="Transparent" Command="{Binding  ElementName=AdditionalBox, Path=DataContext.ContentChange}" Focusable="False" />
+                    <Button DockPanel.Dock="Bottom" Content="Other Info" Background="Transparent" Command="{Binding  ElementName=AdditionalBox, Path=DataContext.ContentChange}" CommandParameter="" Focusable="False" />
                     <ItemsControl DockPanel.Dock="Bottom" Name="AdditionalBox"  DataContext="{Binding SelectedValue.AdditionalInfo, ElementName=DbListBox}" ItemsSource="{Binding DataContext.CurrentContent, RelativeSource={RelativeSource Self}}">
                         <ItemsControl.Template>
                             <ControlTemplate>
@@ -258,7 +266,8 @@
                                     <StackPanel>
                                         <TextBlock Text="{Binding IndexName, StringFormat=Name: {0}}" />
                                         <TextBlock Text="{Binding TableName, StringFormat=Table: {0}}" />
-                                        <TextBlock Text="{Binding Kind, StringFormat=Kind: {0}}" />
+                                        <TextBlock Text="{Binding Kind, StringFormat=Constraint: {0}}" />
+                                        <TextBlock Text="{Binding IsUnique, StringFormat=Unique: {0}}" />
                                     </StackPanel>
                                 </Border>
                             </DataTemplate>
@@ -299,9 +308,9 @@
                     <RowDefinition Name="ResultRow" Height="1*"/>
                 </Grid.RowDefinitions>
                 <TabControl x:Name="QueryTab" Grid.Row="0" ItemsSource="{Binding Queries}" SelectedIndex="{Binding TagSelectedIndex, Mode=TwoWay,UpdateSourceTrigger=PropertyChanged,IsAsync=False}" SelectedValue="{Binding TagSelectedValue, Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}">
-                    <i:Interaction.Behaviors>
+                    <Behaviors:Interaction.Behaviors>
                         <b:DynamicTabControlBehavior AddTabCommand="{Binding AddTab}"/>
-                    </i:Interaction.Behaviors>
+                    </Behaviors:Interaction.Behaviors>
                     <TabControl.Resources>
                         <Style TargetType="{x:Type TabItem}">
                             <EventSetter Event="TabItem.MouseRightButtonDown" Handler="TabItem_MouseRightButtonDown"/>
@@ -374,27 +383,27 @@
                                 <Border DockPanel.Dock="Top" BorderThickness="0.5" VerticalAlignment="Bottom" Margin="0">
                                     <StackPanel Orientation="Horizontal" Height="15" Background="#fafbfc">
                                         <Button Focusable="False" ToolTip="Create New Result Tab" Background="{Binding IsNewResult, Converter={StaticResource BackColorConverter}}">
-                                            <i:Interaction.Behaviors>
+                                            <Behaviors:Interaction.Behaviors>
                                                 <b:ImageButtonBehavior ChangeEnable="{Binding IsNewResult, Mode=TwoWay}"/>
-                                            </i:Interaction.Behaviors>
+                                            </Behaviors:Interaction.Behaviors>
                                             <Image Source="../Image/PinItem.png" Opacity="{Binding IsNewResult, Converter={StaticResource OpacityConverter}}"/>
                                         </Button>
                                         <Button Focusable="False" ToolTip="Show Execute Plan" Background="{Binding IsShowExecutionPlan, Converter={StaticResource BackColorConverter}}" Margin="2,0,0,0">
-                                            <i:Interaction.Behaviors>
+                                            <Behaviors:Interaction.Behaviors>
                                                 <b:ImageButtonBehavior ChangeEnable="{Binding IsShowExecutionPlan, Mode=TwoWay}"/>
-                                            </i:Interaction.Behaviors>
+                                            </Behaviors:Interaction.Behaviors>
                                             <Image Source="../Image/ExecutionPlan.png" Opacity="{Binding IsShowExecutionPlan,Converter={StaticResource OpacityConverter}}"/>
                                         </Button>
-                                        <Button Focusable="False" ToolTip="Enable Intelisense (beta)" Background="{Binding IntelisenseEnabled, Converter={StaticResource BackColorConverter}}" Margin="2,0,0,0">
-                                            <i:Interaction.Behaviors>
-                                                <b:ImageButtonBehavior ChangeEnable="{Binding IntelisenseEnabled, Mode=TwoWay}"/>
-                                            </i:Interaction.Behaviors>
-                                            <Image Source="../Image/IntelliSenseKeyword.png" Opacity="{Binding IntelisenseEnabled,Converter={StaticResource OpacityConverter}}"/>
+                                        <Button Focusable="False" ToolTip="Enable Intellisense (beta)" Background="{Binding IntellisenseEnabled, Converter={StaticResource BackColorConverter}}" Margin="2,0,0,0">
+                                            <Behaviors:Interaction.Behaviors>
+                                                <b:ImageButtonBehavior ChangeEnable="{Binding IntellisenseEnabled, Mode=TwoWay}"/>
+                                            </Behaviors:Interaction.Behaviors>
+                                            <Image Source="../Image/IntellisenseKeyword.png" Opacity="{Binding IntellisenseEnabled,Converter={StaticResource OpacityConverter}}"/>
                                         </Button>
                                     </StackPanel>
                                 </Border>
                                 <controls:BindableEditor DockPanel.Dock="Top" AllowDrop="True" Text="{Binding Query, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalScrollBarVisibility="Disabled" Margin="0,2" Grid.RowSpan="2"  PreviewDragEnter="TextBox_PreviewDragEnter"
-            PreviewDragOver="TextBox_PreviewDragEnter" FontSize="14" IntelisenseEnabled="{Binding IntelisenseEnabled, Mode=TwoWay}" Recommender="{Binding DataContext.Recommender, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}">
+            PreviewDragOver="TextBox_PreviewDragEnter" FontSize="14" IntellisenseEnabled="{Binding IntellisenseEnabled, Mode=TwoWay}" Recommender="{Binding DataContext.Recommender, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}">
                                     <controls:BindableEditor.Resources>
                                         <Common:CommandReference x:Key="OverwriteSave" Command="{Binding OverwriteSave}"/>
                                         <Common:CommandReference x:Key="DropFile" Command="{Binding DropFile}"/>
@@ -403,9 +412,9 @@
                                         <KeyBinding Key="F5" Command="{StaticResource Execute}" />
                                         <KeyBinding Modifiers="Ctrl" Key="S" Command="{StaticResource OverwriteSave}" />
                                     </controls:BindableEditor.InputBindings>
-                                    <i:Interaction.Behaviors>
+                                    <Behaviors:Interaction.Behaviors>
                                         <b:FileDropBehavior DropedCommand="{Binding DropFile}" FetchMode="Once"/>
-                                    </i:Interaction.Behaviors>
+                                    </Behaviors:Interaction.Behaviors>
                                 </controls:BindableEditor>
                             </DockPanel>
                         </DataTemplate>
@@ -423,7 +432,7 @@
                     </TabControl.ItemTemplate>
                     <TabControl.ContentTemplate>
                         <DataTemplate>
-                            <ListBox ItemsSource="{Binding Result}" ScrollViewer.VerticalScrollBarVisibility="Visible" ScrollViewer.CanContentScroll="False" HorizontalContentAlignment="Stretch">
+                            <ListBox ItemsSource="{Binding Result}" ScrollViewer.VerticalScrollBarVisibility="Visible" ScrollViewer.CanContentScroll="True" VirtualizingPanel.ScrollUnit="Pixel" HorizontalContentAlignment="Stretch">
                                 <ListBox.Resources>
                                     <c:GridHightSizeConverter x:Key="HeightConverter"/>
                                     <c:GridWidthSizeConverter x:Key="WidthConverter"/>
@@ -435,17 +444,18 @@
                                 </ListBox.ItemContainerStyle>
                                 <ListBox.ItemTemplate>
                                     <DataTemplate>
-                                        <StackPanel Orientation="Vertical" Margin="0,0,0,10">
+                                        <StackPanel Orientation="Vertical" Margin="10,5,10,5">
                                             <DataGrid Name="ResultView" HorizontalAlignment="Stretch"
                                                 ItemsSource="{Binding View}" Margin="0,0,0,0" EnableColumnVirtualization="True" EnableRowVirtualization="True"
                                                 VirtualizingStackPanel.IsVirtualizing="True" VirtualizingStackPanel.VirtualizationMode="Recycling" 
                                                 CanUserAddRows="False" CanUserDeleteRows="False"
                                                 MaxWidth="{Binding Path=ActualWidth, ElementName=ResultGrid, Converter={StaticResource WidthConverter}}"
                                                 MaxHeight="{Binding Path=ActualHeight, ElementName=ResultRow, Converter={StaticResource HeightConverter}}"
-                                                IsReadOnly="True" AutoGenerateColumns="True">
-                                                <i:Interaction.Behaviors>
+                                                IsReadOnly="True" AutoGenerateColumns="True"
+                                                PreviewMouseWheel="ResultView_PreviewMouseWheel">
+                                                <Behaviors:Interaction.Behaviors>
                                                     <b:GridHeaderDisplayNameBehavior/>
-                                                </i:Interaction.Behaviors>
+                                                </Behaviors:Interaction.Behaviors>
                                                 <DataGrid.ContextMenu>
                                                     <ContextMenu>
                                                         <MenuItem Header="結果を保存 CSV(ヘッダ含)" Command="{Binding OutputCsv}" >
